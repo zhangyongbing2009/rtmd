@@ -1,0 +1,1076 @@
+Library {
+  Name			  "RTMDblocks"
+  Version		  6.6
+  MdlSubVersion		  0
+  SavedCharacterEncoding  "windows-1252"
+  LibraryType		  "BlockLibrary"
+  SaveDefaultBlockParams  on
+  SampleTimeColors	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  off
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  off
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ShowTestPointIcons	  on
+  ShowViewerIcons	  on
+  SortedOrder		  off
+  ExecutionContextIcon	  off
+  ShowLinearizationAnnotations on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  BlockNameDataTip	  off
+  BlockParametersDataTip  off
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  Created		  "Fri Feb 10 11:37:41 2006"
+  Creator		  "Tommy"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "Tommy"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Tue Aug 07 14:00:33 2007"
+  ModelVersionFormat	  "1.%<AutoIncrement:19>"
+  ConfigurationManager	  "None"
+  SimulationMode	  "normal"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  AccelVerboseBuild	  off
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeReport	  off
+  CovReportOnPause	  on
+  ExtModeBatchMode	  off
+  ExtModeEnableFloating	  on
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigDurationFloating "auto"
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  ProdHWDeviceType	  "32-bit Generic"
+  ShowModelReferenceBlockVersion off
+  ShowModelReferenceBlockIO off
+  BlockDefaults {
+    Orientation		    "right"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Arial"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      Constant
+      Value		      "1"
+      VectorParams1D	      on
+      SamplingMode	      "Sample based"
+      OutDataTypeMode	      "Inherit from 'Constant value'"
+      OutDataType	      "sfix(16)"
+      ConRadixGroup	      "Use specified scaling"
+      OutScaling	      "2^0"
+      SampleTime	      "inf"
+      FramePeriod	      "inf"
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      ReadBeforeWriteMsg      "none"
+      WriteAfterWriteMsg      "none"
+      WriteAfterReadMsg	      "none"
+      StateMustResolveToSignalObject off
+      ShowAdditionalParam     off
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+    }
+    Block {
+      BlockType		      DataStoreRead
+    }
+    Block {
+      BlockType		      DataStoreWrite
+    }
+    Block {
+      BlockType		      Demux
+      Outputs		      "4"
+      DisplayOption	      "none"
+      BusSelectionMode	      off
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchByCopyingInsideSignal off
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      "S-Function"
+      FunctionName	      "system"
+      SFunctionModules	      "''"
+      PortCounts	      "[]"
+    }
+    Block {
+      BlockType		      Stop
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
+    }
+    Block {
+      BlockType		      Terminator
+    }
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Arial"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Arial"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  System {
+    Name		    "RTMDblocks"
+    Location		    [979, 534, 1264, 926]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+    TiledPageScale	    1
+    ShowPageBoundaries	    off
+    ZoomFactor		    "100"
+    ReportName		    "simulink-default.rpt"
+    Block {
+      BlockType		      "S-Function"
+      Name		      "Convert DAQ Counts"
+      Ports		      [1, 1]
+      Position		      [170, 87, 245, 103]
+      BackgroundColor	      "cyan"
+      FunctionName	      "DAQCounts"
+      SFunctionModules	      "DAQCounts_wrapper"
+      MaskType		      "DAQCounts"
+      MaskDescription	      "Convert uint32 Raw Counts to signed int32 Count"
+"s"
+      MaskDisplay	      "port_label('input',1,'Counts')\nport_label('out"
+"put',1,'Counts')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "Convert DAQ Counts to EU"
+      Ports		      [1, 1]
+      Position		      [175, 42, 235, 58]
+      BackgroundColor	      "cyan"
+      FunctionName	      "DAQCountsToEU"
+      Parameters	      "gain,Vslope,Voffset,EUslope,EUoffset"
+      SFunctionModules	      "DAQCountsToEU_wrapper"
+      MaskType		      "DAQCountsToEU"
+      MaskDescription	      "Convert DAQ Counts to Engineering Units"
+      MaskPromptString	      "gain|Vslope|Voffset|EUslope|EUoffset"
+      MaskStyleString	      "edit,edit,edit,edit,edit"
+      MaskTunableValueString  "on,on,on,on,on"
+      MaskCallbackString      "||||"
+      MaskEnableString	      "on,on,on,on,on"
+      MaskVisibilityString    "on,on,on,on,on"
+      MaskToolTipString	      "on,on,on,on,on"
+      MaskVarAliasString      ",,,,"
+      MaskVariables	      "gain=@1;Vslope=@2;Voffset=@3;EUslope=@4;EUoffse"
+"t=@5;"
+      MaskDisplay	      "port_label('input',1,'Counts')\nport_label('out"
+"put',1,'EU')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "0|0|0|0|0"
+      MaskTabNameString	      ",,,,"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "Convert FP to Fix"
+      Ports		      [1, 1]
+      Position		      [20, 42, 95, 58]
+      BackgroundColor	      "yellow"
+      FunctionName	      "fptofix"
+      SFunctionModules	      "fptofix_wrapper"
+      MaskType		      "FPtoFix"
+      MaskDescription	      "Convert Floating Point value to uint32 Fixed Po"
+"int"
+      MaskDisplay	      "port_label('input',1,'Float')\nport_label('outp"
+"ut',1,'Fixed')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "Convert FP to Fix\nScaled"
+      Ports		      [1, 1]
+      Position		      [20, 126, 95, 144]
+      BackgroundColor	      "yellow"
+      FunctionName	      "fptofixwithscale"
+      Parameters	      "scale"
+      SFunctionModules	      "fptofixwithscale_wrapper"
+      MaskType		      "FPtoFixScaled"
+      MaskDescription	      "Convert Floating Point value to uint32 Fixed Po"
+"int and scale to normalized value."
+      MaskPromptString	      "scale"
+      MaskStyleString	      "edit"
+      MaskTunableValueString  "on"
+      MaskEnableString	      "on"
+      MaskVisibilityString    "on"
+      MaskToolTipString	      "on"
+      MaskVariables	      "scale=@1;"
+      MaskDisplay	      "port_label('input',1,'Float')\nport_label('outp"
+"ut',1,'Fixed')\nfprintf('1/%d',scale);"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "1"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "Convert Fix to FP"
+      Ports		      [1, 1]
+      Position		      [20, 82, 95, 98]
+      BackgroundColor	      "yellow"
+      FunctionName	      "fixtofp"
+      SFunctionModules	      "fixtofp_wrapper"
+      MaskType		      "FixtoFP"
+      MaskDescription	      "Convert uint32 Fixed Point to Floating Point"
+      MaskDisplay	      "port_label('input',1,'Fixed')\nport_label('outp"
+"ut',1,'Float')"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+    }
+    Block {
+      BlockType		      "S-Function"
+      Name		      "Convert Fix to FP\nScaled"
+      Ports		      [1, 1]
+      Position		      [20, 176, 95, 194]
+      BackgroundColor	      "yellow"
+      FunctionName	      "fixtofpwithscale"
+      Parameters	      "scale"
+      SFunctionModules	      "fixtofpwithscale_wrapper"
+      MaskType		      "FixtoFPScaled"
+      MaskDescription	      "Convert uint32 Fixed Point to Floating Point an"
+"d scale"
+      MaskPromptString	      "scale"
+      MaskStyleString	      "edit"
+      MaskTunableValueString  "on"
+      MaskEnableString	      "on"
+      MaskVisibilityString    "on"
+      MaskToolTipString	      "on"
+      MaskVariables	      "scale=@1;"
+      MaskDisplay	      "port_label('input',1,'Fixed')\nport_label('outp"
+"ut',1,'Float')\nfprintf('%d',scale);"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "1"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "File (xPC) "
+      Ports		      [1]
+      Position		      [175, 172, 240, 198]
+      SourceBlock	      "xpclib/Misc./Scope (xPC) "
+      SourceType	      "xpcscopeblock"
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      scopeno		      "1"
+      scopetype		      "File"
+      autostart		      on
+      viewmode		      "Graphical redraw"
+      formatstr		      "'%15.6f'"
+      grid		      on
+      ylimits		      "[0,0]"
+      nosamples		      "250"
+      noprepostsamples	      "0"
+      interleave	      "1"
+      triggermode	      "FreeRun"
+      triggersignal	      "1"
+      triggerlevel	      "0.0"
+      triggerslope	      "Either"
+      triggerscope	      "1"
+      triggersample	      "0"
+      filename		      "data.dat"
+      mode		      "Lazy"
+      writesize		      "512"
+      autorestart	      on
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Limit Checker"
+      Ports		      [1, 1]
+      Position		      [175, 264, 250, 286]
+      BackgroundColor	      "red"
+      MinAlgLoopOccurrences   off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      MaskHideContents	      off
+      MaskPromptString	      "upperlimit|lowerlimit"
+      MaskStyleString	      "edit,edit"
+      MaskTunableValueString  "on,on"
+      MaskCallbackString      "|"
+      MaskEnableString	      "on,on"
+      MaskVisibilityString    "on,on"
+      MaskToolTipString	      "on,on"
+      MaskVarAliasString      ","
+      MaskVariables	      "upperlimit=@1;lowerlimit=@2;"
+      MaskIconFrame	      on
+      MaskIconOpaque	      on
+      MaskIconRotate	      "none"
+      MaskIconUnits	      "autoscale"
+      MaskValueString	      "1|-1"
+      MaskTabNameString	      ","
+      System {
+	Name			"Limit Checker"
+	Location		[48, 620, 546, 920]
+	Open			on
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  ">"
+	  Position		  [110, 63, 140, 77]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant"
+	  Position		  [85, 137, 140, 163]
+	  Value			  "upperlimit"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Constant1"
+	  Position		  [85, 176, 140, 204]
+	  Value			  "lowerlimit"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Data Store\nMemory"
+	  Position		  [225, 15, 257, 45]
+	  DataStoreName		  "Prev"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Data Store\nRead"
+	  Position		  [85, 95, 115, 125]
+	  DataStoreName		  "Prev"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Data Store\nWrite"
+	  Position		  [355, 115, 385, 145]
+	  DataStoreName		  "Prev"
+	  SampleTime		  "-1"
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Embedded\nMATLAB Function"
+	  Ports			  [4, 3]
+	  Position		  [185, 98, 300, 157]
+	  MinAlgLoopOccurrences	  off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  MaskHideContents	  off
+	  MaskType		  "Stateflow"
+	  MaskDescription	  "Embedded MATLAB block"
+	  MaskDisplay		  "disp('fcn');"
+	  MaskSelfModifiable	  on
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  off
+	  MaskIconRotate	  "none"
+	  MaskIconUnits		  "autoscale"
+	  System {
+	    Name		    "Embedded\nMATLAB Function"
+	    Location		    [257, 457, 812, 717]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "in"
+	      Position		      [20, 101, 40, 119]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "prev"
+	      Position		      [20, 136, 40, 154]
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "upperlimit"
+	      Position		      [20, 171, 40, 189]
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "lowerlimit"
+	      Position		      [20, 206, 40, 224]
+	      Port		      "4"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      Ports		      [1, 1]
+	      Position		      [270, 220, 320, 260]
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      "S-Function"
+	      Name		      " SFunction "
+	      Tag		      "Stateflow S-Function RTMDblocks 1"
+	      Ports		      [4, 4]
+	      Position		      [180, 100, 230, 220]
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[4 4]"
+	      Port {
+		PortNumber		2
+		Name			"out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		3
+		Name			"prev_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		4
+		Name			"state_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      Position		      [460, 231, 480, 249]
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "out"
+	      Position		      [460, 101, 480, 119]
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "prev_out"
+	      Position		      [460, 136, 480, 154]
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "state_out"
+	      Position		      [460, 171, 480, 189]
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Line {
+	      SrcBlock		      "lowerlimit"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      4
+	    }
+	    Line {
+	      SrcBlock		      "upperlimit"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      3
+	    }
+	    Line {
+	      SrcBlock		      "prev"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      2
+	    }
+	    Line {
+	      Name		      "state_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      4
+	      DstBlock		      "state_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "prev_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      3
+	      DstBlock		      "prev_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      Points		      [0, 125]
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "in"
+	      SrcPort		      1
+	      Points		      [120, 0]
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "out"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  Stop
+	  Name			  "Stop Simulation"
+	  Position		  [355, 162, 390, 198]
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  " >"
+	  Position		  [335, 68, 365, 82]
+	  IconDisplay		  "Port number"
+	  BusOutputAsStruct	  off
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  2
+	  DstBlock		  "Data Store\nWrite"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Data Store\nRead"
+	  SrcPort		  1
+	  Points		  [25, 0; 0, 10]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Constant"
+	  SrcPort		  1
+	  Points		  [25, 0]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Constant1"
+	  SrcPort		  1
+	  Points		  [25, 0]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  4
+	}
+	Line {
+	  SrcBlock		  ">"
+	  SrcPort		  1
+	  Points		  [10, 0; 0, 35]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  1
+	  Points		  [0, -35]
+	  DstBlock		  " >"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  3
+	  Points		  [20, 0; 0, 30]
+	  DstBlock		  "Stop Simulation"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "SCR init "
+      Ports		      []
+      Position		      [25, 264, 88, 278]
+      SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 init "
+      SourceType	      "SC150 Init"
+      node		      "[node]"
+      pci		      "-1"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "SCR read "
+      Ports		      [0, 1]
+      Position		      [25, 302, 90, 318]
+      BackgroundColor	      "orange"
+      SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 read "
+      SourceType	      "SC150 Read"
+      partition		      "[]"
+      errorport		      off
+      ts		      "sample"
+      pci		      "-1"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "SCR write "
+      Ports		      [1]
+      Position		      [25, 342, 90, 358]
+      BackgroundColor	      "green"
+      SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 write "
+      SourceType	      "SC150 Write"
+      partition		      "[]"
+      errorport		      off
+      ts		      "sample"
+      pci		      "-1"
+    }
+    Annotation {
+      Name		      "Controller Blocks"
+      Position		      [58, 13]
+      FontSize		      12
+      FontWeight	      "bold"
+    }
+    Annotation {
+      Name		      "DAQ Blocks"
+      Position		      [208, 14]
+      FontSize		      12
+      FontWeight	      "bold"
+    }
+    Annotation {
+      Name		      "SCRAMNet Blocks"
+      Position		      [63, 243]
+      FontSize		      12
+      FontWeight	      "bold"
+    }
+    Annotation {
+      Name		      "xPC Blocks"
+      Position		      [208, 153]
+      FontSize		      12
+      FontWeight	      "bold"
+    }
+    Annotation {
+      Name		      "Utilities"
+      Position		      [208, 242]
+      FontSize		      12
+      FontWeight	      "bold"
+    }
+  }
+}
+
+# Finite State Machines
+#
+#    Stateflow Version 6.6 (R2007a) dated Jan 30 2007, 03:33:34
+#
+#
+
+Stateflow {
+
+	machine {
+		id                   		1
+		name                 		"RTMDblocks"
+		created              		"07-Aug-2007 10:58:36"
+		isLibrary            		1
+		firstTarget          		14
+		sfVersion            		66014000
+	}
+
+	chart {
+		id                                        		2
+		name                                      		"Limit Checker/Embedded\n"
+					"MATLAB Function"
+		windowPosition                            		[341.813 269.45 200.25 189.75]
+		viewLimits                                		[0 156.75 0 153.75]
+		screen                                    		[1 1 1280 1024 1.333333333333333]
+		treeNode                                  		[0 3 0 0]
+		firstTransition                           		5
+		firstJunction                             		4
+		viewObj                                   		2
+		machine                                   		1
+		toolbarMode                               		LIBRARY_TOOLBAR
+		decomposition                             		CLUSTER_CHART
+		type                                      		EML_CHART
+		firstData                                 		6
+		chartFileNumber                           		1
+		disableImplicitCasting                    		1
+		eml {
+			name       		"fcn"
+		}
+	}
+
+	state {
+		id                           		3
+		labelString                  		"eML_blk_kernel()"
+		position                     		[18 64.5 118 66]
+		fontSize                     		12
+		chart                        		2
+		treeNode                     		[2 0 0 0]
+		superState                   		SUBCHART
+		subviewer                    		2
+		type                         		FUNC_STATE
+		decomposition                		CLUSTER_STATE
+		eml {
+			isEML                    		1
+			script                   		"function [out,prev_out,state_out] = fcn(in,prev,upperlimit,"
+						"lowerlimit)\n"
+						"\n"
+						"if ((in < upperlimit) && (in > lowerlimit))\n"
+						"    % ok\n"
+						"    out = in;\n"
+						"    prev_out = in;\n"
+						"    state_out = 0;\n"
+						"else\n"
+						"    % limit hit\n"
+						"    out = prev;\n"
+						"    prev_out = out;\n"
+						"    state_out = 1;\n"
+						"end\n"
+						"\n"
+						"\n"
+						""
+			editorLayout             		"100 M4x1[146 214 671 364]"
+			fimathString             		"fimath(...\n"
+								"'RoundMode', 'floor',...\n"
+								"'OverflowMode', 'wrap',...\n"
+								"'ProductMode', 'KeepLSB', 'ProductWordLength', 32,..."
+								"\n"
+								"'SumMode', 'KeepLSB', 'SumWordLength', 32,...\n"
+								"'CastBeforeSum', false)"
+			treatIntsAsFixpt         		0
+		}
+	}
+
+	junction {
+		id         		4
+		position   		[23.5747 49.5747 7]
+		chart      		2
+		linkNode   		[2 0 0]
+		subviewer  		2
+		type       		CONNECTIVE_JUNCTION
+	}
+
+	transition {
+		id             		5
+		labelString    		"{eML_blk_kernel();}"
+		labelPosition  		[32.125 19.875 102.544 14.964]
+		fontSize       		12
+		src {
+			intersection		[0 0 1 0 23.5747 14.625 0 0]
+		}
+		dst {
+			id          		4
+			intersection		[7 0 -1 -1 23.5747 42.5747 0 0]
+		}
+		midPoint       		[23.5747 24.9468]
+		chart          		2
+		linkNode       		[2 0 0]
+		dataLimits     		[23.575 23.575 14.625 34.575]
+		subviewer      		2
+		drawStyle      		SMART
+		executionOrder 		1
+	}
+
+	data {
+		id                            		6
+		name                          		"in"
+		linkNode                      		[2 0 7]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		fixptType {
+			slope   		1
+			baseType		SF_INT16_TYPE
+		}
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		7
+		name                          		"prev"
+		linkNode                      		[2 6 8]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		8
+		name                          		"out"
+		linkNode                      		[2 7 9]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		fixptType {
+			slope   		1
+			baseType		SF_INT16_TYPE
+		}
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		9
+		name                          		"prev_out"
+		linkNode                      		[2 8 10]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		10
+		name                          		"state_out"
+		linkNode                      		[2 9 11]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+	}
+
+	data {
+		id                            		11
+		name                          		"upperlimit"
+		linkNode                      		[2 10 12]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+		}
+		dataType                      		"inherited"
+	}
+
+	data {
+		id                            		12
+		name                          		"lowerlimit"
+		linkNode                      		[2 11 0]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+		}
+		dataType                      		"inherited"
+	}
+
+	instance {
+		id     		13
+		name   		"Limit Checker/Embedded\n"
+					"MATLAB Function"
+		machine		1
+		chart  		2
+	}
+
+	target {
+		id                        		14
+		name                      		"sfun"
+		description               		"Default Simulink S-Function Target."
+		machine                   		1
+		linkNode                  		[1 0 0]
+	}
+}

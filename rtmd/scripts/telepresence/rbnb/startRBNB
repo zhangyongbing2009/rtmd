@@ -1,0 +1,22 @@
+#!/bin/bash
+# Init script for the RBNB server
+#
+# LJM 060607
+# The RBNB_HOME location needs to exist and be acceptable to the admin of the
+# RBNB host system.
+#
+# chkconfig: 345 98 98
+# description: Start the RBNB server
+#
+
+if [ ! "${RBNB_HOME}" ]; then RBNB_HOME=/usr/share/java/rbnb-2.5; fi
+RBNB_LOG='/var/log/rbnb.log'
+RBNB_PIDFILE='/var/run/rbnb.pid'
+RBNB_ARCHIVE_LOC='rbnb_archive'
+# Amount of memory in MegaBytes for the JVM running RBNB to use
+RBNB_MEM='1000'
+
+   mkdir -p ${RBNB_ARCHIVE_LOC}
+   cd ${RBNB_ARCHIVE_LOC}
+   java -Xmx${RBNB_MEM}M -jar ${RBNB_HOME}/bin/rbnb.jar > ${RBNB_LOG} 2>&1 &
+   echo $! > ${RBNB_PIDFILE}

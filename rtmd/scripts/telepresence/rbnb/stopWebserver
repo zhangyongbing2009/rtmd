@@ -1,0 +1,2 @@
+cd ${RBNB_HOME}/bin
+sudo ./Stop_Webserver.sh

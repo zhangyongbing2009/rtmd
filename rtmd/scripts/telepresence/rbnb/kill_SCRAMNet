@@ -1,0 +1,2 @@
+pid=`ps -eafl|grep "java org.nees.rbnb.SCRAMNetSource"|awk '{print $4}'` 
+kill -9 $pid

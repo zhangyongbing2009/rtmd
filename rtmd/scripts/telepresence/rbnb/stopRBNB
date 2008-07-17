@@ -1,0 +1,2 @@
+pid=`ps -eafl|grep "java -Xmx1000M -jar /usr/share/java/rbnb-2.5"|awk '{print $4}'` 
+kill -9 $pid

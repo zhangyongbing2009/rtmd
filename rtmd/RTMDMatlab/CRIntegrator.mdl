@@ -1,0 +1,2762 @@
+Model {
+  Name			  "CRIntegrator"
+  Version		  6.6
+  MdlSubVersion		  0
+  GraphicalInterface {
+    NumRootInports	    0
+    NumRootOutports	    0
+    ParameterArgumentNames  ""
+    ComputedModelVersion    "1.81"
+    NumModelReferences	    0
+    NumTestPointedSignals   0
+  }
+  SavedCharacterEncoding  "windows-1252"
+  SaveDefaultBlockParams  on
+  SampleTimeColors	  off
+  LibraryLinkDisplay	  "none"
+  WideLines		  off
+  ShowLineDimensions	  off
+  ShowPortDataTypes	  off
+  ShowLoopsOnError	  on
+  IgnoreBidirectionalLines off
+  ShowStorageClass	  off
+  ShowTestPointIcons	  on
+  ShowViewerIcons	  on
+  SortedOrder		  off
+  ExecutionContextIcon	  off
+  ShowLinearizationAnnotations on
+  ScopeRefreshTime	  0.035000
+  OverrideScopeRefreshTime on
+  DisableAllScopes	  off
+  DataTypeOverride	  "UseLocalSettings"
+  MinMaxOverflowLogging	  "UseLocalSettings"
+  MinMaxOverflowArchiveMode "Overwrite"
+  BlockNameDataTip	  off
+  BlockParametersDataTip  off
+  BlockDescriptionStringDataTip	off
+  ToolBar		  on
+  StatusBar		  on
+  BrowserShowLibraryLinks off
+  BrowserLookUnderMasks	  off
+  Created		  "Mon Apr 09 13:09:11 2007"
+  Creator		  "Tommy"
+  UpdateHistory		  "UpdateHistoryNever"
+  ModifiedByFormat	  "%<Auto>"
+  LastModifiedBy	  "Tommy"
+  ModifiedDateFormat	  "%<Auto>"
+  LastModifiedDate	  "Tue Apr 17 10:06:17 2007"
+  ModelVersionFormat	  "1.%<AutoIncrement:81>"
+  ConfigurationManager	  "None"
+  SimulationMode	  "normal"
+  LinearizationMsg	  "none"
+  Profile		  off
+  ParamWorkspaceSource	  "MATLABWorkspace"
+  AccelSystemTargetFile	  "accel.tlc"
+  AccelTemplateMakefile	  "accel_default_tmf"
+  AccelMakeCommand	  "make_rtw"
+  AccelVerboseBuild	  off
+  TryForcingSFcnDF	  off
+  RecordCoverage	  off
+  CovPath		  "/"
+  CovSaveName		  "covdata"
+  CovMetricSettings	  "dw"
+  CovNameIncrementing	  off
+  CovHtmlReporting	  on
+  covSaveCumulativeToWorkspaceVar on
+  CovSaveSingleToWorkspaceVar on
+  CovCumulativeVarName	  "covCumulativeData"
+  CovCumulativeReport	  off
+  CovReportOnPause	  on
+  ExtModeBatchMode	  off
+  ExtModeEnableFloating	  on
+  ExtModeTrigType	  "manual"
+  ExtModeTrigMode	  "normal"
+  ExtModeTrigPort	  "1"
+  ExtModeTrigElement	  "any"
+  ExtModeTrigDuration	  1000
+  ExtModeTrigDurationFloating "auto"
+  ExtModeTrigHoldOff	  0
+  ExtModeTrigDelay	  0
+  ExtModeTrigDirection	  "rising"
+  ExtModeTrigLevel	  0
+  ExtModeArchiveMode	  "off"
+  ExtModeAutoIncOneShot	  off
+  ExtModeIncDirWhenArm	  off
+  ExtModeAddSuffixToVar	  off
+  ExtModeWriteAllDataToWs off
+  ExtModeArmWhenConnect	  on
+  ExtModeSkipDownloadWhenConnect off
+  ExtModeLogAll		  on
+  ExtModeAutoUpdateStatusClock on
+  BufferReuse		  off
+  ProdHWDeviceType	  "32-bit Generic"
+  ShowModelReferenceBlockVersion off
+  ShowModelReferenceBlockIO off
+  Array {
+    Type		    "Handle"
+    Dimension		    1
+    Simulink.ConfigSet {
+      $ObjectID		      1
+      Version		      "1.2.0"
+      Array {
+	Type			"Handle"
+	Dimension		7
+	Simulink.SolverCC {
+	  $ObjectID		  2
+	  Version		  "1.2.0"
+	  StartTime		  "0.0"
+	  StopTime		  "50"
+	  AbsTol		  "auto"
+	  FixedStep		  "sample"
+	  InitialStep		  "auto"
+	  MaxNumMinSteps	  "-1"
+	  MaxOrder		  5
+	  ConsecutiveZCsStepRelTol "10*128*eps"
+	  MaxConsecutiveZCs	  "1000"
+	  ExtrapolationOrder	  4
+	  NumberNewtonIterations  1
+	  MaxStep		  "auto"
+	  MinStep		  "auto"
+	  MaxConsecutiveMinStep	  "1"
+	  RelTol		  "1e-3"
+	  SolverMode		  "SingleTasking"
+	  Solver		  "FixedStepDiscrete"
+	  SolverName		  "FixedStepDiscrete"
+	  ZeroCrossControl	  "UseLocalSettings"
+	  AlgebraicLoopSolver	  "TrustRegion"
+	  SolverResetMethod	  "Fast"
+	  PositivePriorityOrder	  off
+	  AutoInsertRateTranBlk	  off
+	  SampleTimeConstraint	  "Unconstrained"
+	  RateTranMode		  "Deterministic"
+	}
+	Simulink.DataIOCC {
+	  $ObjectID		  3
+	  Version		  "1.2.0"
+	  Decimation		  "1"
+	  ExternalInput		  "[t, u]"
+	  FinalStateName	  "xFinal"
+	  InitialState		  "xInitial"
+	  LimitDataPoints	  on
+	  MaxDataPoints		  "1000"
+	  LoadExternalInput	  off
+	  LoadInitialState	  off
+	  SaveFinalState	  off
+	  SaveFormat		  "Array"
+	  SaveOutput		  on
+	  SaveState		  off
+	  SignalLogging		  on
+	  InspectSignalLogs	  off
+	  SaveTime		  on
+	  StateSaveName		  "xout"
+	  TimeSaveName		  "tout"
+	  OutputSaveName	  "yout"
+	  SignalLoggingName	  "logsout"
+	  OutputOption		  "RefineOutputTimes"
+	  OutputTimes		  "[]"
+	  Refine		  "1"
+	}
+	Simulink.OptimizationCC {
+	  $ObjectID		  4
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    5
+	    Cell		    "ZeroExternalMemoryAtStartup"
+	    Cell		    "ZeroInternalMemoryAtStartup"
+	    Cell		    "InitFltsAndDblsToZero"
+	    Cell		    "OptimizeModelRefInitCode"
+	    Cell		    "NoFixptDivByZeroProtection"
+	    PropName		    "DisabledProps"
+	  }
+	  Version		  "1.2.0"
+	  BlockReduction	  off
+	  BooleanDataType	  on
+	  ConditionallyExecuteInputs on
+	  InlineParams		  off
+	  InlineInvariantSignals  off
+	  OptimizeBlockIOStorage  off
+	  BufferReuse		  off
+	  EnforceIntegerDowncast  on
+	  ExpressionFolding	  off
+	  ExpressionDepthLimit	  2147483647
+	  FoldNonRolledExpr	  on
+	  LocalBlockOutputs	  off
+	  RollThreshold		  5
+	  SystemCodeInlineAuto	  off
+	  StateBitsets		  off
+	  DataBitsets		  off
+	  UseTempVars		  off
+	  ZeroExternalMemoryAtStartup on
+	  ZeroInternalMemoryAtStartup on
+	  InitFltsAndDblsToZero	  on
+	  NoFixptDivByZeroProtection off
+	  EfficientFloat2IntCast  off
+	  OptimizeModelRefInitCode off
+	  LifeSpan		  "inf"
+	  BufferReusableBoundary  on
+	}
+	Simulink.DebuggingCC {
+	  $ObjectID		  5
+	  Version		  "1.2.0"
+	  RTPrefix		  "error"
+	  ConsistencyChecking	  "none"
+	  ArrayBoundsChecking	  "none"
+	  SignalInfNanChecking	  "none"
+	  ReadBeforeWriteMsg	  "UseLocalSettings"
+	  WriteAfterWriteMsg	  "UseLocalSettings"
+	  WriteAfterReadMsg	  "UseLocalSettings"
+	  AlgebraicLoopMsg	  "warning"
+	  ArtificialAlgebraicLoopMsg "warning"
+	  CheckSSInitialOutputMsg on
+	  CheckExecutionContextPreStartOutputMsg off
+	  CheckExecutionContextRuntimeOutputMsg	off
+	  SignalResolutionControl "UseLocalSettings"
+	  BlockPriorityViolationMsg "warning"
+	  MinStepSizeMsg	  "warning"
+	  TimeAdjustmentMsg	  "none"
+	  MaxConsecutiveZCsMsg	  "error"
+	  SolverPrmCheckMsg	  "warning"
+	  InheritedTsInSrcMsg	  "warning"
+	  DiscreteInheritContinuousMsg "warning"
+	  MultiTaskDSMMsg	  "error"
+	  MultiTaskCondExecSysMsg "none"
+	  MultiTaskRateTransMsg	  "error"
+	  SingleTaskRateTransMsg  "none"
+	  TasksWithSamePriorityMsg "warning"
+	  SigSpecEnsureSampleTimeMsg "warning"
+	  CheckMatrixSingularityMsg "none"
+	  IntegerOverflowMsg	  "warning"
+	  Int32ToFloatConvMsg	  "warning"
+	  ParameterDowncastMsg	  "error"
+	  ParameterOverflowMsg	  "error"
+	  ParameterUnderflowMsg	  "none"
+	  ParameterPrecisionLossMsg "warning"
+	  ParameterTunabilityLossMsg "warning"
+	  UnderSpecifiedDataTypeMsg "none"
+	  UnnecessaryDatatypeConvMsg "none"
+	  VectorMatrixConversionMsg "none"
+	  InvalidFcnCallConnMsg	  "error"
+	  FcnCallInpInsideContextMsg "Use local settings"
+	  SignalLabelMismatchMsg  "none"
+	  UnconnectedInputMsg	  "warning"
+	  UnconnectedOutputMsg	  "warning"
+	  UnconnectedLineMsg	  "warning"
+	  SFcnCompatibilityMsg	  "none"
+	  UniqueDataStoreMsg	  "none"
+	  BusObjectLabelMismatch  "warning"
+	  RootOutportRequireBusObject "warning"
+	  AssertControl		  "UseLocalSettings"
+	  EnableOverflowDetection off
+	  ModelReferenceIOMsg	  "none"
+	  ModelReferenceVersionMismatchMessage "none"
+	  ModelReferenceIOMismatchMessage "none"
+	  ModelReferenceCSMismatchMessage "none"
+	  ModelReferenceSimTargetVerbose off
+	  UnknownTsInhSupMsg	  "warning"
+	  ModelReferenceDataLoggingMessage "warning"
+	  ModelReferenceSymbolNameMessage "warning"
+	  ModelReferenceExtraNoncontSigs "error"
+	  StateNameClashWarn	  "warning"
+	  StrictBusMsg		  "Warning"
+	}
+	Simulink.HardwareCC {
+	  $ObjectID		  6
+	  Version		  "1.2.0"
+	  ProdBitPerChar	  8
+	  ProdBitPerShort	  16
+	  ProdBitPerInt		  32
+	  ProdBitPerLong	  32
+	  ProdIntDivRoundTo	  "Undefined"
+	  ProdEndianess		  "Unspecified"
+	  ProdWordSize		  32
+	  ProdShiftRightIntArith  on
+	  ProdHWDeviceType	  "32-bit Generic"
+	  TargetBitPerChar	  8
+	  TargetBitPerShort	  16
+	  TargetBitPerInt	  32
+	  TargetBitPerLong	  32
+	  TargetShiftRightIntArith on
+	  TargetIntDivRoundTo	  "Undefined"
+	  TargetEndianess	  "Unspecified"
+	  TargetWordSize	  32
+	  TargetTypeEmulationWarnSuppressLevel 0
+	  TargetPreprocMaxBitsSint 32
+	  TargetPreprocMaxBitsUint 32
+	  TargetHWDeviceType	  "Specified"
+	  TargetUnknown		  off
+	  ProdEqTarget		  on
+	}
+	Simulink.ModelReferenceCC {
+	  $ObjectID		  7
+	  Version		  "1.2.0"
+	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
+	  CheckModelReferenceTargetMessage "error"
+	  ModelReferenceNumInstancesAllowed "Multi"
+	  ModelReferencePassRootInputsByReference on
+	  ModelReferenceMinAlgLoopOccurrences off
+	}
+	Simulink.RTWCC {
+	  $BackupClass		  "Simulink.RTWCC"
+	  $ObjectID		  8
+	  Array {
+	    Type		    "Cell"
+	    Dimension		    1
+	    Cell		    "IncludeHyperlinkInReport"
+	    PropName		    "DisabledProps"
+	  }
+	  Version		  "1.2.0"
+	  SystemTargetFile	  "xpctarget.tlc"
+	  GenCodeOnly		  off
+	  MakeCommand		  "make_rtw"
+	  GenerateMakefile	  on
+	  TemplateMakefile	  "xpc_default_tmf"
+	  Description		  "xPC Target"
+	  GenerateReport	  off
+	  SaveLog		  off
+	  RTWVerbose		  on
+	  RetainRTWFile		  off
+	  ProfileTLC		  off
+	  TLCDebug		  off
+	  TLCCoverage		  off
+	  TLCAssert		  off
+	  ProcessScriptMode	  "Default"
+	  ConfigurationMode	  "Optimized"
+	  ProcessScript		  "xpctarget_make_rtw_hook"
+	  ConfigAtBuild		  off
+	  IncludeHyperlinkInReport off
+	  LaunchReport		  off
+	  TargetLang		  "C"
+	  IncludeBusHierarchyInRTWFileBlockHierarchyMap	off
+	  IncludeERTFirstTime	  on
+	  Array {
+	    Type		    "Handle"
+	    Dimension		    2
+	    Simulink.CodeAppCC {
+	      $ObjectID		      9
+	      Array {
+		Type			"Cell"
+		Dimension		9
+		Cell			"IgnoreCustomStorageClasses"
+		Cell			"InsertBlockDesc"
+		Cell			"SFDataObjDesc"
+		Cell			"SimulinkDataObjDesc"
+		Cell			"DefineNamingRule"
+		Cell			"SignalNamingRule"
+		Cell			"ParamNamingRule"
+		Cell			"InlinedPrmAccess"
+		Cell			"CustomSymbolStr"
+		PropName		"DisabledProps"
+	      }
+	      Version		      "1.2.0"
+	      ForceParamTrailComments off
+	      GenerateComments	      on
+	      IgnoreCustomStorageClasses on
+	      IncHierarchyInIds	      off
+	      MaxIdLength	      31
+	      PreserveName	      off
+	      PreserveNameWithParent  off
+	      ShowEliminatedStatement off
+	      IncAutoGenComments      off
+	      SimulinkDataObjDesc     off
+	      SFDataObjDesc	      off
+	      IncDataTypeInIds	      off
+	      PrefixModelToSubsysFcnNames on
+	      MangleLength	      1
+	      CustomSymbolStrGlobalVar "$R$N$M"
+	      CustomSymbolStrType     "$N$R$M"
+	      CustomSymbolStrField    "$N$M"
+	      CustomSymbolStrFcn      "$R$N$M$F"
+	      CustomSymbolStrBlkIO    "rtb_$N$M"
+	      CustomSymbolStrTmpVar   "$N$M"
+	      CustomSymbolStrMacro    "$R$N$M"
+	      DefineNamingRule	      "None"
+	      ParamNamingRule	      "None"
+	      SignalNamingRule	      "None"
+	      InsertBlockDesc	      off
+	      SimulinkBlockComments   on
+	      EnableCustomComments    off
+	      InlinedPrmAccess	      "Literals"
+	      ReqsInCode	      off
+	    }
+	    xpctarget.xpcTargetCC {
+	      $BackupClass	      "Simulink.TargetCC"
+	      $ObjectID		      10
+	      Array {
+		Type			"Cell"
+		Dimension		12
+		Cell			"IncludeMdlTerminateFcn"
+		Cell			"CombineOutputUpdateFcns"
+		Cell			"SuppressErrorStatus"
+		Cell			"ERTCustomFileBanners"
+		Cell			"GenerateSampleERTMain"
+		Cell			"MultiInstanceERTCode"
+		Cell			"PurelyIntegerCode"
+		Cell			"SupportNonFinite"
+		Cell			"SupportComplex"
+		Cell			"SupportAbsoluteTime"
+		Cell			"SupportContinuousTime"
+		Cell			"SupportNonInlinedSFcns"
+		PropName		"DisabledProps"
+	      }
+	      Version		      "1.2.0"
+	      TargetFcnLib	      "ansi_tfl_tmw.mat"
+	      TargetLibSuffix	      ""
+	      TargetPreCompLibLocation ""
+	      GenFloatMathFcnCalls    "ANSI_C"
+	      UtilityFuncGeneration   "Auto"
+	      GenerateFullHeader      on
+	      GenerateSampleERTMain   off
+	      GenerateTestInterfaces  off
+	      IsPILTarget	      off
+	      ModelReferenceCompliant on
+	      IncludeMdlTerminateFcn  on
+	      CombineOutputUpdateFcns off
+	      SuppressErrorStatus     off
+	      IncludeFileDelimiter    "Auto"
+	      ERTCustomFileBanners    off
+	      SupportAbsoluteTime     on
+	      LogVarNameModifier      "rt_"
+	      MatFileLogging	      on
+	      MultiInstanceERTCode    off
+	      SupportNonFinite	      on
+	      SupportComplex	      on
+	      PurelyIntegerCode	      off
+	      SupportContinuousTime   on
+	      SupportNonInlinedSFcns  on
+	      EnableShiftOperators    on
+	      ParenthesesLevel	      "Nominal"
+	      PortableWordSizes	      off
+	      ModelStepFunctionPrototypeControlCompliant off
+	      RL32ModeModifier	      "Real-Time"
+	      ExtMode		      on
+	      ExtModeMexFile	      "ext_xpc"
+	      ExtModeIntrfLevel	      "Level2 - Open"
+	      ExtModeArmWhenConnect   off
+	      RL32LogTETModifier      on
+	      RL32LogBufSizeModifier  "100000"
+	      RL32IRQSourceModifier   "Timer"
+	      xPCIRQSourceBoard	      "None/Other"
+	      xPCIOIRQSlot	      "-1"
+	      xpcDblBuff	      off
+	      xpcObjCom		      off
+	      xPCGenerateASAP2	      off
+	      xPCGenerateXML	      off
+	      RL32ObjectName	      "tg"
+	      xPCisDownloadable	      on
+	      xPCisDefaultEnv	      on
+	    }
+	    PropName		    "Components"
+	  }
+	}
+	PropName		"Components"
+      }
+      Name		      "Configuration"
+      CurrentDlgPage	      "Real-Time Workshop"
+    }
+    PropName		    "ConfigurationSets"
+  }
+  Simulink.ConfigSet {
+    $PropName		    "ActiveConfigurationSet"
+    $ObjectID		    1
+  }
+  BlockDefaults {
+    Orientation		    "right"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    NamePlacement	    "normal"
+    FontName		    "Arial"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    ShowName		    on
+  }
+  BlockParameterDefaults {
+    Block {
+      BlockType		      Constant
+      Value		      "1"
+      VectorParams1D	      on
+      SamplingMode	      "Sample based"
+      OutDataTypeMode	      "Inherit from 'Constant value'"
+      OutDataType	      "sfix(16)"
+      ConRadixGroup	      "Use specified scaling"
+      OutScaling	      "2^0"
+      SampleTime	      "inf"
+      FramePeriod	      "inf"
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      ReadBeforeWriteMsg      "none"
+      WriteAfterWriteMsg      "none"
+      WriteAfterReadMsg	      "none"
+      StateMustResolveToSignalObject off
+      ShowAdditionalParam     off
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+    }
+    Block {
+      BlockType		      DataStoreRead
+    }
+    Block {
+      BlockType		      DataStoreWrite
+    }
+    Block {
+      BlockType		      Demux
+      Outputs		      "4"
+      DisplayOption	      "none"
+      BusSelectionMode	      off
+    }
+    Block {
+      BlockType		      FromWorkspace
+      VariableName	      "simulink_input"
+      SampleTime	      "-1"
+      Interpolate	      on
+      ZeroCross		      off
+      OutputAfterFinalValue   "Extrapolation"
+    }
+    Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParameterDataTypeMode   "Same as input"
+      ParameterDataType	      "sfix(16)"
+      ParameterScalingMode    "Best Precision: Matrix-wise"
+      ParameterScaling	      "2^0"
+      OutDataTypeMode	      "Same as input"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchByCopyingInsideSignal off
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      UseBusObject	      off
+      BusObject		      "BusObject"
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      SampleTime	      "-1"
+      DataType		      "auto"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Scope
+      ModelBased	      off
+      TickLabels	      "OneTimeTick"
+      ZoomMode		      "on"
+      Grid		      "on"
+      TimeRange		      "auto"
+      YMin		      "-5"
+      YMax		      "5"
+      SaveToWorkspace	      off
+      SaveName		      "ScopeData"
+      LimitDataPoints	      on
+      MaxDataPoints	      "5000"
+      Decimation	      "1"
+      SampleInput	      off
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      "S-Function"
+      FunctionName	      "system"
+      SFunctionModules	      "''"
+      PortCounts	      "[]"
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      MinMaxOverflowLogging   "UseLocalSettings"
+    }
+    Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      OutDataTypeMode	      "Same as first input"
+      OutDataType	      "sfix(16)"
+      OutScaling	      "2^0"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Terminator
+    }
+    Block {
+      BlockType		      UnitDelay
+      X0		      "0"
+      SampleTime	      "1"
+      StateMustResolveToSignalObject off
+      RTWStateStorageClass    "Auto"
+    }
+  }
+  AnnotationDefaults {
+    HorizontalAlignment	    "center"
+    VerticalAlignment	    "middle"
+    ForegroundColor	    "black"
+    BackgroundColor	    "white"
+    DropShadow		    off
+    FontName		    "Arial"
+    FontSize		    10
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+    UseDisplayTextAsClickCallback off
+  }
+  LineDefaults {
+    FontName		    "Arial"
+    FontSize		    9
+    FontWeight		    "normal"
+    FontAngle		    "normal"
+  }
+  System {
+    Name		    "CRIntegrator"
+    Location		    [183, 240, 986, 630]
+    Open		    on
+    ModelBrowserVisibility  off
+    ModelBrowserWidth	    200
+    ScreenColor		    "white"
+    PaperOrientation	    "landscape"
+    PaperPositionMode	    "auto"
+    PaperType		    "usletter"
+    PaperUnits		    "inches"
+    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+    TiledPageScale	    1
+    ShowPageBoundaries	    off
+    ZoomFactor		    "100"
+    ReportName		    "simulink-default.rpt"
+    Block {
+      BlockType		      SubSystem
+      Name		      "CRIntegrator"
+      Ports		      [3, 3]
+      Position		      [105, 95, 335, 185]
+      MinAlgLoopOccurrences   off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      MaskHideContents	      off
+      System {
+	Name			"CRIntegrator"
+	Location		[557, 120, 1237, 907]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "Analytical Restoring Force"
+	  Position		  [75, 593, 105, 607]
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "Experimental Restoring Force"
+	  Position		  [75, 628, 105, 642]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "Experimental Displacement"
+	  Position		  [75, 513, 105, 527]
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Calculated Acceleration"
+	  Position		  [555, 474, 595, 506]
+	  DataStoreName		  "accel"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Calculated Displacement"
+	  Position		  [555, 295, 595, 325]
+	  DataStoreName		  "disp"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Calculated Displacement Memory"
+	  Position		  [555, 665, 630, 695]
+	  DataStoreName		  "disp_old"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Calculated Velocity"
+	  Position		  [555, 385, 595, 415]
+	  DataStoreName		  "vel"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Displacement Command"
+	  Position		  [555, 615, 630, 645]
+	  DataStoreName		  "disp_command"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Large Time Step"
+	  Position		  [565, 195, 595, 225]
+	  DataStoreName		  "i"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Previous Step Target Displacement"
+	  Position		  [555, 525, 630, 555]
+	  DataStoreName		  "disp_e_prev"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  " Substep"
+	  Position		  [565, 244, 615, 276]
+	  DataStoreName		  "ramper"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Calculated\nAcceleration"
+	  Position		  [165, 135, 197, 165]
+	  DataStoreName		  "accel"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Calculated\nVelocity"
+	  Position		  [165, 75, 197, 105]
+	  DataStoreName		  "vel"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Calculated \nDisplacement"
+	  Position		  [165, 15, 197, 45]
+	  DataStoreName		  "disp"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Calculated Acceleration "
+	  Position		  [50, 461, 100, 489]
+	  DataStoreName		  "accel"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Calculated Displacement"
+	  Position		  [50, 1076, 135, 1104]
+	  DataStoreName		  "disp_old"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Calculated Displacement\nMemory"
+	  Position		  [260, 15, 340, 45]
+	  DataStoreName		  "disp_old"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Calculated Displacement "
+	  Position		  [50, 365, 100, 395]
+	  DataStoreName		  "disp"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Calculated Velocity "
+	  Position		  [50, 415, 100, 445]
+	  DataStoreName		  "vel"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Damping Matrix"
+	  Position		  [50, 666, 115, 694]
+	  Value			  "C"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Displacement Command\nMemory"
+	  Position		  [260, 75, 339, 102]
+	  DataStoreName		  "disp_command"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Displacement Command "
+	  Position		  [50, 1026, 135, 1054]
+	  DataStoreName		  "disp_command"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "Embedded\nMATLAB Function"
+	  Ports			  [21, 8]
+	  Position		  [330, 192, 480, 508]
+	  MinAlgLoopOccurrences	  off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  MaskHideContents	  off
+	  MaskType		  "Stateflow"
+	  MaskDescription	  "Embedded MATLAB block"
+	  MaskDisplay		  "disp('fcn');"
+	  MaskSelfModifiable	  on
+	  MaskIconFrame		  on
+	  MaskIconOpaque	  off
+	  MaskIconRotate	  "none"
+	  MaskIconUnits		  "autoscale"
+	  System {
+	    Name		    "Embedded\nMATLAB Function"
+	    Location		    [257, 457, 812, 717]
+	    Open		    off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "i"
+	      Position		      [20, 101, 40, 119]
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "steps"
+	      Position		      [20, 136, 40, 154]
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "ramper"
+	      Position		      [20, 171, 40, 189]
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "F"
+	      Position		      [20, 206, 40, 224]
+	      Port		      "4"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "disp"
+	      Position		      [20, 246, 40, 264]
+	      Port		      "5"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "vel"
+	      Position		      [20, 281, 40, 299]
+	      Port		      "6"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "accel"
+	      Position		      [20, 316, 40, 334]
+	      Port		      "7"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "disp_e"
+	      Position		      [20, 351, 40, 369]
+	      Port		      "8"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "disp_e_prev"
+	      Position		      [20, 386, 40, 404]
+	      Port		      "9"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "r_a"
+	      Position		      [20, 426, 40, 444]
+	      Port		      "10"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "r_e"
+	      Position		      [20, 461, 40, 479]
+	      Port		      "11"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "C"
+	      Position		      [20, 496, 40, 514]
+	      Port		      "12"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "K"
+	      Position		      [20, 531, 40, 549]
+	      Port		      "13"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "Minv"
+	      Position		      [20, 566, 40, 584]
+	      Port		      "14"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "beta1"
+	      Position		      [20, 606, 40, 624]
+	      Port		      "15"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "beta2"
+	      Position		      [20, 641, 40, 659]
+	      Port		      "16"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "Keq"
+	      Position		      [20, 676, 40, 694]
+	      Port		      "17"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "dt"
+	      Position		      [20, 711, 40, 729]
+	      Port		      "18"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "dt_multiplier"
+	      Position		      [20, 746, 40, 764]
+	      Port		      "19"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "disp_command"
+	      Position		      [20, 786, 40, 804]
+	      Port		      "20"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "disp_old"
+	      Position		      [20, 821, 40, 839]
+	      Port		      "21"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      Ports		      [1, 1]
+	      Position		      [270, 560, 320, 600]
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      "S-Function"
+	      Name		      " SFunction "
+	      Tag		      "Stateflow S-Function CRIntegrator 2"
+	      Ports		      [21, 9]
+	      Position		      [180, 120, 230, 560]
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[21 9]"
+	      Port {
+		PortNumber		2
+		Name			"i_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		3
+		Name			"ramper_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		4
+		Name			"disp_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		5
+		Name			"vel_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		6
+		Name			"accel_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		7
+		Name			"disp_e_prev_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		8
+		Name			"disp_command_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		9
+		Name			"disp_old_out"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      Position		      [460, 571, 480, 589]
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "i_out"
+	      Position		      [460, 101, 480, 119]
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "ramper_out"
+	      Position		      [460, 136, 480, 154]
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "disp_out"
+	      Position		      [460, 171, 480, 189]
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "vel_out"
+	      Position		      [460, 206, 480, 224]
+	      Port		      "4"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "accel_out"
+	      Position		      [460, 246, 480, 264]
+	      Port		      "5"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "disp_e_prev_out"
+	      Position		      [460, 281, 480, 299]
+	      Port		      "6"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "disp_command_out"
+	      Position		      [460, 316, 480, 334]
+	      Port		      "7"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "disp_old_out"
+	      Position		      [460, 351, 480, 369]
+	      Port		      "8"
+	      IconDisplay	      "Port number"
+	      BusOutputAsStruct	      off
+	    }
+	    Line {
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      Points		      [0, 440]
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "i"
+	      SrcPort		      1
+	      Points		      [120, 0]
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "steps"
+	      SrcPort		      1
+	      Points		      [120, 0]
+	      DstBlock		      " SFunction "
+	      DstPort		      2
+	    }
+	    Line {
+	      SrcBlock		      "ramper"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      3
+	    }
+	    Line {
+	      SrcBlock		      "F"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      4
+	    }
+	    Line {
+	      SrcBlock		      "disp"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      5
+	    }
+	    Line {
+	      SrcBlock		      "vel"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      6
+	    }
+	    Line {
+	      SrcBlock		      "accel"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      7
+	    }
+	    Line {
+	      SrcBlock		      "disp_e"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      8
+	    }
+	    Line {
+	      SrcBlock		      "disp_e_prev"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      9
+	    }
+	    Line {
+	      SrcBlock		      "r_a"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      10
+	    }
+	    Line {
+	      SrcBlock		      "r_e"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      11
+	    }
+	    Line {
+	      SrcBlock		      "C"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      12
+	    }
+	    Line {
+	      SrcBlock		      "K"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      13
+	    }
+	    Line {
+	      SrcBlock		      "Minv"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      14
+	    }
+	    Line {
+	      SrcBlock		      "beta1"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      15
+	    }
+	    Line {
+	      SrcBlock		      "beta2"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      16
+	    }
+	    Line {
+	      SrcBlock		      "Keq"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      17
+	    }
+	    Line {
+	      SrcBlock		      "dt"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      18
+	    }
+	    Line {
+	      SrcBlock		      "dt_multiplier"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      19
+	    }
+	    Line {
+	      SrcBlock		      "disp_command"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      20
+	    }
+	    Line {
+	      SrcBlock		      "disp_old"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      21
+	    }
+	    Line {
+	      Name		      "i_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "i_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "ramper_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      3
+	      DstBlock		      "ramper_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "disp_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      4
+	      DstBlock		      "disp_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "vel_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      5
+	      DstBlock		      "vel_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "accel_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      6
+	      DstBlock		      "accel_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "disp_e_prev_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      7
+	      DstBlock		      "disp_e_prev_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "disp_command_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      8
+	      DstBlock		      "disp_command_out"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "disp_old_out"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      9
+	      DstBlock		      "disp_old_out"
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Equivalent Stiffness"
+	  Position		  [50, 891, 115, 919]
+	  Value			  "Keq"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  FromWorkspace
+	  Name			  "Excitation Force"
+	  Position		  [50, 324, 100, 346]
+	  VariableName		  "F"
+	  SampleTime		  "0"
+	  ZeroCross		  on
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Integration Parameter B1"
+	  Position		  [50, 801, 115, 829]
+	  Value			  "beta1"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Integration Parameter B2"
+	  Position		  [50, 846, 115, 874]
+	  Value			  "beta2"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Inverse Mass Matrix"
+	  Position		  [50, 756, 115, 784]
+	  Value			  "Minv"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Large Time Step"
+	  Position		  [55, 15, 112, 45]
+	  DataStoreName		  "i"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Large Time Step "
+	  Position		  [50, 185, 100, 215]
+	  DataStoreName		  "i"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Previous Step Target\nDisplacement Memory"
+	  Position		  [260, 135, 339, 162]
+	  DataStoreName		  "disp_e_prev"
+	  InitialValue		  "0"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Previous Step Target Displacement"
+	  Position		  [50, 550, 125, 580]
+	  DataStoreName		  "disp_e_prev"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Step Counter"
+	  Position		  [50, 232, 100, 258]
+	  Value			  "steps"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Stiffness Matrix"
+	  Position		  [50, 711, 115, 739]
+	  Value			  "K"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  DataStoreMemory
+	  Name			  "Substep"
+	  Position		  [56, 65, 112, 96]
+	  DataStoreName		  "ramper"
+	  InitialValue		  "1"
+	  RTWStateStorageClass	  "Auto"
+	  VectorParams1D	  on
+	  ShowAdditionalParam	  off
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Substep "
+	  Position		  [50, 275, 100, 305]
+	  DataStoreName		  "ramper"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Substep Multiplier"
+	  Position		  [50, 981, 115, 1009]
+	  Value			  "dt_multiplier"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Time Step"
+	  Position		  [50, 936, 115, 964]
+	  Value			  "dt"
+	  SampleTime		  "sample"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Displacement Command"
+	  Position		  [555, 578, 585, 592]
+	  IconDisplay		  "Port number"
+	  BusOutputAsStruct	  off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Velocity"
+	  Position		  [560, 433, 590, 447]
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	  BusOutputAsStruct	  off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Target Displacement"
+	  Position		  [555, 348, 585, 362]
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	  BusOutputAsStruct	  off
+	}
+	Line {
+	  SrcBlock		  "Large Time Step "
+	  SrcPort		  1
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Excitation Force"
+	  SrcPort		  1
+	  Points		  [40, 0; 0, -90]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  4
+	}
+	Line {
+	  SrcBlock		  "Damping Matrix"
+	  SrcPort		  1
+	  Points		  [105, 0; 0, -315]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  12
+	}
+	Line {
+	  SrcBlock		  "Stiffness Matrix"
+	  SrcPort		  1
+	  Points		  [115, 0; 0, -345]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  13
+	}
+	Line {
+	  SrcBlock		  "Inverse Mass Matrix"
+	  SrcPort		  1
+	  Points		  [125, 0; 0, -375]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  14
+	}
+	Line {
+	  SrcBlock		  "Substep Multiplier"
+	  SrcPort		  1
+	  Points		  [175, 0; 0, -525]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  19
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  4
+	  Points		  [40, 0; 0, 70]
+	  Branch {
+	    Points		    [0, 40]
+	    DstBlock		    "Velocity"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    " Calculated Velocity"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  7
+	  Points		  [10, 0; 0, 135]
+	  Branch {
+	    DstBlock		    "Displacement Command"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 45]
+	    DstBlock		    " Displacement Command"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Analytical Restoring Force"
+	  SrcPort		  1
+	  Points		  [95, 0; 0, -265]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  10
+	}
+	Line {
+	  SrcBlock		  "Experimental Restoring Force"
+	  SrcPort		  1
+	  Points		  [105, 0; 0, -285]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  11
+	}
+	Line {
+	  SrcBlock		  "Experimental Displacement"
+	  SrcPort		  1
+	  Points		  [75, 0; 0, -215]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  8
+	}
+	Line {
+	  SrcBlock		  "Time Step"
+	  SrcPort		  1
+	  Points		  [165, 0; 0, -495]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  18
+	}
+	Line {
+	  SrcBlock		  "Equivalent Stiffness"
+	  SrcPort		  1
+	  Points		  [155, 0; 0, -465]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  17
+	}
+	Line {
+	  SrcBlock		  "Step Counter"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, -30]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Integration Parameter B1"
+	  SrcPort		  1
+	  Points		  [135, 0; 0, -405]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  15
+	}
+	Line {
+	  SrcBlock		  "Integration Parameter B2"
+	  SrcPort		  1
+	  Points		  [145, 0; 0, -435]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  16
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  1
+	  DstBlock		  " Large Time Step"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  2
+	  Points		  [60, 0; 0, 10]
+	  DstBlock		  " Substep"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  3
+	  Points		  [50, 0; 0, 20]
+	  Branch {
+	    DstBlock		    " Calculated Displacement"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, 45]
+	    DstBlock		    "Target Displacement"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  5
+	  Points		  [30, 0; 0, 120]
+	  DstBlock		  " Calculated Acceleration"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  6
+	  Points		  [20, 0; 0, 130]
+	  DstBlock		  " Previous Step Target Displacement"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Embedded\nMATLAB Function"
+	  SrcPort		  8
+	  Points		  [0, 190]
+	  DstBlock		  " Calculated Displacement Memory"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Substep "
+	  SrcPort		  1
+	  Points		  [30, 0; 0, -60]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Calculated Displacement "
+	  SrcPort		  1
+	  Points		  [50, 0; 0, -120]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  5
+	}
+	Line {
+	  SrcBlock		  "Calculated Velocity "
+	  SrcPort		  1
+	  Points		  [60, 0; 0, -155]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  6
+	}
+	Line {
+	  SrcBlock		  "Calculated Acceleration "
+	  SrcPort		  1
+	  Points		  [70, 0; 0, -185]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  7
+	}
+	Line {
+	  SrcBlock		  "Previous Step Target Displacement"
+	  SrcPort		  1
+	  Points		  [65, 0; 0, -245]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  9
+	}
+	Line {
+	  SrcBlock		  "Displacement Command "
+	  SrcPort		  1
+	  Points		  [165, 0; 0, -555]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  20
+	}
+	Line {
+	  SrcBlock		  "Calculated Displacement"
+	  SrcPort		  1
+	  Points		  [175, 0]
+	  DstBlock		  "Embedded\nMATLAB Function"
+	  DstPort		  21
+	}
+      }
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain"
+      Position		      [425, 100, 465, 130]
+      Gain		      "Keq"
+      ParameterDataTypeMode   "Inherit via internal rule"
+      OutDataTypeMode	      "Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+      SampleTime	      "sample"
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain1"
+      Position		      [425, 50, 455, 80]
+      Gain		      "K"
+      ParameterDataTypeMode   "Inherit via internal rule"
+      OutDataTypeMode	      "Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+      SampleTime	      "sample"
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain2"
+      Position		      [425, 150, 465, 180]
+      Gain		      "Ceq"
+      ParameterDataTypeMode   "Inherit via internal rule"
+      OutDataTypeMode	      "Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+      SampleTime	      "sample"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope"
+      Ports		      [1]
+      Position		      [460, 184, 490, 216]
+      Floating		      off
+      Location		      [649, 461, 1146, 779]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      TimeRange		      "50"
+      YMin		      "-0.01"
+      YMax		      "0.01"
+      DataFormat	      "StructureWithTime"
+      MaxDataPoints	      "50000000"
+      SampleTime	      "0"
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum"
+      Ports		      [2, 1]
+      Position		      [520, 105, 540, 125]
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|++"
+      InputSameDT	      off
+      OutDataTypeMode	      "Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+      SampleTime	      "sample"
+    }
+    Block {
+      BlockType		      UnitDelay
+      Name		      "Unit Delay"
+      Position		      [310, 222, 340, 238]
+      Orientation	      "left"
+      SampleTime	      "sample"
+    }
+    Block {
+      BlockType		      UnitDelay
+      Name		      "Unit Delay1"
+      Position		      [310, 37, 340, 53]
+      Orientation	      "left"
+      SampleTime	      "sample"
+    }
+    Block {
+      BlockType		      UnitDelay
+      Name		      "Unit Delay2"
+      Position		      [255, 22, 285, 38]
+      Orientation	      "left"
+      SampleTime	      "sample"
+    }
+    Line {
+      SrcBlock		      "CRIntegrator"
+      SrcPort		      1
+      Points		      [0, 10; 35, 0]
+      Branch {
+	Points			[20, 0; 0, 15]
+	Branch {
+	  Points		  [0, -20]
+	  Branch {
+	    DstBlock		    "Gain"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -50]
+	    DstBlock		    "Gain1"
+	    DstPort		    1
+	  }
+	}
+	Branch {
+	  Points		  [0, 65]
+	  DstBlock		  "Scope"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[0, 110]
+	DstBlock		"Unit Delay"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "CRIntegrator"
+      SrcPort		      2
+      Points		      [0, 25]
+      DstBlock		      "Gain2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Gain2"
+      SrcPort		      1
+      Points		      [60, 0]
+      DstBlock		      "Sum"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Gain"
+      SrcPort		      1
+      DstBlock		      "Sum"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Sum"
+      SrcPort		      1
+      Points		      [5, 0; 0, -70]
+      DstBlock		      "Unit Delay1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Gain1"
+      SrcPort		      1
+      Points		      [0, -35]
+      DstBlock		      "Unit Delay2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Unit Delay"
+      SrcPort		      1
+      Points		      [-225, 0; 0, -60]
+      DstBlock		      "CRIntegrator"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Unit Delay1"
+      SrcPort		      1
+      Points		      [-215, 0]
+      DstBlock		      "CRIntegrator"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Unit Delay2"
+      SrcPort		      1
+      Points		      [-170, 0; 0, 80]
+      DstBlock		      "CRIntegrator"
+      DstPort		      1
+    }
+    Annotation {
+      Name		      "experimental restoring force"
+      Position		      [542, 36]
+    }
+    Annotation {
+      Name		      "analytical restoring force"
+      Position		      [394, 22]
+    }
+    Annotation {
+      Name		      "experimental displacement"
+      Position		      [116, 238]
+    }
+  }
+}
+
+# Finite State Machines
+#
+#    Stateflow Version 6.6 (R2007a) dated Jan 30 2007, 03:33:34
+#
+#
+
+Stateflow {
+
+	machine {
+		id                   		1
+		name                 		"CRIntegrator"
+		created              		"09-Apr-2007 13:09:12"
+		isLibrary            		0
+		firstTarget          		36
+		sfVersion            		66014000
+	}
+
+	chart {
+		id                                        		2
+		name                                      		"CRIntegrator/Embedded\n"
+					"MATLAB Function"
+		windowPosition                            		[296.813 314.45 200.25 189.75]
+		viewLimits                                		[0 156.75 0 153.75]
+		screen                                    		[1 1 1280 1024 1.333333333333333]
+		treeNode                                  		[0 3 0 0]
+		firstTransition                           		5
+		firstJunction                             		4
+		viewObj                                   		2
+		machine                                   		1
+		decomposition                             		CLUSTER_CHART
+		type                                      		EML_CHART
+		firstData                                 		6
+		chartFileNumber                           		2
+		disableImplicitCasting                    		1
+		eml {
+			name       		"fcn"
+		}
+	}
+
+	state {
+		id                           		3
+		labelString                  		"eML_blk_kernel()"
+		position                     		[18 64.5 118 66]
+		fontSize                     		12
+		chart                        		2
+		treeNode                     		[2 0 0 0]
+		superState                   		SUBCHART
+		subviewer                    		2
+		type                         		FUNC_STATE
+		decomposition                		CLUSTER_STATE
+		eml {
+			isEML                    		1
+			script                   		"function [i_out,ramper_out,disp_out,vel_out,accel_out,disp_"
+						"e_prev_out,disp_command_out,disp_old_out]  = fcn(i,steps,ra"
+						"mper,F,disp,vel,accel,disp_e,disp_e_prev,r_a,r_e,C,K,Minv,b"
+						"eta1,beta2,Keq,dt,dt_multiplier,disp_command,disp_old)\n"
+						" \n"
+						"%% First step initializes acceleration vector\n"
+						"if (i == 0)\n"
+						"    accel = Minv*( F(1)-C*vel-K*disp ); %calculate new acce"
+						"leration vector\n"
+						"end\n"
+						"\n"
+						"%% Main cycle occurs while the earthquake record isn't exha"
+						"usted\n"
+						"if (i < steps-1)  \n"
+						"    %% First ramp of a new step, calculate displacement and"
+						" velocity vectors\n"
+						"    if (ramper == 1)\n"
+						"        i = i + 1;                                  %increm"
+						"ent to next step\n"
+						"        disp_old = disp;                            %save p"
+						"revious displacement\n"
+						"        disp = disp + dt*vel + beta2*dt^2*accel;    %calcul"
+						"ate next displacement vector\n"
+						"        vel = vel + beta1*dt*accel;                 %calcul"
+						"ate next velocity vector\n"
+						"        disp_e_prev = disp_e;                       %get in"
+						"itial displacement for this step      \n"
+						"    end\n"
+						"    \n"
+						"    %% Set ramped command vector\n"
+						"    disp_command_out = (disp - disp_old)/dt_multiplier * ra"
+						"mper + disp_old;\n"
+						"    \n"
+						"    %% Check for the last ramper\n"
+						"    if (ramper == dt_multiplier)\n"
+						"        ramper_out = 1;      \n"
+						"        r_e = r_e + Keq*(disp_e - disp_e_prev)/dt_multiplie"
+						"r;  %correct restoring force                \n"
+						"        r = r_e + r_a;                   %form full restori"
+						"ng force vector                \n"
+						"        accel = Minv*( F(i)-C*vel-r ); %calculate new accel"
+						"eration vector\n"
+						"    %% Ramp the command within the same earthquake step\n"
+						"    else\n"
+						"        ramper_out = ramper + 1;\n"
+						"    end\n"
+						"    \n"
+						"    %% Pass variables through to the next sample \n"
+						"    i_out = i;                  %remember big time step\n"
+						"    disp_out = disp;            %remember displacement vect"
+						"or\n"
+						"    vel_out = vel;              %remember velocity vector\n"
+						"    accel_out = accel;          %remember acceleration vect"
+						"or\n"
+						"    disp_old_out = disp_old;    %remember previous displace"
+						"ment vector\n"
+						"    disp_e_prev_out = disp_e_prev; %remember initial measur"
+						"ed experimental displacement\n"
+						"          \n"
+						"%% Earthquake record exhausted so just set output = input f"
+						"or all variables\n"
+						"else\n"
+						"    i_out = i;\n"
+						"    ramper_out = ramper;\n"
+						"    disp_out = disp;    \n"
+						"    vel_out = vel;      \n"
+						"    accel_out = accel;\n"
+						"    disp_command_out = disp_command; \n"
+						"    disp_old_out = disp_old;\n"
+						"    disp_e_prev_out = disp_e_prev;\n"
+						"end"
+			editorLayout             		"100 M4x1[65 65 720 600]"
+			fimathString             		"fimath(...\n"
+								"'RoundMode', 'floor',...\n"
+								"'OverflowMode', 'wrap',...\n"
+								"'ProductMode', 'KeepLSB', 'ProductWordLength', 32,..."
+								"\n"
+								"'SumMode', 'KeepLSB', 'SumWordLength', 32,...\n"
+								"'CastBeforeSum', false)"
+			treatIntsAsFixpt         		0
+		}
+	}
+
+	junction {
+		id         		4
+		position   		[23.5747 49.5747 7]
+		chart      		2
+		linkNode   		[2 0 0]
+		subviewer  		2
+		type       		CONNECTIVE_JUNCTION
+	}
+
+	transition {
+		id             		5
+		labelString    		"{eML_blk_kernel();}"
+		labelPosition  		[32.125 19.875 102.544 14.964]
+		fontSize       		12
+		src {
+			intersection		[0 0 1 0 23.5747 14.625 0 0]
+		}
+		dst {
+			id          		4
+			intersection		[7 0 -1 -1 23.5747 42.5747 0 0]
+		}
+		midPoint       		[23.5747 24.9468]
+		chart          		2
+		linkNode       		[2 0 0]
+		dataLimits     		[23.575 23.575 14.625 34.575]
+		subviewer      		2
+		drawStyle      		SMART
+		executionOrder 		1
+	}
+
+	data {
+		id                            		6
+		name                          		"i"
+		linkNode                      		[2 0 7]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		fixptType {
+			slope   		1
+			baseType		SF_INT16_TYPE
+		}
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		7
+		name                          		"steps"
+		linkNode                      		[2 6 8]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		8
+		name                          		"i_out"
+		linkNode                      		[2 7 9]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		fixptType {
+			slope   		1
+			baseType		SF_INT16_TYPE
+		}
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		9
+		name                          		"ramper_out"
+		linkNode                      		[2 8 10]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		10
+		name                          		"ramper"
+		linkNode                      		[2 9 11]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		11
+		name                          		"F"
+		linkNode                      		[2 10 12]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		12
+		name                          		"disp"
+		linkNode                      		[2 11 13]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		13
+		name                          		"vel"
+		linkNode                      		[2 12 14]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		14
+		name                          		"accel"
+		linkNode                      		[2 13 15]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		15
+		name                          		"disp_e"
+		linkNode                      		[2 14 16]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		16
+		name                          		"disp_e_prev"
+		linkNode                      		[2 15 17]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		17
+		name                          		"r_a"
+		linkNode                      		[2 16 18]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		18
+		name                          		"r_e"
+		linkNode                      		[2 17 19]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		19
+		name                          		"C"
+		linkNode                      		[2 18 20]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		20
+		name                          		"K"
+		linkNode                      		[2 19 21]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		21
+		name                          		"Minv"
+		linkNode                      		[2 20 22]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		22
+		name                          		"disp_out"
+		linkNode                      		[2 21 23]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		23
+		name                          		"vel_out"
+		linkNode                      		[2 22 24]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		24
+		name                          		"accel_out"
+		linkNode                      		[2 23 25]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		25
+		name                          		"disp_e_prev_out"
+		linkNode                      		[2 24 26]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		26
+		name                          		"beta1"
+		linkNode                      		[2 25 27]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		27
+		name                          		"beta2"
+		linkNode                      		[2 26 28]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		28
+		name                          		"Keq"
+		linkNode                      		[2 27 29]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		29
+		name                          		"dt"
+		linkNode                      		[2 28 30]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		30
+		name                          		"dt_multiplier"
+		linkNode                      		[2 29 31]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		31
+		name                          		"disp_command"
+		linkNode                      		[2 30 32]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		32
+		name                          		"disp_command_out"
+		linkNode                      		[2 31 33]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		33
+		name                          		"disp_old_out"
+		linkNode                      		[2 32 34]
+		scope                         		OUTPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+			frame                		SF_FRAME_NO
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	data {
+		id                            		34
+		name                          		"disp_old"
+		linkNode                      		[2 33 0]
+		scope                         		INPUT_DATA
+		machine                       		1
+		props {
+			array {
+				size      		"-1"
+			}
+			type {
+				method    		SF_INHERITED_TYPE
+				primitive 		SF_DOUBLE_TYPE
+				isSigned  		1
+				wordLength		"16"
+			}
+			complexity           		SF_COMPLEX_INHERITED
+		}
+		dataType                      		"inherited"
+		complexity                    		SF_COMPLEX_INHERITED
+	}
+
+	instance {
+		id     		35
+		name   		"CRIntegrator/Embedded\n"
+					"MATLAB Function"
+		machine		1
+		chart  		2
+	}
+
+	target {
+		id                        		36
+		name                      		"sfun"
+		description               		"Default Simulink S-Function Target."
+		machine                   		1
+		linkNode                  		[1 0 37]
+	}
+
+	target {
+		id                        		37
+		name                      		"rtw"
+		codeFlags                 		" comments=1 statebitsets=1 databitsets=1 emitlogicalops=1 el"
+						"seifdetection=1 constantfolding=1 redundantloadelimination=0"
+						" preservenames=0 preservenameswithparent=0 exportcharts=0"
+		machine                   		1
+		linkNode                  		[1 36 0]
+	}
+}

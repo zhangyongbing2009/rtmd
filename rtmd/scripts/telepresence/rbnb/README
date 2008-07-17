@@ -1,0 +1,19 @@
+admin_panel: Manage data turbine sources and archived data sets
+
+connect_flexTPS_streams: Connect FlexTPS streams to data turbine
+
+connect_SCRAMNet: Connect SCRAMNet channels to data turbine
+
+daq_to_turbine_xml: Convert a DAQ Database XML file to a data turbine XML configuration
+
+kill_flexTPS_streams: Disconnect FlexTPS streams from the data turbine
+
+kill_SCRAMNet: Disconnect SCRAMNet channels from the data turbine
+
+plot: Opens the Creare plotting package
+
+source_test: Opens the Creare rbnb source generator
+
+startRBNB: Starts the data turbine server
+
+stopRBNB: Stops the data turbine server
