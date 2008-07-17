@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ ! -n "$2" ]
+then
+  echo "Usage: ./connect_SCRAMNet [Source name] [Turbine XML File]"
+  exit 1
+fi  
+
+# Set name of source here
+SOURCE=$1
+
+# Set xml file
+XMLFILE=$2
+
+# SCRAMNet pushes 4 bytes 10x per second. 
+# 1 hour cache
+# 1 day archive
+CACHE_SIZE=36000
+ARCHIVE_SIZE=1000000
+
+# Adjust CLASSPATH 
+export CLASSPATH=$CLASSPATH:/usr/rtmd/rbnb/rtmd.jar
+
+java org.nees.rbnb.SCRAMNetSource -N $XMLFILE -S $SOURCE -z $CACHE_SIZE -Z $ARCHIVE_SIZE &

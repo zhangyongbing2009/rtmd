@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Edit this variable with the Stream Name and it's description (no spaces)
+STREAMS="
+         ExperiCam01,Overview
+         ExperiCam02,North
+         ExperiCam03,Middle
+         ExperiCam04,South
+         ExperiCam05,Closeup1
+         ExperiCam06,Closeup2
+        "
+ 
+for stream in `echo $STREAMS`
+do
+ name=${stream%,*}
+ desc=${stream#*,}
+ ## Starts a Webcam stream sampling at 1 fps
+ ## Cache = 10 seconds
+ ## Archive = 7200 seconds (~35kB per frame == 250MB per camera archive)
+ java org.nees.rbnb.FlexTpsSource -R http://tpm.nees.lehigh.edu/feeds/public/$name/mjpeg/1 -S $desc -z 10 -Z 7200 &
+
+done

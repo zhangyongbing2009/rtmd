@@ -1,0 +1,1 @@
+java -classpath 'cameragrabber.jar:scramnet.jar:.' edu.lehigh.nees.util.FlexTPSCameraGrabber $*

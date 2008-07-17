@@ -1,0 +1,6 @@
+Run ./run --trigger 61 [IPs.. ] for cameras to be triggered by a SCRAMNet counter at address 61
+
+Run ./run --timer [milliseconds] [IPs.. ] for cameras to be triggered based on a timer independent of SCRAMNet
+
+For password-protected streams, enter the IP,user,pass, ie:
+./run -timer 1000 128.180.xxx.xxx,user,pass  
