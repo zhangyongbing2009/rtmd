@@ -24,7 +24,7 @@
 * 	Date: July 31, 2007
 */
 
-package org.nees.buffalo.rdv.datapanel;
+package org.rdv.datapanel;
 
 import java.awt.Color;
 import java.io.*;
