@@ -1,0 +1,346 @@
+/* The surrounding of the page and the main text */
+body {
+background-color:#DDCDB9;
+font-size: 12px;
+font-family: Verdana, Arial, SunSans-Regular, Sans-Serif;
+color:#000000;
+padding:0px;
+margin:0px;
+}
+
+/* Links */
+a {color: #000000;text-decoration:none;}
+a:visited {color:#000000;text-decoration:none;}
+a:hover {color: #FF0000;text-decoration:none;}
+a:active { color:#FF0000;text-decoration:none;}
+
+/* Object items */
+a.objectitem {color: #3F66BA;text-decoration:none;}
+a.objectitem:visited {color:#3F66BA;text-decoration:none;}
+a.objectitem:hover {color: #FF0000;text-decoration:none;}
+a.objectitem:active { color:#FF0000;text-decoration:none;}
+a.objectitem2 {color: #3FBA66;text-decoration:none;}
+a.objectitem2:visited {color:#3FBA66;text-decoration:none;}
+a.objectitem2:hover {color: #FF0000;text-decoration:none;}
+a.objectitem2:active { color:#FF0000;text-decoration:none;}
+
+/* Login text */
+a.login:link {color: #eeeeee;text-decoration:none;}
+a.login:visited {color:#eeeeee;text-decoration:none;}
+a.login:hover {color: #FF0000;text-decoration:none;}
+a.login:active { color:#FF0000;text-decoration:none;}
+
+/* Address bar and footer bar */
+h1 {	
+font-size: 10px;
+text-transform:uppercase;
+background-color: #3F66BA;  
+color:#eeeeee;
+border-top:1px solid #3F66BA;
+border-bottom:1px solid #3F66BA;
+padding:5px 15px;
+margin:0px; }
+h1 a {color: #eeeeee;text-decoration:none;}
+h1 a:visited {color: #eeeeee;text-decoration:none;}
+h1 a:hover {color: #FF0000;text-decoration:none;}
+h1 a:active { color:#FF0000;text-decoration:none;}
+
+/* Sub content Header */
+h2 {
+font-size:20px;
+font-weight: normal;
+color: #770000;
+border-bottom: 1px dashed #3F66BA;
+//background-image: url(headinggradient.png); 	/* Test */
+background-color: #C2CEE9; 
+padding: 5px 10px;
+margin:0px;
+}
+
+/* Login bar */
+h3 {
+font-size: 10px;
+background-color: #3F66BA;  
+color:#eeeeee;
+border-top:1px solid #3F66BA;
+border-bottom:1px solid #3F66BA;
+padding:5px 15px;
+margin:0px; 
+}
+
+/* Mini login box heading */
+h4 {
+font-size: 10px;
+text-transform:uppercase;
+text-align:center;
+background-color: #3F66BA;  /* Colors of top and bottom bars */
+color:#eeeeee;
+border-top:1px solid #3F66BA;
+border-bottom:1px solid #3F66BA;
+padding:5px 5px;
+margin:0px; }
+
+/* Object box heading */
+.sublevel {
+font-size:14px;
+font-weight: normal;
+border: 1px solid #3F66BA;
+//padding: 5px;
+padding-top: 5px;								/* Test */
+padding-bottom: 5px;							/* Test */
+background-color:#FFEBAA;						/* Test */
+//background-image: url(subcontentgradient.png); 	/* Test */
+width: 47%;
+margin: 0px 5px 10px 5px;
+}
+
+/* Object box content */
+.subcontent {
+font-weight: normal;
+font-size:12px;
+padding: 2px;									
+margin-top: 3px;
+border-top: 1px dashed #3F66BA;
+//background-color:#FFF9E9;  						/* Test */
+background-color:#FFEBAA;						/* Test */
+}
+
+/* Subcontent header */
+.subcontentheader {
+float:left;
+margin-left:2px;
+cursor:default;
+}
+
+/* General form content */
+form {
+ padding: 5px;
+}
+
+/* Forms for the buttons */
+.buttonforms {
+margin: 2px 2px 2px 2px;
+padding: 2px;
+}
+
+/* General table content */
+table {
+ padding: 10px;
+}
+
+/* General button information */
+.buttons a, .buttons button{
+    display:block;
+    margin:0 5px 0 5px;
+    background-color:#f5f5f5;
+    border:1px solid #dedede;
+    border-top:1px solid #eee;
+    border-left:1px solid #eee;
+    font-family:"Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
+    font-size:100%;
+    line-height:130%;
+    text-decoration:none;
+    text-align:left;
+    font-weight:bold;
+    color:#565656;
+    cursor:pointer;
+    padding:5px 10px 6px 7px; /* Links */
+}
+.buttons button{
+    width:auto;
+    overflow:visible;
+    padding:4px 10px 3px 7px; /* IE6 */
+}
+.buttons button[type]{
+    padding:5px 10px 5px 7px; /* Firefox */
+    line-height:17px; /* Safari */
+}
+.buttons button img, .buttons a img{
+    margin:0 3px -3px 0 !important;
+    padding:0;
+    border:none;
+    width:16px;
+    height:16px;
+}
+/* Add/Edit/Nav button */
+.buttons a.add:hover, button.add:hover, a.edit:hover, button.edit:hover, a.nav:hover, button.nav:hover, {
+    background-color:#dff4ff;
+    border:1px solid #c2e1ef;
+    color:#336699;
+}
+.buttons a.add:active, a.edit:active, a.nav:active, {
+    background-color:#6299c5;
+    border:1px solid #6299c5;
+    color:#fff;
+}
+/* Delete button */
+.buttons a.delete, button.delete, a.cancel, button.cancel{
+    color:#d12f19;
+}
+.buttons a.delete:hover, button.delete:hover, a.cancel:hover, button.cancel:hover{
+    background:#fbe3e4;
+    border:1px solid #fbc2c4;
+    color:#d12f19;
+}
+.buttons a.delete:active, a.cancel:active{
+    background-color:#d12f19;
+    border:1px solid #d12f19;
+    color:#fff;
+}
+
+/* The X for deleting a link */
+img.deletelink {
+height: 10px;
+width: 10px;
+border: none;
+}
+
+/* The + for adding an object and the download image */
+img.addobject, img.download {
+border: none;
+}
+
+/* Image for reordering objects */
+img.moveobject {
+border: none;
+cursor:pointer;
+}
+
+/* Container for all frames */
+#container {
+width: 800px;
+margin-bottom: 10px;
+margin-top: 10px;
+margin-left: auto;
+margin-right: auto;
+background-color: #eeeeee;
+border: 3px solid #3F66BA;
+}
+
+/* Banner Logo */
+#banner {
+background-color: #eeeeee;  /* Color of top panel */
+text-align: left;
+padding: 0px;
+margin: 0px;
+}
+#banner img {padding:10px 0px;} 
+
+/* Main */
+#content {
+background-color: #ffffff;
+border-left: 1px solid #3F66BA;
+padding: 0px;
+margin-left: 0px;
+margin-right: 0px;
+}
+div#content { 
+min-height:500px; 
+/*height:500px;*/
+/*height:expression(this.scrollHeight > 500 ? "auto":"500px"); */
+/* for Internet Explorer */
+_height: 500px;
+}
+
+/* Indented paragraph styling */
+p.indented {
+padding: 5px 10px;
+margin:0px;
+}
+
+/* left navigavtion */
+#left {
+float: left;
+width: 200px;
+margin: 0px;
+padding: 0px;
+font: bold 10px Verdana,Geneva,Helvetica,Arial;
+}
+
+/* footer search */
+#footer_search {
+clear: both;
+margin: 0px;
+padding: 0px;
+text-align: left; }
+
+/* footer */
+#footer {
+#clear: both;
+width: 800px;
+margin: 0px;
+padding: 0px;
+text-align: right; }
+
+/* Main */
+#manage {
+background-color: #ffffff;
+padding: 0px;
+margin-left: 0px;
+margin-right: 0px;
+}
+
+/* Address Bar */
+#addressbar {
+float: left;
+width: 600px;
+margin: 0px;
+padding: 0px;
+}
+
+/* Login Bar */
+#loginbar {
+float: right;
+width: 200px;
+margin: 0px;
+padding: 0px;
+}
+
+/* Breadcrumb Bar */
+#breadcrumbbar {
+float: left;
+width: 800px;
+margin: 0px;
+padding: 0px;
+border-top: thin dotted #000000;
+}
+
+/* Lists for shared objects */
+.list {
+	list-style-type : none;
+	margin: 10px;
+	padding: 0;
+}
+.listrow {
+	font-size:16px;
+	font-weight: bold;
+	margin: 10px 0px 0px 0px;
+	background-color: #EEEEEE;
+}
+.listrownonmember  {
+	font-size:16px;
+	font-weight: normal;
+	margin: 10px 0px 0px 0px;
+	background-color: #EEEEEE;
+	color: #666666;
+}
+
+/* For creating a sortable list of object */
+.sortable-list {
+    list-style-type : none;
+    margin : 0;
+    padding: 0;
+}
+.sortable-list li {        
+    margin: 2px 0px 2px 10px;
+    padding: 0;
+}
+.single-list {
+    list-style-type : none;
+    margin : 0;
+    padding: 0;
+}
+.single-list li {    
+    margin: 2px 0px 2px 10px;
+    padding: 0;
+}
