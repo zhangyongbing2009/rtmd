@@ -1,0 +1,170 @@
+Version 1.4
+-Change: Lots of just minor tweaks and compatibilities for releaseable version
+
+
+Version 1.3
+-Feature: Inline editing of text
+-Feature: Updated Scriptalicious to 1.8.1
+-Feature: Can delete a user from the admin screen now
+-Feature: Can request membership to a project from the project list
+-BugFix: Objectlink doesn't break flow
+-Change: Moved navi button
+-Change: Hide drop down arrow when no items exist in object
+-Change: Timing on drop down increased
+-Change: Only one column of objects now
+-Change: Removed background gradient image for header
+-Change: Opens object after new addition
+
+
+Version 1.2.6
+-Change: Major coding overhaul for compatibility on different servers
+
+
+Version 1.2.5
+-BugFix: Shared objects show child objects when linked to other parents
+-Change: Shared objects referenced by general name.  They no longer require explicit declarations from each parent
+-Change: Lehigh Model structure changed and simplified
+
+
+Version 1.2.4
+-BugFix: AllowSharing checked when sometimes not set
+-BugFix: Single objects don't show add button after item added
+-Change: Shortened object header to fit on one line with hover text
+-Change: Colors of multiple object items alternates to make distinction clearer
+-Change: Removed DAQ, Controller and Simulation systems
+-Change: Specifications are now multiple
+
+
+Version 1.2.3
+-Change: Overhauled button images
+-Change: Bracing and Reacting Fixture Drawings now multiple
+-Change: DAQ, Controller and Simulation systems now under Facility
+-Change: Test Protocols have DAQ, Controller and Other Configuration files
+-Change: Many PHP bug fixes
+-Change: Moved Add object button to object header bar
+
+
+Version 1.2.2
+-Feature: Shared objects have owning Project
+-Change: Only admins of a Project that owns a shared object can edit that shared object
+
+
+Version 1.2.1
+-Feature: Project membership request form on front page
+-Change: Cleanup of some code and some extra commenting for future developer(s)
+
+
+Version 1.2
+-BugFix: Concrete Material compression strength fixed
+-BugFix: Physical Substructure Test Test Protocol fixed
+-Change: Object block heading font sized down
+-Change: Removed Simulation link from Interface object
+-Change: Added some new objects
+-Change: Load is now Case Protocol
+-Feature: Analytical Substructure Computation Descriptive Files added
+-Feature: Object blocks can now be ordered based on their order in the switchboard.php file
+-Feature: Usage of "break:here" in the $Items array adds a separating line in the object section
+-Feature: Lehigh users can just log in and become automatically registered
+-Feature: Users can see all projects but only click the ones that they are a member of
+-Feature: DataSets have Descriptive Files and Other Files
+
+
+Version 1.1
+-Change: Terminology of releases changed
+-Change: Tests are no longer shared objects
+-Change: Cannot edit new shared object until its added to an object
+-Change: All objects under BasicClass table
+-Change: Object boxes align better
+-Change: Allowed up to 2GB uploads
+-Change: objectlink type reference for linking directly to an object
+-Change: SingleItems are object boxes and only allow one add
+-Change: Removed IT Architecture
+-Change: Changed Analytical, Analysis, Simulation data sets
+-Feature: Adding a new shared object is quicker
+-Feature: Sliding hide/show content for object boxes
+-Feature: "more" button for displaying large text areas
+-Feature: Added Specimen Drawings to model
+-Feature: Made Geometry Drawings multiple
+-Feature: Added calibration constant to sensor item
+-Feature: Highlighted List items
+-Feature: Alphabetically Sort List items
+
+
+Beta Version 5 - 1.0
+-BugFix: Searching into a project breaks navigation
+-Change: Complete rewrite of implementation and database structure (fixed all previous bugs)
+-Change: Structure is based on case table with unique names for every class in data model
+-Change: Templates exist for 3 distinct types of objects (see README.txt)
+-Change: Fixed the vertical alignment for the description tags
+-Change: Name field for files (defaults to filename when created)
+-Change: Files are referenced by name
+-Change: BasicClass references two generic dates by DateTime1 and DateTime2
+-Change: Added Project name to login bar
+-Change: Added Class name to section heading
+-Feature: Full implementation of Lehigh Data Model version 1 (January 2007)
+-Feature: Added up to 5 files to upload at a time
+-Feature: Reset password form
+-Feature: Change password form
+-Feature: View/Edit/Delete restrictions
+-Feature: Created 'favicon' icon for Web browser URL
+-Feature: Basic search feature to start with
+-Feature: Multiple select for adding shared objects (ie, Sensors)
+-Feature: WYSIWYG editor for text areas
+
+
+Beta Version 4 - 
+-BugFix: Edit Actuator under Test Condition, no description appears
+-BugFix: Edit Other Loading Fixture under Test Condition, no description appears
+-BugFix: Sensors.php page only shows Title
+-BugFix: Database file for Controller System doesn't make link with uploaded file
+-BugFix: Editting Test doesn't work 
+-BugFix: Delete in Test Description file doesn't work and doesn't redirect
+-BugFix: Cancel button on Edit screen in types goes to main page instead of view page
+-BugFix: Back to View from Data file in Types
+-BugFix: Add button goes away when only one child object is allowed in a parent object
+-Feature: Can go directly to the Type description window from a view object page
+-Feature: Types window can grow and scroll
+-Feature: Close button on main Types pages
+-Feature: Can only link to Substructures or Simulations that are in your Experimental Task
+-Feature: Substructure Commands and Feedbacks are automatically linked when a relationship
+          is made between a Simulation and a Substructure.
+-Change: Moved Edit button on View pages to the bottom
+-Change: Absolute path used for PHP references and HTML SRC references
+-Change: Smaller banner logo for window size constraints
+-Change: Only one Data Set is allowed per Test
+-Change: Only one Simulation Coordinator is allowed per Project Task
+-Change: Project Task now called Experimental Task (only in application title, not DB or code)
+
+         
+Beta Version 3 - 
+-Feature: Options particular to Hybrid Tasks will only show up when a Project Task is set to Hybrid
+-Feature: Hybrid Task structure complete
+-Feature: New welcome page
+-Feature: Login/Logout access
+-Feature: Administrative Panel to assign user's to projects.
+-Feature: Added Login status on Address bar
+-Feature: Address bar text doesn't wordwrap causing misalignment with address bar
+-Feature: Loading Fixture types completed
+
+
+Beta Version 2 - 9/12/06
+-Feature: Large file upload with progress bar support
+-Feature: Check for blank names so no empty name links are created (Bug0001)
+-Feature: All pages are W3C HTML validated and checked againt IE 6 and Firefox 1.x
+-Feature: W3C CSS validated (Bug0002)
+-Bug0003: Left side explorer menu doesn't align data sets correctly with multiple data sets
+-Bug0004: Left side explorer menu leaves '+' when object doesn't have children
+
+
+Beta Version 1 - 8/24/06
+-Feature: Updated CSS with Explorer-like look
+-Feature: File upload support
+-Feature: Created "Type" objects such as Actuator and Cable.
+-Bug0001: Blank names are allowed and create ghost links (Fixed)
+-Bug0002: IE crashes on random pages (Fixed)
+
+
+Initial Beta Version 0 - 8/10/06
+-Feature: Basic hierarchy developed
+-Feature: Simple CSS format with "layer-container" style
+-Feature: Database structure in DB Designer 4 and MySQL developed

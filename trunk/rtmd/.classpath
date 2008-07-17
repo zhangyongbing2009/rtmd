@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
-	<classpathentry path="" kind="output"/>
+	<classpathentry path="RTMD_JAR/src" kind="src"/>
+	<classpathentry path="lib/commons-cli-1.0.jar" kind="lib"/>
+	<classpathentry path="lib/Jama-1.0.2.jar" kind="lib"/>
+	<classpathentry path="lib/jdom.jar" kind="lib"/>
+	<classpathentry path="lib/jep-2.24.jar" kind="lib"/>
+	<classpathentry path="lib/log4j-1.2.13.jar" kind="lib"/>
+	<classpathentry path="lib/oalnf.jar" kind="lib"/>
+	<classpathentry path="lib/rbnb.jar" kind="lib"/>
+	<classpathentry path="lib/thinlet.jar" kind="lib"/>
+	<classpathentry path="lib/zdo-plot.jar" kind="lib"/>
+	<classpathentry path="bin" kind="output"/>
 </classpath>
