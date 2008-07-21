@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+"
-  codebase="http://www.nees.lehigh.edu/rdv/"
+  codebase="http://www.nees.lehigh.edu/uploads/RDV/"
   href="RDV-3D.jnlp">
 	<information>
 		<title>RDV</title>
-		<vendor>Lehigh University courtesy of University at Buffalo, NEESit</vendor>
-		<homepage href="http://it.nees.org/software/rdv/"/>
-		<description>A tool to view synchronzied, streaming data from a Data Turbine server and local archive.</description>
-		<icon href="RDV.gif"/>
+		<vendor>Palta Software</vendor>
+		<homepage href="http://rdv.googlecode.com/"/>
+		<description>A visualization environment for scientific and engineering data.</description>
+		<icon href="rdv.png"/>
 		<offline-allowed/>
 		<shortcut online="false">
 			<desktop/>
@@ -22,7 +22,7 @@
 		<jar href="RDV-3D.jar" main="true"/>
                 <extension href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp"/>
 	</resources>
-	<application-desc main-class="org.nees.buffalo.rdv.DataViewer">
+	<application-desc main-class="org.rdv.RDV">
 		<property name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
 		<argument>--host</argument>
         <argument>neestele.nees.lehigh.edu</argument>        
