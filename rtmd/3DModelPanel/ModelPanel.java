@@ -26,54 +26,49 @@
 
 package org.rdv.datapanel;
 
-import java.awt.Color;
-import java.io.*;
-import javax.vecmath.*;
+import org.rdv.rbnb.Channel;
+import org.rdv.ui.MessagePopup;
+import com.rbnb.sapi.ChannelMap;
 
+import java.io.*;
+import java.lang.Math;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.ParseException;
-import java.util.regex.PatternSyntaxException;
-import javax.swing.text.DefaultFormatter;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.InputMethodEvent;
 
-import javax.media.j3d.*;
-
-import java.lang.Math;
-
-import java.awt.Font;
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.ButtonGroup;
-import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-
-import java.awt.GridBagLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import org.nees.buffalo.rdv.rbnb.Channel;
-import org.nees.buffalo.rdv.ui.MessagePopup;
+import javax.vecmath.*;
+import javax.media.j3d.*;
+import javax.media.j3d.BoundingSphere;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import com.rbnb.sapi.ChannelMap;
 import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
@@ -100,17 +95,18 @@ public class ModelPanel extends AbstractDataPanel
 	ModelViewer mview;
 	/** Component that contains the 3D pane and the toolbars. */
 	ViewPanel viewpanel;
-	/** Editor to edit live models */
+	/** Editor to modify live models */
 	ModelEditor editor;
+	/** Mouse event handler for interacting with the 3D model. */
+	MousePicker mpicker;
 
-	/** A mapping of indices to node names */
-	//HashMap<Integer,String> nodenames;
 	/** Last posted time */
 	double lastPostedTime;
 	
 	/** actionLinks */
-	// matches channel names to a set of NodeAxisPairs
+	// matches channel names to a set of NodeAxisPairs 
 	HashMap<String,HashSet<NodeAxisPair>> actionLinks;
+	
 	// constants for axes numbers in NodeAxisPairs
 	static final int X_AXIS = 0;
 	static final int Y_AXIS = 1;
@@ -119,36 +115,35 @@ public class ModelPanel extends AbstractDataPanel
 	static final int Y_ROT = 4;
 	static final int Z_ROT = 5;
 	static final int STR = 6; // stress/strain "axis"
-	
+	// constants for bound edges
 	static final int MIN = 0;
 	static final int MAX = 1;
 	
 	
 	/**
 	 * Initializes the Model Panel. Sets up the 3D environment and controls.
-	 *
 	 */
 	public ModelPanel()
 	{
 		super();
+		actionLinks = new HashMap<String,HashSet<NodeAxisPair>>();
 		model = new StructureModel();
 		loader = new SModelLoader();
 		editor = new ModelEditor();
 		mview = new ModelViewer();
-
 		viewpanel = new ViewPanel();
-		actionLinks = new HashMap<String,HashSet<NodeAxisPair>>();
 		
 		setDataComponent((JPanel)(viewpanel));
 	}
 
 	/**
 	 * Links the channel to the currently selected node and axis from channel linker.
+	 * Defers to addChannel(String channelname, String node, int axis)
 	 * @param	channelname		name of the channel to add
 	 */
 	public boolean addChannel(String channelname)
 	{
-		return addChannel(channelname,viewpanel.selectednode,viewpanel.selectedaxis);
+		return addChannel(channelname,editor.selectednode,editor.selectedaxis);
 	}
 	
 	/**
@@ -162,19 +157,14 @@ public class ModelPanel extends AbstractDataPanel
 	 */
 	public boolean addChannel(String channelname, String node, int axis)
 	{
-		System.out.println("Adding: "+node+","+axis+" to channel "+channelname);
 		// check that channel exists
 		Channel channel = rbnbController.getChannel(channelname);
-		//ArrayList<Integer> list = new ArrayList();
-		//list.add(linkindex);
-		//list.add(linkaxis); // generate a copy of the ArrayList for comparison
 		if (model.nodes.isEmpty())
-		{
+		{ // no model to link against, shouldn't happen
 			return false;
 		}
 		else if (channel == null || node.isEmpty() || axis < 0)
-		{
-			//System.out.println("channel was null.");
+		{ // some param is invalid, also shouldn't happen
 			return false;
 		}
 		else if (channels.contains(channelname))
@@ -188,7 +178,6 @@ public class ModelPanel extends AbstractDataPanel
 		else
 		{
 			// totally new channel: link and subscribe
-			//System.out.println("channel getting linked.");
 			channels.add(channelname);
 			updateTitle();
 			channelAdded(channelname,node,axis);
@@ -210,7 +199,10 @@ public class ModelPanel extends AbstractDataPanel
 		// add an MotionNode to the set
 		unlink(node,axis);
 		link(node,axis,channelname);
-		viewpanel.channame.setText(channelname);
+		// maybe editor.updatescreen() but not setChanName....
+		// editor.setChanName(channelname);
+		
+		
 	}
 	
 	/* link the index and axis to the given channel name*/
@@ -231,10 +223,10 @@ public class ModelPanel extends AbstractDataPanel
 	 * Overridden from AbstractDataPanel to do extra work.
 	 * Unlinks a channel from all node and axes with which it may be associated.
 	 */
-	void channelRemoved(String channelname)
+	protected void channelRemoved(String channelname)
 	{
 		actionLinks.remove(channelname);
-		viewpanel.channame.setText(channelname);
+		editor.setChanName(channelname);
 	}
 	
 	/**
@@ -253,32 +245,27 @@ public class ModelPanel extends AbstractDataPanel
 	// overridden, leave parent's javadoc intact and re-vamp if needed
 	public void postTime(double time)
 	{
-
 		// PostData drops in new data, postTime is called
 		// repeatedly on those data points, iterate through them
-
 		HashMap<String,Point3d> disp_updates = new HashMap<String,Point3d>();
 		HashMap<String,Point3d> rot_updates = new HashMap<String,Point3d>();
 		HashMap<String,Double> str_updates = new HashMap<String,Double>();
 		
 		// i iterates over subscribed channels
-		Iterator i = channels.iterator();
-		while (i.hasNext())
+		Iterator<String> i = channels.iterator();
+		while (i.hasNext() && channelMap != null )
 		{
 			String channelName = (String)i.next();
 			int channelIndex = channelMap.GetIndex(channelName);
 			if (channelIndex != -1) // if this channel has new data
 			{
-				
 				double [] times = channelMap.GetTimes(channelIndex);
-
 				int timeIndex = 0;
 				if (times.length > 0 && time > mpanel.time )
 				{
 					for ( timeIndex = 0; times[timeIndex] < time && timeIndex < times.length-1 ; timeIndex++)
 					{}
 				}
-				//System.out.println("time Index: "+timeIndex+"/"+times.length);
 				int typeID = channelMap.GetType(channelIndex);
 				double data;
 				switch (typeID)
@@ -357,14 +344,11 @@ public class ModelPanel extends AbstractDataPanel
 					{
 						rot_updates.put(nap.nodename, rot);
 					}
-					
 				}// end while anodes
-				
 			} // end if channelIndex !=1
 		} // while channel.hasNext()  (subscribed channels)
 		
 		// now walk updates and push to model and then call mview.update()
-		
 		Iterator<Map.Entry<String,Point3d>> iter = disp_updates.entrySet().iterator();
 		while(iter.hasNext())
 		{
@@ -395,7 +379,7 @@ public class ModelPanel extends AbstractDataPanel
 	public void destroyModel()
 	{
 		mview.destroyModelBranch();
-		viewpanel.reinit();
+		editor.deselectAll(); // deselect all
 		actionLinks.clear();
 		model.nodes.clear();
 		model.members.clear();
@@ -412,7 +396,6 @@ public class ModelPanel extends AbstractDataPanel
 		while(iter.hasNext())
 		{
 			String key = iter.next();
-			//chanlinker.selectedindex = key;
 			ArrayList<String> chans = channelmaps.get(key);
 			for(int j=0;j<chans.size();j++)
 			{
@@ -424,10 +407,12 @@ public class ModelPanel extends AbstractDataPanel
 		}
 	}
 	
+	// find the channel linked to the specified node axis pair
 	private String getChannel(String node, int axis)
 	{
 		boolean found = false;
-		Iterator<String> i = actionLinks.keySet().iterator();
+		Set<String> s = actionLinks.keySet();
+		Iterator<String> i = s.iterator();
 		String channel = "--";
 		while(!found && i.hasNext())
 		{
@@ -435,8 +420,8 @@ public class ModelPanel extends AbstractDataPanel
 			Iterator <NodeAxisPair> j = actionLinks.get(channame).iterator();
 			while(j.hasNext() && !found)
 			{
-				NodeAxisPair n = j.next();
-				if( n.nodename == node && n.axis == axis )
+				NodeAxisPair n = j.next(); 
+				if( n.nodename.equals(node) && n.axis == axis )
 				{
 					found = true;
 					channel = channame;
@@ -446,17 +431,22 @@ public class ModelPanel extends AbstractDataPanel
 		return channel;
 	}
 	
+	// save model without channels
 	public void saveModel()
 	{
 		saveModel(false);
 	}
 	
+	/**
+	 * Prompts for a filename and saves the current model with or without currently linked channels
+	 * @param savechannels if <code>true</code> save currently linked channels, otherwise save model only
+	 */
 	public void saveModel(boolean savechannels)
 	{
 		if( model.nodeCount() > 0 )
 		{
+		  // get a file name
 			JFileChooser chooser = new JFileChooser();
-			
 			int returnVal = chooser.showSaveDialog(dataComponent);
 			if(returnVal != JFileChooser.APPROVE_OPTION) 
 			{	return;	}
@@ -464,7 +454,7 @@ public class ModelPanel extends AbstractDataPanel
 			if (tempfile == null ) 
 		    {	return;	}
 			else
-			{
+			{ // write the file
 					try{
 				tempfile.createNewFile();
 				BufferedWriter output = new BufferedWriter(new FileWriter(tempfile));
@@ -586,20 +576,20 @@ public class ModelPanel extends AbstractDataPanel
 			}
 		}
 		else
-		{
+		{ // if there is no live model
 			popupError("No model to save.");
 		}
 	}
 	
+	// return Color3f as #xxxxxx hex string
 	private String colortohex(Color3f c)
 	{
 		String color = String.format("#%1$02x%2$02x%3$02x",c.get().getRed(),c.get().getGreen(),c.get().getBlue());
-		
 		return color;
 	}
 	
 	/**
-	 * Displays an error message in a popup window.
+	 * Displays an error message in a popup window. Also echo error message to stdout.
 	 * @param msg	The error message to display.
 	 */
 	public void popupError(String msg)
@@ -640,11 +630,11 @@ public class ModelPanel extends AbstractDataPanel
 		}
 
 		/**
-		*	Adds a node to the <code>StructureModel</code>. Every node must have a unique name, though they
-		*	are not required to be at unique locations. Throws NodeExistsException
+		*	Adds a node to the <code>StructureModel</code>. Every node must have a unique name, and
+		*	are required to be at unique locations. Throws NodeExistsException
 		*	@param s        the name of the node being added
-		*   @param p		the location of the node being added
-		*	@param c		the color of the node being added
+		* @param p    		the location of the node being added
+		*	@param c		    the color of the node being added
 		*	@see	#addNode(String,Point3d)
 		*/
 		public void addNode(String s, Point3d p, Color3f c) throws ModelException
@@ -668,9 +658,9 @@ public class ModelPanel extends AbstractDataPanel
 		}
 
 		/**
-		*	Adds a node to the <code>StructureModel</code>.
+		*	Adds a node to the <code>StructureModel</code> with a default color (gray).
 		*	@param s        the name of the node being added
-		*   @param p		the location of the node being added
+		* @param p	     	the location of the node being added
 		*	@see 	#addNode(String,Point3d,Color3f)
 		*/
 		public void addNode(String s, Point3d node) throws ModelException
@@ -705,10 +695,9 @@ public class ModelPanel extends AbstractDataPanel
 		
 
 		/**
-		*	Defines a new linear member in the <code>StructureModel</code> by its two end nodes.
+		*	Defines a new linear member in the <code>StructureModel</code> by its two end nodes with a default color.
 		*	@param NodeOne		the name of the node at one end of the member
 		*	@param NodeTwo		the name of the node at the other end of the member
-		*	@param color		the color of the member
 		*	@see	#defineMember(String, String, int, Color3f)
 		*/
 		public void defineMember(String NodeOne, String NodeTwo) throws ModelException
@@ -720,7 +709,7 @@ public class ModelPanel extends AbstractDataPanel
 		*	Defines a new linear member in the <code>StructureModel</code> by its two end nodes.
 		*	@param NodeOne		the String of the node at one end of the member
 		*	@param NodeTwo		the String of the node at the other end of the member
-		*	@param color		the color of the member
+		*	@param color		  the color of the member
 		*/
 		public void defineMember(String NodeOne, String NodeTwo, Color3f color) throws ModelException
 		{
@@ -729,7 +718,7 @@ public class ModelPanel extends AbstractDataPanel
 
 		/**
 		*	Defines a new member in the <code>StructureModel</code> by its two end nodes
-		*	 and deformation type.
+		*	 and deformation type with a default color.
 		*	@param NodeOne		the name of the node at one end of the member
 		*	@param NodeTwo		the name of the node at the other end of the member
 		*	@param type			<code>int</code> that defines the type of deformation 
@@ -742,7 +731,7 @@ public class ModelPanel extends AbstractDataPanel
 
 		/**
 		*	Defines a new member in the <code>StructureModel</code> by its two end nodes
-		*	 and deformation type.
+		*	 and deformation type with a specific color.
 		*	@param NodeOne		the node of the node at one end of the member
 		*	@param NodeTwo		the ndoe of the node at the other end of the member
 		*	@param type			<code>int</code> that defines the type of deformation this
@@ -795,9 +784,8 @@ public class ModelPanel extends AbstractDataPanel
 		}
 		
 		/**
-		 * Remove the member that links nodeone to nodetwo from the model
-		 * @param nodeone	the name of the first node in the member
-		 * @param nodetwo	the name of the second node in the member
+		 * Remove the specified member
+		 * @param member  the member index to remove (computed as nodeOne.hashCode()*nodeTwo.hashCode() )
 		 */
 		public void removeMember(int member)
 		{
@@ -810,43 +798,18 @@ public class ModelPanel extends AbstractDataPanel
 		 * @param axis		one of ModelPanel.X_AXIS, .Y_AXIS or .Z_AXIS
 		 * @return			a double of the extreme value for the specified axis
 		 */
-		
 		public double getAxisExtreme(int extreme, int axis)
 		{
-			double limit = 0.0;
-			double xlimit = 0.0;
-			double ylimit = 0.0;
-			double zlimit = 0.0;
-			Iterator<String> i = nodes.keySet().iterator();
-			while( i.hasNext() )
+			TreeSet<Double> sort = new TreeSet<Double>();
+			Iterator<String> nodeiter = model.nodes.keySet().iterator();
+			while(nodeiter.hasNext())
 			{
-				Point3d p = nodes.get(i.next()).position;
-				if( extreme == MAX )
-				{
-					xlimit = Math.max(xlimit, p.x);
-					ylimit = Math.max(ylimit, p.y);
-					zlimit = Math.max(zlimit, p.z);
-				}
-				else
-				{
-					xlimit = Math.min(xlimit, p.x);
-					ylimit = Math.min(ylimit, p.y);
-					zlimit = Math.min(zlimit, p.z);
-				}
+				double values[] = new double[3];
+				nodes.get(nodeiter.next()).getBasePosition().get(values);
+				sort.add(values[axis]);
 			}
-			if( axis == ModelPanel.X_AXIS )
-			{
-				limit = xlimit;
-			}
-			else if( axis == ModelPanel.Y_AXIS )
-			{
-				limit = ylimit;
-			}
-			else if( axis == ModelPanel.Z_AXIS )
-			{
-				limit = zlimit;
-			}
-			return limit;
+			return (sort.isEmpty() ? 0 : (extreme == MAX ? sort.last() : sort.first() ) );
+			
 		}
 		
 		/**
@@ -857,6 +820,16 @@ public class ModelPanel extends AbstractDataPanel
 		public double getHeight()
 		{ 
 			return getAxisExtreme(MAX,Z_AXIS)-getAxisExtreme(MIN,Z_AXIS);
+		}
+		
+		/**
+		 * Returns the maximum depth (y-axis parallel distance) of the model.
+		 * @return	the maximum depth (y-axis parallel distance) in the
+		 * model as a <code>double</code>
+		 */
+		public double getDepth()
+		{ 
+			return getAxisExtreme(MAX,Y_AXIS)-getAxisExtreme(MIN,Y_AXIS);
 		}
 		
 		/**
@@ -889,7 +862,7 @@ public class ModelPanel extends AbstractDataPanel
 			Point3d center = new Point3d();
 			if( center_defined )
 			{
-				center = centerpoint;
+				center.set(centerpoint);
 			}
 			else
 			{
@@ -900,13 +873,20 @@ public class ModelPanel extends AbstractDataPanel
 			return center;
 		}
 
-		/** 
-		 * Return true if the model contains a node by the given name
-		 */
+		/**
+     * Returns <code>true</code> if the model contains a node by this name.
+     * @param name the name to check for existence
+     * @return  <code>true</code> if the model contains a node by this name
+     */
 		public boolean containsNode(String name)
 		{
 			return nodes.containsKey(name);	
 		}
+		/**
+		 * Returns <code>true</code> if the model contains a node at this location.
+		 * @param p the Point3d to check for the presence of a node
+		 * @return  <code>true</code> if the model contains a node at this point
+		 */
 		public boolean containsNode(Point3d p)
 		{
 			boolean found = false;
@@ -954,7 +934,7 @@ public class ModelPanel extends AbstractDataPanel
 		* node's currently displaced position). An absolute movement changes the node's 
 		* base position to the <code>Point3d</code> supplied and zeroes its displacement.
 		*	@param index		the index of the node to move
-		* 	@param p 			the {@link Point3d} to move the node to or displace it by
+		* @param p 			the Point3d to move the node to or displace it by
 		*	@param relative 	<code>true</code> if this is a relative movement, <code>false</code> if this an absolute movement
 		*/
 		public void moveNode(String name, Point3d p, boolean relative)
@@ -1037,18 +1017,9 @@ public class ModelPanel extends AbstractDataPanel
 			int curveType;
 			Color3f color;
 
-			/** Specifies linear deformation */
 			public static final int LINEAR = 0;
-			/** Specifies cubic deformation */
 			public static final int CUBIC = 1;
 
-			/**
-			*	Constructs a member between nodes indexed by <code>one</code> and <code>two</code>.
-			*	@param one 	name of the node on one end of the member
-			*	@param two 	name of the node on the other end of the member
-			*   @param type	int that specifies type of deformation this member undergoes
-			*	@param c	color the member should be drawn in
-			*/
 			SMember(String one, String two, int type, Color3f c)
 			{
 				if( one.compareTo(two) > 0) // ensure lexographic order for later searching...
@@ -1070,7 +1041,6 @@ public class ModelPanel extends AbstractDataPanel
 		{
 			float upper, lower, middle;
 			Color3f uppercolor, lowercolor, middlecolor, failcolor;
-
 			
 			ScaleNode(String s, Point3d position, float lower, float middle, float upper, Color3f lowercolor, Color3f middlecolor, Color3f uppercolor, Color3f failcolor)
 			{
@@ -1084,6 +1054,7 @@ public class ModelPanel extends AbstractDataPanel
 				this.failcolor = failcolor;
 				
 			}
+
 			void interpolatecolor(float data)
 			{				
 				if(data>upper || data<lower) //failcolor if out of range
@@ -1099,10 +1070,10 @@ public class ModelPanel extends AbstractDataPanel
 					float alpha = 1-(data-lower)/(middle-lower);
 				//	System.out.println("Between: "+middlecolor+" and "+lowercolor+"at ratio: "+alpha );
 					this.color = new Color3f( ((1-alpha)*middlecolor.x + alpha*lowercolor.x) , ((1-alpha)*middlecolor.y + alpha*lowercolor.y) , ((1-alpha)*middlecolor.z + alpha*lowercolor.z) );
-				}
-				
+				}	
 			}
 		}
+		
 		class ModelException extends Exception
 		{
 			String errormsg;
@@ -1122,7 +1093,6 @@ public class ModelPanel extends AbstractDataPanel
 	 */
 	class SModelLoader extends JPanel
 	{
-		
 		/* The file descriptor for the model definition */
 		private File fileds;
 		private BufferedReader reader;
@@ -1164,9 +1134,10 @@ public class ModelPanel extends AbstractDataPanel
 		{
 			fileds = new File(f);
 		}
+		
 		/**
 		*  Parses the file associated with this SModelLoader and adds the described
-		*  nodes and members into the <code>StructureModel</code> associated with this
+		*  nodes and members into the StructureModel associated with this
 		*  SModelLoader.
 		*/
 		public void processModelFile()
@@ -1201,22 +1172,18 @@ public class ModelPanel extends AbstractDataPanel
 			}
 		}// end buildModel()
 
-		/**
-		 * Opens the associated file for parsing.
-		 */
+	 // open the associated file for parsing
 		private void openFile()
 		{		try{
 			reader = new BufferedReader(new FileReader(fileds));
 				}
 				catch(FileNotFoundException e)
 				{
-					
 					System.out.println("Could not find file: "+fileds.toString());
 				}
 		}
-		/**
-		 * Closes the associated file.
-		 */
+		
+		// Closes the associated file.
 		private void closeFile()
 		{
 				try{
@@ -1228,9 +1195,7 @@ public class ModelPanel extends AbstractDataPanel
 				}
 		}
 
-		/** 
-		 * Get the nodes from the model definition file
-		 */
+		// Get the nodes from the model definition file
 		private void parseNodes()
 		{
 			String name;
@@ -1295,9 +1260,7 @@ public class ModelPanel extends AbstractDataPanel
 				}
 		}
 		
-		/**
-		 * Get members from the associated file.
-		 */
+		// Get members from the associated file.
 		private void parseMembers()
 		{
 			Pattern memberpattern = Pattern.compile("([\\w]+)\\s+([\\w]+)((?:[^\\[]*)([^\\]]+)(?:\\]))?\\s*(#?[\\w]+)?");
@@ -1357,9 +1320,7 @@ public class ModelPanel extends AbstractDataPanel
 				}
 		}
 		
-		/**
-		 * Get the defined center from the associated file, if it exists.
-		 */
+		// Get the defined center from the associated file, if it exists.
 		private void parseCenter()
 		{
 			// default to calculated centerpoint
@@ -1404,10 +1365,7 @@ public class ModelPanel extends AbstractDataPanel
 				{ System.out.println("Error reading from file.");}
 		}
 		
-		/**
-		 * Parses the model definition file for stress/strain nodes and adds them to the StructureModel
-		 */
-		
+		// Parses the model definition file for stress/strain nodes and adds them to the StructureModel
 		private void parseScaleNodes()
 		{
 				try{
@@ -1426,7 +1384,7 @@ public class ModelPanel extends AbstractDataPanel
 					while(( line.length() == 0 || line.trim().charAt(0) == '#') && reader.ready())
 					{ line = reader.readLine();	} // skip '#' denoted comments and empty lines
 					Matcher sn = snpattern.matcher(line);
-					if( sn.matches())
+					if( sn.matches() )
 					{
 							try{
 						// defaults
@@ -1478,7 +1436,7 @@ public class ModelPanel extends AbstractDataPanel
 								mpanel.destroyModel();
 							}
 					}
-					else if ( line.contains("===") )
+					else if ( line.contains("===") || line.length() == 0 )
 					{ // end of section
 						done = true;
 					}
@@ -1580,8 +1538,7 @@ public class ModelPanel extends AbstractDataPanel
 								mpanel.popupError("Channel: "+mb.group(i).trim()+" does not exist. (Node: "+m1.group(1).trim()+")");
 								valid = false;
 							}
-						}
-						
+						}	
 					}
 					else if ( ma.matches() ) // just displacemet
 					{
@@ -1754,9 +1711,7 @@ public class ModelPanel extends AbstractDataPanel
 		
 		
 		// helper functions for parsing the model file
-		/**
-		 * Try to skip a number of sections, report succeed or fail.
-		 */
+		// Try to skip a number of sections, report succeed or fail.
 		private boolean advanceSections(int numsections)
 		{
 			boolean done = false;
@@ -1782,9 +1737,9 @@ public class ModelPanel extends AbstractDataPanel
 			return succeed;
 		}
 
+		// build a Poitn3d from a String: x,y,z
 		private Point3d buildPoint(String point) throws PointFormatException
 		{
-			//System.out.println("Point is:_"+point+"_");
 			// ensure this is valid format. otherwise throw exception
 			if (!point.matches("\\s*-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?\\s*"))
 			{ throw new PointFormatException("Invalid point format: ("+point+")"); }
@@ -1798,6 +1753,8 @@ public class ModelPanel extends AbstractDataPanel
 				return new Point3d(x,y,z);
 			}
 		}
+		
+		// build a Color3f from an ansi name or #xxxxxx String
 		private Color3f parseColor(String line)
 		{
 			String color ="";
@@ -1816,7 +1773,6 @@ public class ModelPanel extends AbstractDataPanel
 						System.out.println("Invalid color ("+color+") in config file, using default.");
 						c.set(Color.LIGHT_GRAY);
 					}
-			
 			}
 			else if(color.equalsIgnoreCase("blue"))
 			{	c.set(Color.BLUE); }
@@ -1844,6 +1800,8 @@ public class ModelPanel extends AbstractDataPanel
 			{ System.out.println("Invalid color ("+color+") in config file, using default."); }
 			return c;
 		}
+		
+		// get member type from String 
 		private int parseMemberType(String line)
 		{
 			int type = 0; // default to LINEAR
@@ -1865,28 +1823,32 @@ public class ModelPanel extends AbstractDataPanel
 	class ModelViewer extends JPanel
 	{
 		private SimpleUniverse suni;
-		private BranchGroup modelBranch;
-		private BranchGroup bridgeBranch;
-		private BranchGroup axesBranch;
+		
+		// branches for sync control
+		private BranchGroup modelBranch; // holds top-level TGs --> bridgeBranch
+		private BranchGroup bridgeBranch; // holds node and member branches
+		private BranchGroup axesBranch; // holds axes
 		
 		// for setting up the initial view
 		private Transform3D cameraTrans = new Transform3D();
+		private Transform3D cameraorig;
+		
 		private Transform3D modelTrans = new Transform3D();
-		private Transform3D modelorig = new Transform3D();
-		private Transform3D cameraorig = new Transform3D();
-		private Transform3D rgroupinit = new Transform3D();
+		private Transform3D modelorig;
+	
+		private Transform3D tiltzoomorig = new Transform3D();
+		private Transform3D rotatetranslateorig = new Transform3D();
 
-		private TransformGroup tgroup = new TransformGroup(); // used for initial positioning
-		private TransformGroup rgroup = new TransformGroup(); // used for local axis rotation
+		private TransformGroup modelPlacementTG = new TransformGroup(); // used for initial positioning
+		private TransformGroup rotatetranslateTG = new TransformGroup(); // used for tilt control via API methods (screen oriented)
+		private TransformGroup tiltzoomTG = new TransformGroup();  // used for mouse and most transforms via API methods (model-centered)
+
 		private MouseRotate mouseSpin = new MouseRotate();
-   		private MouseZoom mouseSize = new MouseZoom();
-   		private MouseTranslate mouseMove = new MouseTranslate();
-
-		private TransformGroup viewControlGroup = new TransformGroup();
+   	private MouseZoom mouseSize = new MouseZoom();
+   	private MouseTranslate mouseMove = new MouseTranslate();
 
 		// where the nodes live
-		//mappings of node names to nodetransforms and nodeshapes
-		 
+		//mappings of node names to nodetransforms and nodeshapes		 
 		private HashMap<String,TransformGroup> nodetransformmap;
 		private HashMap<String,Sphere> nodeshapemap;
 
@@ -1901,7 +1863,6 @@ public class ModelPanel extends AbstractDataPanel
 		private String highlightnode = "";
 		private int highlightmember = 0;
 		private Canvas3D canvas;
-		private MousePicker mpicker;
 		private PickCanvas pcanvas;
 
 
@@ -1919,95 +1880,81 @@ public class ModelPanel extends AbstractDataPanel
 			bridgeBranch = new BranchGroup();
 			bridgeBranch.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
 			bridgeBranch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-			//bridgeBranch.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-			
-			
-			//tgroup.setCapability(Group.ALLOW_CHILDREN_READ);
-		    //tgroup.setCapability(Group.ALLOW_CHILDREN_WRITE);
-		    //tgroup.setCapability(Group.ALLOW_CHILDREN_EXTEND);
-		    tgroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		    tgroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-	
-		    //rgroup.setCapability(Group.ALLOW_CHILDREN_READ);
-		    //rgroup.setCapability(Group.ALLOW_CHILDREN_WRITE);
-		    //rgroup.setCapability(Group.ALLOW_CHILDREN_EXTEND);
-		    rgroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		    rgroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-		    
-		    mouseSpin.setCapability(Behavior.ALLOW_BOUNDS_WRITE);
-		    mouseSize.setCapability(Behavior.ALLOW_BOUNDS_WRITE);
-		    mouseMove.setCapability(Behavior.ALLOW_BOUNDS_WRITE);
+			bridgeBranch.setCapability(BranchGroup.ALLOW_BOUNDS_READ);
+			bridgeBranch.setBoundsAutoCompute(true);
+		
+			tiltzoomTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+	    tiltzoomTG.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 
-		    // from java's ColorCube tutorial
+	    rotatetranslateTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+	    rotatetranslateTG.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+	    
+	    modelPlacementTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+	    modelPlacementTG.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+	    
+	    mouseSpin.setCapability(Behavior.ALLOW_BOUNDS_WRITE);
+	    mouseSize.setCapability(Behavior.ALLOW_BOUNDS_WRITE);
+	    mouseMove.setCapability(Behavior.ALLOW_BOUNDS_WRITE);
+
+	    // from java's ColorCube tutorial
 			// set up Mouse Controls for zoom/spin/rotate
 
-		    // bounds were 10000.0 ... check how big they actually need to be....? pixels?
-		    BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
+	    // bounds were 10000.0 ... check how big they actually need to be....? pixels?
+	    BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
 
-	   		//Setup and apply rotation behavior
-	   		mouseSpin.setFactor(mouseSpin.getXFactor()*0.6);
-			mouseSpin.setTransformGroup(viewControlGroup);
+   		//Setup and apply rotation behavior
+   		mouseSpin.setFactor(mouseSpin.getXFactor()*0.6);
+			mouseSpin.setTransformGroup(rotatetranslateTG);
 			modelBranch.addChild(mouseSpin);
 			mouseSpin.setSchedulingBounds(bounds);
-	   		//Setup and apply zoom behavior
-			mouseSize.setTransformGroup(viewControlGroup);
+
+			//Setup and apply zoom behavior
+			mouseSize.setTransformGroup(tiltzoomTG);
 			modelBranch.addChild(mouseSize);
 			mouseSize.setSchedulingBounds(bounds);
-	   		//Setup and apply translate behavior
-			mouseMove.setTransformGroup(viewControlGroup);
+   		//Setup and apply translate behavior
+			mouseMove.setTransformGroup(rotatetranslateTG);
 			modelBranch.addChild(mouseMove);
 			mouseMove.setSchedulingBounds(bounds);
 			
 			// nest view control groups.
-			// camera control --> z-axis rotation correction --> local mouse rotation control
-			modelBranch.addChild(viewControlGroup);
-			viewControlGroup.addChild(rgroup);
-			rgroup.addChild(tgroup);
-			tgroup.addChild(bridgeBranch);
+			// tiltzoom --> rotate --> local placement and orientation
+			modelBranch.addChild(tiltzoomTG);
+			tiltzoomTG.addChild(rotatetranslateTG);
+			rotatetranslateTG.addChild(modelPlacementTG);
+			modelPlacementTG.addChild(bridgeBranch);
 		    
-
-		    viewControlGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		    viewControlGroup.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-			viewControlGroup.getTransform(cameraorig);
-
 			canvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
-			add( "Center", canvas );
+			add(canvas,BorderLayout.CENTER );
 
 			suni = new SimpleUniverse(canvas);
 			suni.getViewingPlatform().setNominalViewingTransform();
-
+			
 			suni.addBranchGraph(modelBranch);
 			
 			// setup mouse picker
 			pcanvas = new PickCanvas(canvas,modelBranch);
-			pcanvas.setMode(PickCanvas.BOUNDS);
 			mpicker = new MousePicker(pcanvas);
-			canvas.addMouseListener(mpicker);
 			
 			nodebranch = new BranchGroup();
 			memberbranch = new BranchGroup();
-			//nodebranch.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
 			nodebranch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 			nodebranch.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
 			nodebranch.setCapability(BranchGroup.ALLOW_DETACH);
-			//memberbranch.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
 			memberbranch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 			memberbranch.setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);	
 			memberbranch.setCapability(BranchGroup.ALLOW_DETACH);
 			
 			axesBranch = createAxes();
-			axesBranch.setCapability(BranchGroup.ALLOW_DETACH);
 			
 			bridgeBranch.addChild(nodebranch);
 			bridgeBranch.addChild(memberbranch);
 			bridgeBranch.addChild(axesBranch);
-			
-			
 		} // end constructor
 
 		
 		/**
-		 * This synchronizes the mview scenegraph object with the model
+		 * This synchronizes the <code>ModelViewer</code> scenegraph object with the <code>StructureModel</code>
 		 */
 		public void sync()
 		{
@@ -2025,18 +1972,17 @@ public class ModelPanel extends AbstractDataPanel
 					float radius = (float)Math.max(model.getMaximumSize()/75.0, 0.01);
 					Sphere sphere = new Sphere(radius);
 					sphere.getShape().setCapability(Shape3D.ALLOW_GEOMETRY_WRITE);
-					//sphere.setBounds(new BoundingSphere(new Point3d(),50.0*sphere.getRadius()));
 					Appearance ap = new Appearance();
 					ap.setCapability(Appearance.ALLOW_COLORING_ATTRIBUTES_WRITE);
 					ap.setColoringAttributes(new ColoringAttributes(model.nodes.get(nextnode).color, ColoringAttributes.SHADE_FLAT));
 					sphere.setAppearance(ap);
 					TransformGroup tg = new TransformGroup();
 					tg.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-					//tg.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 					Transform3D tr = new Transform3D();
 					tr.set(new Vector3d(model.nodes.get(nextnode).position));
 					tg.setTransform(tr);
 					tg.addChild(sphere);
+           
 					nodebranch.addChild(tg);
 					nodetransformmap.put(nextnode, tg);
 					nodeshapemap.put(nextnode, sphere);
@@ -2081,7 +2027,6 @@ public class ModelPanel extends AbstractDataPanel
 					}
 					l.setCapability(GeometryArray.ALLOW_COORDINATE_READ);
 					l.setCapability(GeometryArray.ALLOW_COORDINATE_WRITE);
-					//l.setCapability(GeometryArray.ALLOW_COLOR_READ);
 					l.setCapability(GeometryArray.ALLOW_COLOR_WRITE);
 					
 					Shape3D lineShape = new Shape3D(l,lineAppearance);
@@ -2110,7 +2055,8 @@ public class ModelPanel extends AbstractDataPanel
 		
 		/**
 		 * Update the viewing platform and transform to reflect the model's new size and shape
-		 * for proper viewing and scaling.
+		 * for proper viewing and scaling. This method adjusts center and scaling, but does not
+		 * change the model's orientation onscreen. See resetScene() for that.
 		 */
 		public void viewsync()
 		{
@@ -2119,70 +2065,70 @@ public class ModelPanel extends AbstractDataPanel
 			BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 10.0*scale);
 			mouseSize.setBounds(bounds);
 			mouseSize.setSchedulingBounds(bounds);
-		    mouseSize.setFactor(scale/75);
+	    mouseSize.setFactor(scale/75);
 			mouseMove.setBounds(bounds);
 			mouseMove.setSchedulingBounds(bounds);
-		    mouseMove.setFactor(scale/100);
+	    mouseMove.setFactor(scale/100);
 			mouseSpin.setBounds(bounds);
 			mouseSpin.setSchedulingBounds(bounds);
 			
 			// update view controls rotation bases
+			// model is now upright vs. toward screen
 			modelTrans.rotX(-Math.PI*1/2);
-			// the rotation must be metered by the height of the model
-			// was 8.5 if >0, 5.5 else
-			double height = model.getHeight();
-			if( height > 0 )
-			{
-				rgroupinit.rotX(-Math.PI*0.5/16.0); 
-			}
-			else
-			{ rgroupinit.rotX(Math.PI*3.5/16.0); }
-			rgroup.setTransform(rgroupinit); // save for resetScene
-			// increase zoom factor if necessary
-			viewpanel.setZoomFactor((float)Math.max(1.0,model.getMaximumSize()/8.0f));
-
-			
-			/*
-			 * Now we have to position the model around a center location.
-			 * This is either set by the model file, or we will calculate
-			 * it based on the model's dimensions, which we have been 
-			 * tracking via model.trackSize(Point3d p)
-			*/
 			/* Translate to the center of the model. Orientation is
 			 * rotated versus screen. y <=> z
 			*/
 			// update model location
 			Point3d modelcenter = model.getCenter();
 			modelTrans.setTranslation(new Vector3d(-modelcenter.x,-modelcenter.z,modelcenter.y));
-			tgroup.setTransform(modelTrans);
-			tgroup.getTransform(modelorig); // save for resetScene
+			
+			modelPlacementTG.setTransform(modelTrans);
+			modelorig = new Transform3D(modelTrans); // save for resetScene
+					
+			// rotate the initial viewpoint based on height vs. depth
+			// tilt a low height, high depth model towards camera for better viewing
+			double height = model.getHeight();
+			double depth = model.getDepth();
+			tiltzoomorig.rotX((1.0-(depth > height ? height/depth : 1.0))*Math.PI/4.0); // prep for resetScene
+			tiltzoomTG.setTransform(tiltzoomorig); 
 			
 			// update viewingplatform location
 			// zero nodes, one node, no height, large
-			
 			Point3d eye = new Point3d();
 			double maxsize = model.getMaximumSize();
 			if( maxsize > 0 ) 
 			{
-				if( height > 0 )
+				Iterator<String> points = model.nodes.keySet().iterator();
+				double sw = (double) canvas.getWidth(); // fov is based on sw, need to scale for fov relative to screen height
+				double sh = (double) canvas.getHeight();
+				double borderFactor = 1.1;
+				double screenRatioAdjust = Math.max(1.0, sw/sh);
+				BoundingSphere b = new BoundingSphere(modelcenter,maxsize/10.0);
+				while( points.hasNext() )
 				{
-					eye.set( 0.0, height/2.0, maxsize*2.25 );
+					Point3d np = model.nodes.get(points.next()).getBasePosition();
+					b.combine(np);
 				}
-				else
-				{
-					eye.set(0.0, 0.0-maxsize , maxsize*2.25 );
-				}
-				// only reset the back clip if we have a large model
-				suni.getViewer().getView().setBackClipDistance(maxsize*3.0);
+				eye.set(0,0,b.getRadius()*borderFactor*screenRatioAdjust / Math.tan(suni.getViewer().getView().getFieldOfView()/2) );
 			}
 			else // for zero or one nodes
 			{
-				eye.set(0.0,-1.0,1.75);
+				eye.set(0.0,0,1.75);
 			}
 			
-			cameraTrans.lookAt(eye, new Point3d(0.0,0.0,0.0), new Vector3d(0,1,0));
+			// set clipping distances
+			suni.getViewer().getView().setBackClipDistance(eye.z*2);
+			suni.getViewer().getView().setFrontClipDistance(eye.z*2/500.0);
+			
+			cameraTrans.lookAt(eye, new Point3d(), new Vector3d(0,1,0));
 			cameraTrans.invert();
+			cameraorig = new Transform3D(cameraTrans);
 			suni.getViewingPlatform().getViewPlatformTransform().setTransform(cameraTrans);
+			// also take the mouse TG back to regular zoom (but leave translation/rotation as-is)
+			Transform3D delta = new Transform3D();
+			tiltzoomTG.getTransform(delta);
+			delta.setScale(1.0);
+			tiltzoomTG.setTransform(delta);
 			
 			// update axes scale
 			axesBranch.detach();
@@ -2190,7 +2136,7 @@ public class ModelPanel extends AbstractDataPanel
 			bridgeBranch.addChild(axesBranch);
 		}
 
-
+		
 		/**
 		*	Update the canvas with new values from the model
 		*	This is not optimized at all, so should only be called when there are
@@ -2202,10 +2148,9 @@ public class ModelPanel extends AbstractDataPanel
 			updateMembers();
 		}
 
-
+		
 		/**
 		 * Destroys the model currently being displayed
-		 *
 		 */
 		public void destroyModelBranch()
 		{
@@ -2221,14 +2166,19 @@ public class ModelPanel extends AbstractDataPanel
 			resetScene();
 		}
 
-
+		
 		// axes scaled by (1/32) of max_size
 		private BranchGroup createAxes()
 		{
 			double scale = (1.0/32.0)*model.getMaximumSize();
 			float label_scale = (float)((1.0/16.0)*model.getMaximumSize());
-		
+			Matrix3f matrix = new Matrix3f(1,0,0,0,1,0,0,0,1);
+			
 			BranchGroup axes = new BranchGroup();
+			Point3d mc = model.getCenter();
+			TransformGroup tg = new TransformGroup(new Transform3D(matrix,new Vector3d(mc.x,mc.y,model.getAxisExtreme(ModelPanel.MIN, ModelPanel.Z_AXIS)),1.0));
+			
+			axes.addChild(tg);
 			axes.setCapability(BranchGroup.ALLOW_DETACH);
 			axes.setCapability(Group.ALLOW_CHILDREN_WRITE);
 			axes.setCapability(Group.ALLOW_CHILDREN_READ);
@@ -2240,44 +2190,42 @@ public class ModelPanel extends AbstractDataPanel
 			x_axis.setCoordinate(1,new Point3f((float)(scale),0.0f,0.0f));
 			x_axis.setColor(0,blue);
 			x_axis.setColor(1,blue);
-			axes.addChild(new Shape3D(x_axis));
+			tg.addChild(new Shape3D(x_axis));
 		
 			LineArray y_axis = new LineArray(2,LineArray.COORDINATES|LineArray.COLOR_3);
 			y_axis.setCoordinate(0,new Point3f(0.0f,(float)(-scale),0.0f));
 			y_axis.setCoordinate(1,new Point3f(0.0f,(float)(scale),0.0f));
 			y_axis.setColor(0,blue);
 			y_axis.setColor(1,blue);
-			axes.addChild(new Shape3D(y_axis));
+			tg.addChild(new Shape3D(y_axis));
 		
 			LineArray z_axis = new LineArray(2,LineArray.COORDINATES|LineArray.COLOR_3);
 			z_axis.setCoordinate(0,new Point3f(0.0f,0.0f,(float)(-scale)));
 			z_axis.setCoordinate(1,new Point3f(0.0f,0.0f,(float)(scale)));
 			z_axis.setColor(0,blue);
 			z_axis.setColor(1,blue);
-			axes.addChild(new Shape3D(z_axis));
+			tg.addChild(new Shape3D(z_axis));
 		
 			// labels
-			Matrix3f matrix = new Matrix3f(1,0,0,0,1,0,0,0,1);
-		
 			Text2D x_label = new Text2D("x",new Color3f(1.0f,0.0f,0.0f),"SansSerif",150,java.awt.Font.BOLD);
 			x_label.setRectangleScaleFactor(x_label.getRectangleScaleFactor()*label_scale);
 			// was scale, -0.25,
 			TransformGroup xtg = new TransformGroup(new Transform3D(matrix,new Vector3d(scale,0,0),1.0));
 			xtg.addChild(x_label);
-			axes.addChild(xtg);
+			tg.addChild(xtg);
 			Text2D y_label = new Text2D("y",new Color3f(1.0f,0.0f,0.0f),"SansSerif",150,java.awt.Font.BOLD);
 			y_label.setRectangleScaleFactor(y_label.getRectangleScaleFactor()*label_scale);
 			// was -0.25,scale,
 			TransformGroup ytg = new TransformGroup(new Transform3D(matrix,new Vector3d(0,scale,0),1.0));
 			ytg.addChild(y_label);
-			axes.addChild(ytg);
+			tg.addChild(ytg);
 			Text2D z_label = new Text2D("z",new Color3f(1.0f,0.0f,0.0f),"SansSerif",150,java.awt.Font.BOLD);
 			z_label.setRectangleScaleFactor(z_label.getRectangleScaleFactor()*label_scale);
 			TransformGroup ztg = new TransformGroup();
 			Transform3D z_trans = new Transform3D(new Matrix3f(-1,0,0,0,0,-1,0,-1,0), new Vector3d(0,0,1.5*scale),1.0);
 			ztg.setTransform(z_trans);
 			ztg.addChild(z_label);
-			axes.addChild(ztg);
+			tg.addChild(ztg);
 			// turn off picking for all axes shapes
 			for (int i = 0; i < axes.numChildren() ; i++ )
 			{
@@ -2371,9 +2319,14 @@ public class ModelPanel extends AbstractDataPanel
 						curline.setColor(j,c);
 					}
 				}
-			} // end for
+			} // end while
 		}
 
+		/**
+		 * Get the <code>String</code> name for the <code>Node</code> specified
+		 * @param s the <code>Node</code> to find the name of
+		 * @return  the name of the node as a <code>String</code>
+		 */
 		public String getNodeName(Node s)
 		{
 			Iterator<String> names = nodeshapemap.keySet().iterator();
@@ -2387,6 +2340,12 @@ public class ModelPanel extends AbstractDataPanel
 			}
 			return next;
 		}
+		
+		/**
+		 * Get the <code>int</code> reference for the <code>Node</code> specified
+		 * @param s the <code>Node</code> to find the name of
+		 * @return the reference of the member as an <code>int</code>
+		 */
 		public int getMemberRef(Node s)
 		{
 			Iterator<Integer> refs = membermap.keySet().iterator();
@@ -2401,6 +2360,7 @@ public class ModelPanel extends AbstractDataPanel
 			return next;
 		}
 		
+		// rotate a point about a center point on three axes
 		private Point3d rotatePoint(Point3d p, Point3d center, Point3d rotation)
 		{
 			double xangle = rotation.x;
@@ -2420,6 +2380,7 @@ public class ModelPanel extends AbstractDataPanel
 			return p;
 		}
 		
+		// compute a Bezier point along a curve
 		private Point3d getBezPoint(double percent,Point3d end1, Point3d ctrl1, Point3d ctrl2, Point3d end2)
 		{
 			Point3d result = new Point3d();
@@ -2452,69 +2413,79 @@ public class ModelPanel extends AbstractDataPanel
 		/**
 		*	Rotates the displayed model around its own z-axis
 		*	@param degrees	the number of degrees to rotate the model
+		* @param relative whether this rotation is relative to current position or absolute (relative to initial position)
 		*/
-		public void rotateModel(float degrees)
+		public void rotateModel(float degrees, boolean relative)
 		{
-			// HOW TO GET OBJECT CENTERED ROTATION??
-			/*A:
-			 * Nested transform groups. tgroup is the initial translate to
-			 * centered postion. pgroup is the local axis rotation
-			 */
-			
-			Transform3D center = new Transform3D();
-			Transform3D delta = new Transform3D();
-			rgroup.getTransform(center);
-			delta.rotY(degrees/180*Math.PI);
-			center.mul(delta);
-			rgroup.setTransform(center);
+				Transform3D current = new Transform3D();
+				Transform3D delta = new Transform3D();
+				rotatetranslateTG.getTransform(current);
+				if( ! relative ) // if not relative, reset rotation to zero before multiply
+				{	current.rotY(0); } 
+				delta.rotY(degrees/180*Math.PI);
+				current.mul(delta);
+				rotatetranslateTG.setTransform(current);
 		}
 		
 		/**
 		*	Tilts the displayed model around its own y-axis towards the viewer
 		*	@param degrees	the number of degrees to rotate the model
+		* @param relative whether this tilt is relative to current position or absolute (relative to initial position)
 		*/
-		public void tiltModel(float degrees)
+		public void tiltModel(float degrees, boolean relative)
 		{
 			Transform3D delta = new Transform3D();
-			Transform3D camera = new Transform3D();
-			viewControlGroup.getTransform(camera);
+			Transform3D current = new Transform3D();
+			tiltzoomTG.getTransform(current);
+			if( !relative )
+			{	current.rotX(0);	}
 			delta.rotX(degrees/180f*Math.PI);
-			camera.mul(delta);
-			viewControlGroup.setTransform(camera);
+			current.mul(delta);
+			tiltzoomTG.setTransform(current);
 		}
+		
 		/**
 		*	Zooms the camera in or out
 		*	@param	depth	amount to zoom, may be positive (zoom-in) or negative (zoom out).
+		* @param relative whether this zoom is relative to current position or absolute (relative to initial position)
 		*/
-		public void zoomCamera(float depth)
+		public void zoomCamera(float factor, boolean relative)
 		{
-			Vector3d trans = new Vector3d();
-			viewControlGroup.getTransform(cameraTrans);
-			cameraTrans.get(trans);
-			trans.z = trans.z+depth;
-			cameraTrans.setTranslation(trans);
-			viewControlGroup.setTransform(cameraTrans);
+			Transform3D delta = new Transform3D();
+			tiltzoomTG.getTransform(delta);
+			if( relative )
+			{ delta.setScale(delta.getScale()*factor); }
+			else
+			{ delta.setScale(factor); }
+			tiltzoomTG.setTransform(delta);
 		}
 
 		/**
-		*	Resets the camera to its initial viewpoint, a slightly isometric view of the whole model.
+		*	Resets the camera to its initial viewpoint.
 		*/
 		public void resetScene()
 		{
-			rgroup.setTransform(rgroupinit);
-			tgroup.setTransform(modelorig);
-			viewControlGroup.setTransform(cameraorig);
+			viewsync();
+			tiltzoomTG.setTransform(tiltzoomorig);
+			modelPlacementTG.setTransform(modelorig);
+			rotatetranslateTG.setTransform(rotatetranslateorig);
+			suni.getViewingPlatform().getViewPlatformTransform().setTransform(cameraorig);
 		}
 
 		/**
 		*	Highlights the specified node in the model
-		*	@param index the index of the node to highlight
+		*	@param nodename the name of the node to highlight
 		*/
 		public void highlightNode(String nodename)
 		{
 			highlightnode = nodename;
 			updateNodes();
 		}
+		
+		/**
+	    * Highlights the specified member in the model
+	    * @param memberref the reference of the member to highlight
+	    */
 		public void highlightMember(int memberref)
 		{
 			highlightmember = memberref;
@@ -2522,16 +2493,13 @@ public class ModelPanel extends AbstractDataPanel
 		}
 
 		/**
-		*	Highlights the specified node in the model with the specified color
-		*	@param index 	the index of the node to highlight
-		*	@param c 		the {@link Color3f} to user for highlighting
+		* Set the color used to highlight nodes or members.
+		*	@param c 		the <code>Color3f</code> to user for highlighting
 		*/
-		public void highlight(String nodename, Color3f c)
+		public void setHighlightColor( Color3f c)
 		{
 			highlightcolor = c;
-			highlightNode(nodename);
 		}
-		
 	}// end ModelViewer
 	
 
@@ -2542,24 +2510,6 @@ public class ModelPanel extends AbstractDataPanel
 	*/
 	class ViewPanel extends JPanel implements ActionListener
 	{
-		/** Currently selected node index, <code>-1</code>
-		 * if no node is currently selected, otherwise
-		 * between -1 and totalnodes.
-		 */
-		String selectednode = "";
-		int selectedmember = 0;
-		
-		/** Currently selected axis, should be one of
-		 * <code>ModelPanel.X_AXIS</code>,
-		 * <code>ModelPanel.Y_AXIS</code>,
-		 * <code>ModelPanel.Z_AXIS</code>,
-		 * <code>ModelPanel.X_ROT</code>,
-		 * <code>ModelPanel.Y_ROT</code>,
-		 * <code>ModelPanel.Z_ROT</code>,
-		 * <code>ModelPanel.STR</code>
-		 */
-		int selectedaxis = -1;
-		
 		
 		private float zoom_factor = 1;
 		
@@ -2584,23 +2534,9 @@ public class ModelPanel extends AbstractDataPanel
 		private ButtonGroup editgroup			= new ButtonGroup();
 		private JMenuItem stopedit		= new JMenuItem("Leave Edit Mode");
 		
-		private JButton next_node		= new JButton(">");
-		private JButton prev_node		= new JButton("<");
-		private JButton next_axis		= new JButton(">");
-		private JButton prev_axis		= new JButton("<");
-		private JLabel	axislabel		= new JLabel("Axis: ");
-		private JLabel	nodelabel		= new JLabel("Node: ");
-		private JLabel	nodename		= new JLabel(" - ");
-		private JLabel	axisname		= new JLabel(" - ");
-		JLabel	channame				= new JLabel("--");
-		
-		private JButton left_face		= new JButton("<-|");
-		private JButton	left			= new JButton("<-");
-		private JButton right_face		= new JButton("|->");
-		private JButton	right			= new JButton("->");
-		private JLabel fifteen			= new JLabel("15°");
-		private JLabel ninety			= new JLabel("90°");
-		private JLabel spacer			= new JLabel();
+		private JButton menuzoomin = new JButton("+");
+		private JButton menuzoomout = new JButton("-");
+    
 		
 		/** reference for edit pane */
 		// should look into rebuilding this so that axis selection is replace by edit tools
@@ -2612,8 +2548,7 @@ public class ModelPanel extends AbstractDataPanel
 		 */
 		public ViewPanel()
 		{
-			BorderLayout toplevel = new BorderLayout();
-			setLayout(toplevel);
+			setLayout(new BorderLayout());
 			modelmenu.add(open);
 			modelmenu.add(close);
 			modelmenu.add(loadchans);
@@ -2621,8 +2556,8 @@ public class ModelPanel extends AbstractDataPanel
 			modelmenu.add(save);
 			modelmenu.add(savewchans);
 
-			viewmenu.add(zoomin);
-			viewmenu.add(zoomout);
+			viewmenu.add(zoomin); zoomin.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,KeyEvent.CTRL_DOWN_MASK));
+			viewmenu.add(zoomout); zoomout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,KeyEvent.CTRL_DOWN_MASK));
 			viewmenu.addSeparator();
 			viewmenu.add(frontview);
 			viewmenu.add(topview);
@@ -2647,66 +2582,16 @@ public class ModelPanel extends AbstractDataPanel
 			menubar.add(modelmenu);
 			menubar.add(viewmenu);
 			menubar.add(editmenu);
+			menubar.add(Box.createHorizontalGlue());
+			menubar.add(menuzoomin);
+			menubar.add(menuzoomout);
+      
+			
+			add(menubar,BorderLayout.NORTH);
 			add(mview, BorderLayout.CENTER);
-			
-			GridBagLayout grid = new GridBagLayout();
-			JPanel toppane = new JPanel(grid);
-			add(toppane,BorderLayout.NORTH);
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.insets = new Insets(0,1,2,1);
-			gbc.gridwidth = 8;
-			gbc.fill = GridBagConstraints.BOTH;
-			toppane.add( menubar, gbc );
-			gbc.gridy = 1;
-			gbc.gridwidth = 1;
-			gbc.fill = GridBagConstraints.NONE;
-			toppane.add( prev_node, gbc );
-			gbc.gridx = 1;
-			toppane.add( next_node, gbc );
-			gbc.gridx = 2;
-			toppane.add( nodelabel, gbc );
-			gbc.gridx = 3;
-			toppane.add( nodename, gbc );
-			gbc.gridx = 4;
-			gbc.weightx = 1.0;
-			toppane.add(spacer,gbc);
-			gbc.gridx = 5;
-			gbc.weightx = 0;
-			gbc.anchor = GridBagConstraints.BASELINE_TRAILING;
-			toppane.add(left,gbc);
-			gbc.anchor = GridBagConstraints.CENTER;
-			gbc.gridx = 6;
-			toppane.add(fifteen,gbc);
-			gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-			gbc.gridx = 7;
-			toppane.add(right,gbc);
-			// second row
-			gbc.gridx = 0;
-			gbc.gridy = 2;
-			gbc.gridwidth = 1;
-			toppane.add( prev_axis, gbc );
-			gbc.gridx = 1;
-			toppane.add( next_axis, gbc );
-			gbc.gridx = 2;
-			toppane.add( axislabel, gbc );
-			gbc.gridx = 3;
-			toppane.add( axisname, gbc );
-			gbc.gridx = 4;
-			gbc.weightx = 1.0;
-			toppane.add( channame, gbc );
-			gbc.weightx = 0;
-			gbc.gridx = 5;
-			toppane.add(left_face,gbc);
-			gbc.gridx = 6;
-			gbc.anchor = GridBagConstraints.CENTER;
-			toppane.add(ninety,gbc);
-			gbc.anchor = GridBagConstraints.BASELINE_LEADING;
-			gbc.gridx = 7;
-			toppane.add(right_face,gbc);
-			
+			editpanel = editor.getAxisPanel();
+			add(editpanel,BorderLayout.SOUTH);
+						
 			// adding listeners
 			open.addActionListener(this);
 			close.addActionListener(this);
@@ -2723,16 +2608,19 @@ public class ModelPanel extends AbstractDataPanel
 			topview.addActionListener(this);
 			cornerview.addActionListener(this);
 			deselect.addActionListener(this);
-			prev_axis.addActionListener(this);
-			next_axis.addActionListener(this);
-			prev_node.addActionListener(this);
-			next_node.addActionListener(this);
-			right.addActionListener(this);
-			left.addActionListener(this);
-			right_face.addActionListener(this);
-			left_face.addActionListener(this);
-			
+			menuzoomin.addActionListener(this);
+			menuzoomout.addActionListener(this);
 		}// end constructor
+		
+		// remove the current panel in the edit pane
+		private void cleareditpanel()
+		{
+			if( editpanel != null )
+			{
+				remove(editpanel);
+				validate();
+			}
+		}
 		
 		/**
 		*	Handles the button presses and notifies the <code>ModelViewer</code> of what to do
@@ -2744,32 +2632,41 @@ public class ModelPanel extends AbstractDataPanel
 			Object source = e.getSource();
 			if( source == close )
 			{
-					mpanel.destroyModel();
+				// reset into linking mode
+				cleareditpanel();
+				editgroup.clearSelection();
+				editpanel = editor.getAxisPanel();
+				add(editpanel,BorderLayout.SOUTH);
+				validate();
+				editor.updatescreen();
+				
+				mpanel.destroyModel();
 			}
 			else if( source == open )
 			{
-				// ensure we're not in edit mode
-				if( editpanel != null )
-				{
-					remove(editpanel);
-					editor.setMode(ModelEditor.NONE);
-					editgroup.clearSelection();
-					validate();
-				}
-				
 				// launch the file select dialog
 				JFileChooser chooser = new JFileChooser();
 				int returnVal = chooser.showOpenDialog(dataComponent);
 				if(returnVal != JFileChooser.APPROVE_OPTION) 
-				{	return;	}
+				{	return;	}  // break out if user cancels
 				File tempfile = chooser.getSelectedFile();
 				if (tempfile == null || !tempfile.isFile() || !tempfile.exists()) 
-			    {	return;	}
-				mpanel.destroyModel();
+			  {	return;	} // break out if file does not exist
+				
+				// reset into linking mode
+        cleareditpanel();
+        editgroup.clearSelection();
+        editpanel = editor.getAxisPanel();
+        add(editpanel,BorderLayout.SOUTH);
+        validate();
+        editor.updatescreen();
+				// and create new model
+        mpanel.destroyModel();
 				loader.setFile(tempfile);
 				loader.processModelFile();
 				mview.sync();
-				mview.viewsync();
+				mview.resetScene();
+				
 			}
 			else if( source == save )
 			{
@@ -2781,59 +2678,32 @@ public class ModelPanel extends AbstractDataPanel
 			}
 			else if( source == editnodes )
 			{
-				if(editpanel != null)
-				{
-					remove(editpanel);
-					validate();
-				}
+				cleareditpanel();
 				editpanel = editor.getNodePanel();
 				add(editpanel,BorderLayout.SOUTH);
 				validate();
 			}
 			else if( source == editmembers )
 			{
-				if(editpanel != null)
-				{
-					remove(editpanel);
-					validate();
-				}
+				cleareditpanel();
 				editpanel = editor.getMemberPanel();
 				add(editpanel,BorderLayout.SOUTH);
 				validate();
 			}
 			else if( source == editsnodes )
 			{
-				if(editpanel != null)
-				{
-					remove(editpanel);
-					validate();
-				}
+				cleareditpanel();
 				editpanel = editor.getScaleNodePanel();
 				add(editpanel,BorderLayout.SOUTH);
 				validate();
 			}
 			else if( source == stopedit )
 			{
+				cleareditpanel();
 				editgroup.clearSelection();
-				editor.setMode(ModelEditor.NONE);
-				remove(editpanel);
+				editpanel = editor.getAxisPanel();
+				add(editpanel,BorderLayout.SOUTH);
 				validate();
-			}
-			else if(source == left)
-			{
-				mview.rotateModel(-15);
-			}
-			else if(source == right)
-			{
-				mview.rotateModel(15);
-			}
-			else if(source == right_face)
-			{
-				mview.rotateModel(90);
-			}
-			else if(source == left_face)
-			{
-				mview.rotateModel(-90);
 			}
 			else if(source == frontview)
 			{
@@ -2842,248 +2712,237 @@ public class ModelPanel extends AbstractDataPanel
 			else if(source == topview)
 			{
 				mview.resetScene();
-				mview.tiltModel(85);
+				mview.tiltModel(90, false);
 			}
 			else if(source == cornerview)
 			{
 				mview.resetScene();
-				mview.rotateModel(-45);
-				mview.tiltModel(35);
+				mview.rotateModel(-35, false); // reset and initial modification
+				mview.tiltModel(20, true); // second modification must be relative
+				mview.zoomCamera(0.9f, true);
 			}
-			else if(source == zoomin)
+			else if(source == zoomin || source == menuzoomin)
 			{
-				mview.zoomCamera(zoom_factor);
+				mview.zoomCamera(1.1f, true);
 			}
-			else if(source == zoomout)
+			else if(source == zoomout || source == menuzoomout)
 			{
-				mview.zoomCamera(-zoom_factor);
+				mview.zoomCamera(0.9f, true);
 			}
-			// and then linking buttons
-			else if( model.nodeCount() > 0 )
+			
+			else if( source == deselect )
 			{
-				if( source == next_node)
-				{
-					if( selectednode == "" )
-					{
-						selectednode = (String)model.nodes.keySet().toArray()[0];
-					}
-					else
-					{
-						// select next, loop to beginning
-						Object[] nodearray = model.nodes.keySet().toArray();
-						boolean found = false;
-						int index;
-						for( index = 0; index < nodearray.length && !found; index++ )
-						{
-							if( nodearray[index] == selectednode)
-							{	found = true;	}
-						}
-						if(found)
-						{
-							// leavign for loop advances one further, now ensure wrap
-							index = (index)% nodearray.length;
-							selectednode = (String)nodearray[index];
-							if( selectedaxis == STR ) // check if we have Strs/Strn axis selected
-							{   // if so check if we are viewing a ScaleNode
-								if(!(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode) )
-								{ // if not, deselect axis
-									selectedaxis = -1;
-								}
-							}
-							if ( model.nodes.get(selectednode) instanceof StructureModel.ScaleNode )
-							{ // if we select a ScaleNode, make sure rotation axes are not selected
-								if (selectedaxis > 2 && selectedaxis < 6 )
-								{	selectedaxis = -1;	}
-							}
-						}
-						else
-						{
-							selectednode = "";
-							selectedaxis = -1;
-						}
-					}
-							
-				}
-				else if( source == prev_node )
-				{
-					if(selectednode == "")
-					{
-						selectednode = (String)model.nodes.keySet().toArray()[model.nodes.keySet().size()-1];
-					}
-					else
-					{
-						Object[] nodearray = model.nodes.keySet().toArray();
-						boolean found = false;
-						int index;
-						for( index = 0; index < nodearray.length && !found; index++ )
-						{
-							if( nodearray[index] == selectednode)
-							{	found = true;	}
-						}
-						if(found)
-						{
-							index = (index+nodearray.length-2)%nodearray.length;
-							selectednode = (String) nodearray[index];
-							if( selectedaxis == STR ) // check if we have Strs/Strn axis selected
-							{   // if so check if we are viewing a ScaleNode
-								if(!(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode) )
-								{ // if not, deselect axis
-									selectedaxis = -1;
-								}
-							}
-							if ( model.nodes.get(selectednode) instanceof StructureModel.ScaleNode )
-							{ // if we select a ScaleNode, make sure rotation axes are not selected
-								if (selectedaxis > Z_AXIS && selectedaxis < STR )
-								{	selectedaxis = -1;	}
-							}
-						}
-						else
-						{
-							selectednode = "";
-							selectedaxis = -1;
-						}
-					}
-				}
-				else if( source == deselect )
-				{
-					selectednode = "";
-					selectedaxis = -1;
-				}
-				else if( source == loadchans)
-				{
-					mpanel.loadchannels();
-				}
-				else if( source == next_axis)
-				{
-					if(selectednode != "")
-					{
-						if(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode)
-						{
-							do
-							{	selectedaxis = (selectedaxis+1) % 7; }
-							while (selectedaxis > 2 && selectedaxis < 6);
-						}
-						else
-						{
-							selectedaxis = (selectedaxis+1) % 6;
-						}
-					}
-				}
-				else if ( source == prev_axis)
-				{
-					if(selectednode != "")
-					{
-						if(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode)
-						{ 
-							do
-							{// wrap 6->2->1->0->6
-								selectedaxis = (selectedaxis+6) % 7;	
-							}while (selectedaxis >2 && selectedaxis < 6);
-						}
-						else
-						{	// wrap 5-->0
-							selectedaxis = (selectedaxis+5) % 6;
-						}
-					}
-				}
+				editor.deselectAll(); // deselect all
 			}
-			updatescreen();
+			else if( source == loadchans)
+			{
+				// reset into linking mode
+				cleareditpanel();
+				editgroup.clearSelection();
+				editpanel = editor.getAxisPanel();
+				add(editpanel,BorderLayout.SOUTH);
+				validate();
+				
+				mpanel.loadchannels();
+			}
 		} // end actionPerformed()
-		
-		public void selectNode( String name )
-		{
-			selectedmember = 0;
-			selectednode = name;
-		}
-		public void selectMember( int member )
-		{
-			selectednode = "";
-			selectedaxis = -1;
-			selectedmember = member;
-		}
-		
-		
-		public void updatescreen()
-		{
-			if(selectednode == "")
-			{
-				nodename.setText(" - ");
-			}
-			else
-			{
-				nodename.setText(selectednode);
-			}
-			if(selectedaxis == STR)
-			{
-				// check that we have a ScaleNode selected
-				if(!(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode))
-				{	
-					//System.out.println("Had STR on non-snode.");
-					selectedaxis = -1;
-				}
-			}
-			switch (selectedaxis)
-			{
-				case -1:
-					axisname.setText(" - ");
-					break;
-				case 0:
-					axisname.setText("X: ");
-					break;
-				case 1:
-					axisname.setText("Y: ");
-					break;
-				case 2:
-					axisname.setText("Z: ");
-					break;
-				case 3:
-					axisname.setText("X rotation: ");
-					break;
-				case 4:
-					axisname.setText("Y rotation: ");
-					break;
-				case 5:
-					axisname.setText("Z rotation: ");
-					break;
-				case 6:
-					axisname.setText("Strs/Strn: ");
-					break;
-				default:
-					axisname.setText(" - ");
-					break;
-			}
-			mview.highlightNode(selectednode);
-			mview.highlightMember(selectedmember);
-			channame.setText(mpanel.getChannel(selectednode,selectedaxis));
-		}
-		/**
-		 * Sets the zoom factor to accommodate different size structures
-		 * @ param zf		the new zoom factor
-		 */
-		public void setZoomFactor(float zf)
-		{
-			zoom_factor = zf;
-		}
-		public void reinit()
-		{
-			zoom_factor = 1.0f;
-			selectednode = "";
-			selectedaxis = -1;
-		}
 	}
 	
-	class MousePicker extends MouseAdapter
+	// controls which listeners are acting on the canvas
+	//   either for editing of linking, etc
+	class MousePicker
 	{
 		PickCanvas pcanvas;
 		JPopupMenu axismenu,nodemenu,membermenu,nconnmenu;
 		JLabel memberlabel, nodelabel, nconnlabel;
-		MenuListener mlistener;
+		MouseAdapter currentpicker;
+		
+		// node-axis picker
+		MouseAdapter napick = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				Node p = getFinalPick(e,PickResult.PRIMITIVE);
+				if( p != null )
+				{
+					editor.selectNode(mview.getNodeName(p));
+					if(!(model.nodes.get(editor.selectednode) instanceof StructureModel.ScaleNode))
+					{ // ensure stress/strain axis is not selected for non-ScaleNode
+					 	if(editor.selectedaxis == STR)
+					 	{	editor.selectedaxis = -1;	}
+					} 
+					else
+					{// also ensure rotation axes are not selected for ScaleNodes
+						if(editor.selectedaxis == X_ROT || editor.selectedaxis == Y_ROT || editor.selectedaxis == Z_ROT)
+						{ editor.selectedaxis = -1;	}
+					}
+					if (e.getButton() == MouseEvent.BUTTON3)
+					{
+						if((model.nodes.get(editor.selectednode) instanceof StructureModel.ScaleNode))
+						{
+							axismenu.getComponent(3).setEnabled(false);
+							axismenu.getComponent(4).setEnabled(false);
+							axismenu.getComponent(5).setEnabled(false);
+							axismenu.getComponent(6).setEnabled(true);
+						}
+						else
+						{
+							axismenu.getComponent(3).setEnabled(true);
+							axismenu.getComponent(4).setEnabled(true);
+							axismenu.getComponent(5).setEnabled(true);
+							axismenu.getComponent(6).setEnabled(false);
+						}
+						axismenu.show(pcanvas.getCanvas(), e.getX()+8, e.getY()+8);
+					}
+				}
+				else
+				{ // picked nothing --> deselect
+					editor.deselectAll();
+				}
+				editor.updatescreen();
+			}
+		};
+		
+		// node picker
+		MouseAdapter npick = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				Node s = getFinalPick(e,PickResult.PRIMITIVE);
+				if( s != null && !(model.nodes.get(mview.getNodeName(s)) instanceof StructureModel.ScaleNode) )
+				{
+					String name = mview.getNodeName(s);
+					editor.selectNode(name);
+					if( e.getButton() == MouseEvent.BUTTON3  )
+					{
+						nodelabel.setText(name+": "+model.nodes.get(name).getBasePosition());
+						nodemenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
+					}
+				}
+				else
+				{ // picked nothing --> deselect
+					editor.deselectAll();
+				}
+				editor.updatescreen();
+			}
+		};
+		
+		// member picker
+		MouseAdapter mpick = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				Node n = null;
+				if( !e.isShiftDown() ) // regular click --> select members
+				{
+					n = getFinalPick(e,PickResult.SHAPE3D);
+					if( n != null & mview.membermap.containsValue(n) )
+					{
+						int member = mview.getMemberRef(n);
+						editor.selectMember(member);
+						if( e.getButton() == MouseEvent.BUTTON3 )
+						{
+							memberlabel.setText(model.members.get(member).nodes[0]+" to "+model.members.get(member).nodes[1]);
+							membermenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
+						}
+					}
+				}
+				else // shift click --> select nodes
+				{
+					n = getFinalPick(e,PickResult.PRIMITIVE);
+					if( n!=null && !(model.nodes.get(mview.getNodeName(n)) instanceof StructureModel.ScaleNode) )
+					{
+						String name = mview.getNodeName(n);
+						editor.selectNode(name);
+						if( e.getButton() == MouseEvent.BUTTON3 )
+						{
+							nconnlabel.setText(name+": "+model.nodes.get(name).getBasePosition());
+							nconnmenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
+						}
+					}
+				}
+				if( n == null ) // didn't get any valid picks
+				{ editor.deselectAll();	}// deselect all
+				editor.updatescreen();
+			}
+		};
+		
+		// scale node picker
+		MouseAdapter snpick = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				Node s = getFinalPick(e,PickResult.PRIMITIVE);
+				if( s != null && (model.nodes.get(mview.getNodeName(s)) instanceof StructureModel.ScaleNode))
+				{
+					String name = mview.getNodeName(s);
+					editor.selectNode(name);
+					if( e.getButton() == 3 )
+					{
+						nodelabel.setText(name+": "+model.nodes.get(name).getBasePosition());
+						nodemenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
+					}
+				}
+				else
+				{ // picked nothing --> deselect
+					editor.deselectAll();
+				}
+				editor.updatescreen();
+			}
+		};
+		
+		// axis menu listener
+		MouseAdapter amlisten = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				editor.selectedaxis = axismenu.getComponentIndex((Component)e.getSource());
+				editor.updatescreen();
+			}
+		};
+		
+		// node menu listener
+		MouseAdapter nmlisten = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				model.removeNode(editor.selectednode);
+				mview.sync();
+				mview.viewsync();
+				editor.updatescreen();
+			}
+		};
+		
+		// member menu listener
+		MouseAdapter mmlisten = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{
+				model.removeMember(editor.selectedmember);
+				mview.sync();
+				editor.updatescreen();
+			}
+		};
+		
+		// node connection menu listener
+		MouseAdapter ncmlisten = new MouseAdapter()
+		{
+			public void mousePressed(MouseEvent e)
+			{ 
+				editor.setMemberCreationNode(nconnmenu.getComponentIndex( (Component)e.getSource() ), editor.selectednode);
+				editor.updatescreen();
+			}
+		};
+		
+		/**
+		 * Creates a new <code>MousePicker</code> for controlling picking on <code>pc</code>
+		 * @param pc  the <code>PickCanvas</code> that this <code>MousePicker</code> manages picking for.
+		 */
 		public MousePicker(PickCanvas pc)
 		{
 			this.pcanvas = pc;
 			this.pcanvas.setMode(PickTool.GEOMETRY);
 			pcanvas.setTolerance(6.0f); // 6 pixel tolerance
-			mlistener = new MenuListener();
 			axismenu = new JPopupMenu();
 			axismenu.setLightWeightPopupEnabled(false);
 			axismenu.add("X-Axis");
@@ -3096,9 +2955,8 @@ public class ModelPanel extends AbstractDataPanel
 			axismenu.getComponent(6).setEnabled(false);
 			for (int i= 0; i < axismenu.getComponentCount(); i++)
 			{
-				axismenu.getComponent(i).addMouseListener(mlistener);
+				axismenu.getComponent(i).addMouseListener(amlisten);
 			}
-			axismenu.addMouseListener(mlistener);
 			
 			nodelabel = new JLabel("<nodename> <pos>");
 			nodelabel.setFont(new Font("Sans Serif",Font.BOLD,14));
@@ -3106,11 +2964,10 @@ public class ModelPanel extends AbstractDataPanel
 			nodemenu.setLightWeightPopupEnabled(false);
 			nodemenu.add(nodelabel);
 			nodemenu.add("Remove");
-			for (int i= 0; i < nodemenu.getComponentCount(); i++)
+			for (int i= 1; i < nodemenu.getComponentCount(); i++)
 			{
-				nodemenu.getComponent(i).addMouseListener(mlistener);
+				nodemenu.getComponent(i).addMouseListener(nmlisten);
 			}
-			nodemenu.addMouseListener(mlistener);
 			
 			memberlabel = new JLabel("<A to B>");
 			memberlabel.setFont(new Font("Sans Serif",Font.BOLD,14));
@@ -3118,11 +2975,10 @@ public class ModelPanel extends AbstractDataPanel
 			membermenu.setLightWeightPopupEnabled(false);
 			membermenu.add(memberlabel);
 			membermenu.add("Remove");
-			for (int i= 0; i < membermenu.getComponentCount(); i++)
+			for (int i= 1; i < membermenu.getComponentCount(); i++)
 			{
-				membermenu.getComponent(i).addMouseListener(mlistener);
+				membermenu.getComponent(i).addMouseListener(mmlisten);
 			}
-			membermenu.addMouseListener(mlistener);
 			
 			nconnlabel = new JLabel("<nodename> <pos>");
 			nconnlabel.setFont(new Font("Sans Serif",Font.BOLD,14));
@@ -3131,211 +2987,99 @@ public class ModelPanel extends AbstractDataPanel
 			nconnmenu.add(nconnlabel);
 			nconnmenu.add("Copy to Node 1");
 			nconnmenu.add("Copy to Node 2");
-			for (int i= 0; i < nconnmenu.getComponentCount(); i++)
+			for (int i = 1; i < nconnmenu.getComponentCount(); i++)
 			{
-				nconnmenu.getComponent(i).addMouseListener(mlistener);
+				nconnmenu.getComponent(i).addMouseListener(ncmlisten);
 			}
-			nconnmenu.addMouseListener(mlistener);
 		}
 		
-		public void mousePressed(MouseEvent e)
+		/**
+		 * Update the picking mode based on the new mode
+		 * @param mode  the new mode that picking should be handled for, should be one of <code>ModelEditor.AXIS, .NODE, .MEMBER, .SNODE</code>
+		 */
+		public void updatePickMode(int mode)
+		{
+			pcanvas.getCanvas().removeMouseListener(currentpicker);
+			switch( mode )
+			{
+				case 0: // editor.AXIS
+					currentpicker = napick;
+					break;
+				case 1: // editor.NODE
+					currentpicker = npick;
+					break;
+				case 2: // editor.MEMBER:
+					currentpicker = mpick;
+					break;
+				case 3: // editor.SNODE:
+					currentpicker = snpick;
+					break;
+			}
+			pcanvas.getCanvas().addMouseListener(currentpicker);			
+		}
+		
+		// dedude the result of picking based on the type of Node requested and the mouse location
+		// from the pickAllSorted
+		private Node getFinalPick(MouseEvent e, int type )
 		{
 			pcanvas.setShapeLocation(e);
 			PickResult[] picks = pcanvas.pickAllSorted();
-			if( picks == null )
-			{ // if we pick nothing, deselect all
-				viewpanel.selectedaxis = -1;
-				viewpanel.selectednode = "";
-				mview.highlightMember(0);
-				viewpanel.updatescreen();
-			}
-			else if ( editor.getMode() == ModelEditor.NONE)
-			{ // if not editing, run axis selection menu
-				int index = 0;
-				Node p = picks[0].getNode(PickResult.PRIMITIVE);
+			Node p = null;
+			if( picks != null )
+			{
+				int index = 1;
+				p = picks[0].getNode(type);
 				while(p == null && index < picks.length )
-				{  // find the closest PRIMITIVE (Sphere)
-					index ++;
-					p = picks[index].getNode(PickResult.PRIMITIVE);
-				}
-				
-				if ( p != null ) // found no PRIMITIVES --> selected nothing meaningful for this mode
-				{
-					viewpanel.selectNode(mview.getNodeName(p));
-					if(!(model.nodes.get(viewpanel.selectednode) instanceof StructureModel.ScaleNode))
-					{ // ensure stress/strain axis is not selected for non-ScaleNode
-					 	if(viewpanel.selectedaxis == STR)
-					 	{	viewpanel.selectedaxis = -1;	}
-					} 
-					else
-					{// also ensure rotation axes are not selected for ScaleNodes
-						if(viewpanel.selectedaxis == X_ROT || viewpanel.selectedaxis == Y_ROT || viewpanel.selectedaxis == Z_ROT)
-						{ viewpanel.selectedaxis = -1;	}
-					}
-				}
-				if (e.getButton() == MouseEvent.BUTTON3)
-				{
-					if((model.nodes.get(viewpanel.selectednode) instanceof StructureModel.ScaleNode))
-					{
-						axismenu.getComponent(3).setEnabled(false);
-						axismenu.getComponent(4).setEnabled(false);
-						axismenu.getComponent(5).setEnabled(false);
-						axismenu.getComponent(6).setEnabled(true);
-					}
-					else
-					{
-						axismenu.getComponent(3).setEnabled(true);
-						axismenu.getComponent(4).setEnabled(true);
-						axismenu.getComponent(5).setEnabled(true);
-						axismenu.getComponent(6).setEnabled(false);
-					}
-					axismenu.show(pcanvas.getCanvas(), e.getX()+8, e.getY()+8);
-				}
-			}
-			else if( editor.getMode()  == ModelEditor.MEMBER )
-			{
-				if( !e.isShiftDown() ) // regular click --> select members
-				{
-					int index = 0;
-					Node s = picks[0].getNode(PickResult.SHAPE3D);
-					while(s == null && index < picks.length )
-					{  // find the closest Shape3D (LineStripArray)
-						s = picks[index].getNode(PickResult.SHAPE3D);
-						index ++;
-					}
-					if( s != null && mview.membermap.containsValue(s) )
-					{
-						int member = mview.getMemberRef(s);
-						viewpanel.selectMember(member);
-						if( e.getButton() == MouseEvent.BUTTON3 )
-						{
-							memberlabel.setText(model.members.get(member).nodes[0]+" to "+model.members.get(member).nodes[1]);
-							membermenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
-						}
-					}
-				}
-				else // shift click --> select nodes
-				{
-					int index = 0;
-					Node p = picks[0].getNode(PickResult.PRIMITIVE);
-					while(p == null && index < picks.length )
-					{  // find the closest PRIMITIVE (Sphere)
-						p = picks[index].getNode(PickResult.PRIMITIVE);
-						index ++;
-					}
-					
-					if( p!=null && !(model.nodes.get(mview.getNodeName(p)) instanceof StructureModel.ScaleNode) )
-					{
-						String name = mview.getNodeName(p);
-						viewpanel.selectNode(name);
-						if( e.getButton() == MouseEvent.BUTTON3 )
-						{
-							nconnlabel.setText(name+": "+model.nodes.get(name).getBasePosition());
-							nconnmenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
-						}
-					}
-				}
-			}
-			else if( editor.getMode() == ModelEditor.NODE )
-			{
-				int index = 0;
-				Node s = picks[0].getNode(PickResult.PRIMITIVE);
-				while(s == null && index < picks.length )
-				{  // find the closest PRIMITIVE (Sphere)
-					s = picks[index].getNode(PickResult.PRIMITIVE);
+				{  // find the closest Node of requested type
+					p = picks[index].getNode(type);
 					index ++;
 				}
-				if( s != null && mview.nodeshapemap.containsValue(s) )
-				{
-					String name = mview.getNodeName(s);
-					viewpanel.selectNode(name);
-					if( e.getButton() == MouseEvent.BUTTON3 && !(model.nodes.get(name) instanceof StructureModel.ScaleNode) )
-					{
-						nodelabel.setText(name+": "+model.nodes.get(name).getBasePosition());
-						nodemenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
-					}
-				}
 			}
-			else if( editor.getMode() == ModelEditor.SNODE )
-			{
-				int index = 0;
-				Node s = picks[0].getNode(PickResult.PRIMITIVE);
-				while(s == null && index < picks.length )
-				{  // find the closest PRIMITIVE (Sphere)
-					s = picks[index].getNode(PickResult.PRIMITIVE);
-					index ++;
-				}
-				if( s != null && (model.nodes.get(mview.getNodeName(s)) instanceof StructureModel.ScaleNode))
-				{
-					String name = mview.getNodeName(s);
-					viewpanel.selectNode(name);
-					if( e.getButton() == 3 )
-					{
-						nodelabel.setText(name+": "+model.nodes.get(name).getBasePosition());
-						nodemenu.show(pcanvas.getCanvas(),e.getX()+8,e.getY()+8);
-					}
-				}
-			}
-				 
-			viewpanel.updatescreen(); 
-		}
-	
-		private class MenuListener extends MouseAdapter
-		{
-			public void mousePressed(MouseEvent e)
-			{
-				int curmode = editor.getMode();
-				if( curmode == ModelEditor.NONE )
-				{
-					viewpanel.selectedaxis = axismenu.getComponentIndex((Component)e.getSource());
-				}
-				else if( curmode == ModelEditor.NODE || curmode == ModelEditor.SNODE )
-				{
-					if( ((JMenuItem)e.getSource()).getText() == "Remove" )
-					{
-						// remove selected node
-						// based on .... viewpanel.selectednode, make sure its set!
-						//System.out.println("Removing Node: "+viewpanel.selectednode);
-						model.removeNode(viewpanel.selectednode);
-						mview.sync();
-					}
-				}
-				else if( curmode == ModelEditor.MEMBER )
-				{
-					String text = ((JMenuItem)e.getSource()).getText();
-					if(  text == "Remove" )
-					{
-						// remove selectedmember
-						//System.out.println("Removing Member: "+model.members.get(viewpanel.selectedmember).nodes[0]+" to "+model.members.get(viewpanel.selectedmember).nodes[1]);
-						model.removeMember(viewpanel.selectedmember);
-						mview.sync();
-					}
-					else if( text == "Copy to Node 1")
-					{
-						//System.out.println("Copy to node1");
-						editor.setSelectedNode(1, viewpanel.selectednode);
-					}
-					else if( text == "Copy to Node 2")
-					{
-						//System.out.println("Copy to node2");
-						editor.setSelectedNode(2, viewpanel.selectednode);
-					}
-				}		
-			viewpanel.updatescreen();
-			}	
+			return p;
 		}
 	}
 	
+	/**
+	 * This class manages the editing of live models in the panel.
+	 */
 	class ModelEditor implements ActionListener
 	{
+		/* Currently selected node index, <code>-1</code>
+		 * if no node is currently selected, otherwise
+		 * between -1 and totalnodes.
+		 */
+		String selectednode = "";
+		int selectedmember = 0;
+		
+		/* Currently selected axis, should be one of
+		 * <code>ModelPanel.X_AXIS</code>,
+		 * <code>ModelPanel.Y_AXIS</code>,
+		 * <code>ModelPanel.Z_AXIS</code>,
+		 * <code>ModelPanel.X_ROT</code>,
+		 * <code>ModelPanel.Y_ROT</code>,
+		 * <code>ModelPanel.Z_ROT</code>,
+		 * <code>ModelPanel.STR</code>
+		 * or -1 if none selected
+		 */
+		int selectedaxis = -1;
+		
 		// mode indices
-		public static final int NONE = 0,
+		public static final int AXIS = 0,
 								NODE = 1,
 								MEMBER = 2,
 								SNODE = 3;
-		private int mode = NONE;
-		private JPanel nodepane, memberpane, snodepane;
+		private int mode = AXIS;
+		private JPanel axispane, nodepane, memberpane, snodepane;
 		private JButton addnode, addmember, addscalenode;
+		private JButton next_node		= new JButton(">");
+		private JButton prev_node		= new JButton("<");
+		private JButton next_axis		= new JButton(">");
+		private JButton prev_axis		= new JButton("<");
+		private JButton left_face		= new JButton("<-|");
+		private JButton	left			= new JButton("<-");
+		private JButton right_face		= new JButton("|->");
+		private JButton	right			= new JButton("->");
+		
 		private JTextField 	nodename, xpos, ypos,zpos,
 							snname, snxpos, snypos, snzpos,
 							snlowerval, snmiddleval, snupperval;
@@ -3343,6 +3087,9 @@ public class ModelPanel extends AbstractDataPanel
 							membercolor, 
 							snlowercolor, snmiddlecolor, snuppercolor, snfailcolor;
 		private JLabel p1,p2;
+		private JLabel	apnodename		= new JLabel(" - ");
+		private JLabel	apaxisname		= new JLabel(" - ");
+		private JLabel	apchanname		= new JLabel("--");
 		private Vector<String> basecolors;
 		
 		public ModelEditor()
@@ -3360,6 +3107,76 @@ public class ModelPanel extends AbstractDataPanel
 			basecolors.add("white");
 			basecolors.add("gray");
 			
+			// axispane
+			JLabel	axislabel = new JLabel("Axis: ");
+			JLabel	nodelabel = new JLabel("Node: ");
+			JLabel fifteen = new JLabel("15°");
+			JLabel ninety = new JLabel("90°");
+			JLabel spacer = new JLabel();
+			
+			axispane = new JPanel(grid);
+			c.anchor = GridBagConstraints.LINE_START;
+			c.gridx = 0;
+			c.gridy = 0;
+			c.insets = new Insets(2,2,2,2);
+			c.gridwidth = 8;
+			c.fill = GridBagConstraints.BOTH;
+			c.gridy = 1;
+			c.gridwidth = 1;
+			c.fill = GridBagConstraints.NONE;
+			axispane.add( prev_node, c );
+			c.gridx = 1;
+			axispane.add( next_node, c );
+			c.gridx = 2;
+			axispane.add( nodelabel, c );
+			c.gridx = 3;
+			axispane.add( apnodename, c );
+			c.gridx = 4;
+			c.weightx = 1.0;
+			axispane.add(spacer,c);
+			c.gridx = 5;
+			c.weightx = 0;
+			c.anchor = GridBagConstraints.LINE_END;
+			axispane.add(left,c);
+			c.anchor = GridBagConstraints.CENTER;
+			c.gridx = 6;
+			axispane.add(fifteen,c);
+			c.anchor = GridBagConstraints.LINE_START;
+			c.gridx = 7;
+			axispane.add(right,c);
+			// second row
+			c.gridx = 0;
+			c.gridy = 2;
+			c.gridwidth = 1;
+			axispane.add( prev_axis, c );
+			c.gridx = 1;
+			axispane.add( next_axis, c );
+			c.gridx = 2;
+			axispane.add( axislabel, c );
+			c.gridx = 3;
+			axispane.add( apaxisname, c );
+			c.gridx = 4;
+			c.weightx = 1.0;
+			axispane.add( apchanname, c );
+			c.weightx = 0;
+			c.gridx = 5;
+			axispane.add(left_face,c);
+			c.gridx = 6;
+			c.anchor = GridBagConstraints.CENTER;
+			axispane.add(ninety,c);
+			c.anchor = GridBagConstraints.LINE_END;
+			c.gridx = 7;
+			axispane.add(right_face,c);
+			prev_axis.addActionListener(this);
+			next_axis.addActionListener(this);
+			prev_node.addActionListener(this);
+			next_node.addActionListener(this);
+			right.addActionListener(this);
+			left.addActionListener(this);
+			right_face.addActionListener(this);
+			left_face.addActionListener(this);
+			
+			
 			// nodepane fields
 			nodepane = new JPanel(grid);
 			addnode	= new JButton(" Add ");
@@ -3371,10 +3188,9 @@ public class ModelPanel extends AbstractDataPanel
 			xpos	= new JTextField(6); xpos.setText("0");
 			ypos	= new JTextField(6); ypos.setText("0");
 			zpos	= new JTextField(6); zpos.setText("0");
-			nodecolor = new JComboBox(basecolors); nodecolor.setEditable(true); nodecolor.setLightWeightPopupEnabled(false);
+			nodecolor = new JComboBox(basecolors); nodecolor.setLightWeightPopupEnabled(false);
 			
 			// layout of nodepane
-			c.insets = new Insets(1,1,1,1);
 			c.fill = GridBagConstraints.NONE;
 			c.anchor = GridBagConstraints.LINE_START;
 			c.gridy = 0;
@@ -3421,9 +3237,9 @@ public class ModelPanel extends AbstractDataPanel
 			p1   = new JLabel("(-,-,-)");
 			p2   = new JLabel("(-,-,-)");
 			JLabel typecolorlabel	= new JLabel("Type/Color:");
-			node1		= new JComboBox(new Vector<String>(mpanel.model.nodes.keySet()));
+			node1		= new JComboBox();
 			node1.addActionListener(this); node1.setLightWeightPopupEnabled(false);
-			node2		= new JComboBox(new Vector<String>(mpanel.model.nodes.keySet()));
+			node2		= new JComboBox();
 			node2.addActionListener(this); node2.setLightWeightPopupEnabled(false);
 			String[] curves = {"Linear","Cubic"};
 			type		= new JComboBox(curves);
@@ -3532,10 +3348,10 @@ public class ModelPanel extends AbstractDataPanel
 			snodepane.add(snupperval,c);
 			c.gridy = 3;
 			c.gridx = 0;
-			c.weightx = 0.1;
 			c.fill = GridBagConstraints.NONE;
 			snodepane.add(sncolorlabel,c);
 			c.fill = GridBagConstraints.HORIZONTAL;
+			c.weightx = 0.1;
 			c.gridx = 1;
 			snodepane.add(snlowercolor,c);
 			c.gridx = 2;
@@ -3552,6 +3368,20 @@ public class ModelPanel extends AbstractDataPanel
 			snodepane.add(addscalenode,c);
 		}
 		
+		/**
+		 * Gets the <code>JPanel</code> for axis linking
+		 * @return  a <code>JPanel</code> for axis linking
+		 */
+		public JPanel getAxisPanel()
+		{
+			setMode(AXIS);
+			return axispane;
+		}
+    
+    /**
+     * Gets the <code>JPanel</code> for node editing
+     * @return  a <code>JPanel</code> for node editing
+     */
 		public JPanel getNodePanel()
 		{
 			setMode(NODE);
@@ -3559,25 +3389,35 @@ public class ModelPanel extends AbstractDataPanel
 			return nodepane;
 		}
 		
+    /**
+     * Gets the <code>JPanel</code> for member editing
+     * @return  a <code>JPanel</code> for member editing
+     */
 		public JPanel getMemberPanel()
 		{
 			setMode(MEMBER);
-			node1.setModel(new DefaultComboBoxModel((new Vector<String>(mpanel.model.nodes.keySet()))));
-			node2.setModel(new DefaultComboBoxModel(new Vector<String>(mpanel.model.nodes.keySet())));
-			
+			Vector<String> nodes = new Vector<String>(mpanel.model.nodes.keySet());
+			Iterator<String> iter = nodes.iterator();
+			while( iter.hasNext() )
+			{
+				if( mpanel.model.nodes.get(iter.next()) instanceof StructureModel.ScaleNode )
+				{	iter.remove();	} // remove scale nodes
+			}
+			node1.setModel(new DefaultComboBoxModel(nodes));
+			node2.setModel(new DefaultComboBoxModel(nodes));
 			// fill in position labels
 			if( !model.nodes.isEmpty())
 			{
-				StructureModel.SNode s = model.nodes.get(node1.getSelectedItem().toString());
-				Point3d p = s.getBasePosition();
-				p1.setText(p.toString());
-				s = model.nodes.get(node2.getSelectedItem().toString());
-				p = s.getBasePosition();
-				p2.setText(p.toString());
+				setMemberCreationNode(1,node1.getSelectedItem().toString());
+				setMemberCreationNode(2,node2.getSelectedItem().toString());
 			}
 			return memberpane;
 		}
 		
+    /**
+     * Gets the <code>JPanel</code> for stress/strain node editing
+     * @return  a <code>JPanel</code> for stress/strain node editing
+     */
 		public JPanel getScaleNodePanel()
 		{
 			setMode(SNODE);
@@ -3585,28 +3425,97 @@ public class ModelPanel extends AbstractDataPanel
 			return snodepane;
 		}
 		
+		/**
+		 * Selects a node in the model for actions
+		 * @param name  the name of the node to select
+		 */
+		public void selectNode( String name )
+		{
+			selectedmember = 0;
+			selectednode = name;
+		}
+		
+		/**
+		 * Selects a member in the model for actions
+		 * @param member  the reference of the member to select
+		 */
+		public void selectMember( int member )
+		{
+			selectednode = "";
+			selectedaxis = -1;
+			selectedmember = member;
+		}
+		
+		/**
+		 * Deselects any selected nodes, members or axes in the model.
+		 */
+		public void deselectAll()
+		{
+		  selectednode = "";
+		  selectedaxis = -1;
+		  selectedmember = 0;
+		}
+		
+		/**
+		 * Sets the editing mode.
+		 * @param mode  Should be one of <code>ModelEditor.AXIS, .NODE, .MEMBER, .SNODE</code>.
+		 */
 		public void setMode(int mode)
 		{
 			
 			if ( this.mode == MEMBER || mode == MEMBER )
 			{ // if we are leaving or entering MEMBER mode:
 				Iterator<Shape3D> iter = mview.membermap.values().iterator();
-				//System.out.println("Setting members pickable: "+(mode==MEMBER));
 				while( iter.hasNext() )
 				{
 					Shape3D n = iter.next();
 					n.setPickable((mode == MEMBER)); // set members pickable/not  
 				}
 			}
-			viewpanel.selectNode(""); // deselect everything
+			mpicker.updatePickMode(mode);
+			deselectAll(); // deselect everything
+			mview.sync();   // update model for highlighting
+			updatescreen(); // update text in panels
+			if( (this.mode == MEMBER || this.mode == NODE || this.mode == SNODE) && mode == AXIS)
+			{
+			  // prompt to save on leaving edit mode
+			  Object[] options  = {"Save","Save with channels","No"};
+			  int n = JOptionPane.showOptionDialog(
+			      dataComponent,
+			      "Would you like to save the edited model?",
+			      "Save Model?",
+			      JOptionPane.DEFAULT_OPTION, // option type
+			      JOptionPane.QUESTION_MESSAGE,
+			      null, // icon
+			      options,
+			      options[2]);
+			  if(n == 0)
+			  {
+			    saveModel();
+			  }
+			  else if( n == 1)
+			  {
+			    saveModel(true);
+			  }
+			}
 			this.mode = mode;
 		}
+		
+		/**
+		 * Returns the current editing mode.
+		 * @return  an <code>int</code> representing the current editing mode.
+		 */
 		public int getMode()
 		{
 			return mode;
 		}
 		
-		public void setSelectedNode(int which, String name)
+		/**
+		 * Sets the member editing panel's node selection box to the specified node.
+		 * @param which which member editing panel node field to select in. Either 1 or 2.
+		 * @param name  the name of the node to set as selected
+		 */
+		public void setMemberCreationNode(int which, String name)
 		{
 			if ( which == 1 )
 			{
@@ -3620,6 +3529,72 @@ public class ModelPanel extends AbstractDataPanel
 			}
 		}
 		
+		/**
+		 * Sets the axis linking panel's channel name
+		 * @param chan  the name of the channel to set
+		 */
+		public void setChanName( String chan )
+		{
+			apchanname.setText(chan);
+		}
+		
+		/**
+		 * Updates the editing panel with most current selections/actions.
+		 */
+		public void updatescreen()
+		{
+			if(selectednode == "")
+			{
+				apnodename.setText(" - ");
+			}
+			else
+			{
+				apnodename.setText(selectednode);
+			}
+			if(selectedaxis == STR)
+			{
+				// check that we have a ScaleNode selected
+				if(!(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode))
+				{	
+					selectedaxis = -1;
+				}
+			}
+			switch (selectedaxis)
+			{
+				case -1:
+					apaxisname.setText(" - ");
+					break;
+				case 0:
+					apaxisname.setText("X: ");
+					break;
+				case 1:
+					apaxisname.setText("Y: ");
+					break;
+				case 2:
+					apaxisname.setText("Z: ");
+					break;
+				case 3:
+					apaxisname.setText("X rotation: ");
+					break;
+				case 4:
+					apaxisname.setText("Y rotation: ");
+					break;
+				case 5:
+					apaxisname.setText("Z rotation: ");
+					break;
+				case 6:
+					apaxisname.setText("Strs/Strn: ");
+					break;
+				default:
+					apaxisname.setText(" - ");
+					break;
+			}
+			mview.highlightNode(selectednode);
+			mview.highlightMember(selectedmember);
+			apchanname.setText(mpanel.getChannel(selectednode,selectedaxis));
+		}
+		
+		// find the next unused numbered name of the base name in the model
 		private String findNext(String name)
 		{
 			int count = 1;
@@ -3630,9 +3605,11 @@ public class ModelPanel extends AbstractDataPanel
 			return name+count;
 		}
 		
+		// override for implementing ActionListener
 		public void actionPerformed(ActionEvent e)
 		{
-			if( e.getSource() == addnode )
+			Object source = e.getSource();
+			if( source == addnode )
 			{
 					try
 					{
@@ -3642,6 +3619,7 @@ public class ModelPanel extends AbstractDataPanel
 				mpanel.model.addNode(name,point,color);
 				mview.sync();
 				mview.viewsync();
+				//mview.resetScene(); // back to front view
 				mview.update();
 				nodename.setText(findNext("node"));
 					}
@@ -3654,13 +3632,12 @@ public class ModelPanel extends AbstractDataPanel
 						popupError(ex.errorline);
 					}
 			}
-			else if( e.getSource() == addmember )
+			else if( source == addmember )
 			{
 					try
 					{
 				mpanel.model.defineMember((String)node1.getSelectedItem(),(String)node2.getSelectedItem(),(Integer)type.getSelectedIndex(),loader.parseColor((String)membercolor.getSelectedItem()));
 				mview.sync();
-				mview.viewsync();
 				mview.update();
 					}
 					catch (StructureModel.ModelException ex)
@@ -3668,7 +3645,7 @@ public class ModelPanel extends AbstractDataPanel
 						popupError(ex.errormsg);
 					}
 			}
-			else if( e.getSource() == addscalenode )
+			else if( source == addscalenode )
 			{
 					try
 					{
@@ -3684,6 +3661,7 @@ public class ModelPanel extends AbstractDataPanel
 				mpanel.model.addScaleNode(name, point, low, mid, high, lowc, midc, highc, failc);
 				mview.sync();
 				mview.viewsync();
+				//mview.resetScene(); // back to front view
 				mview.update();
 				snname.setText(findNext("snode"));
 					}
@@ -3700,24 +3678,158 @@ public class ModelPanel extends AbstractDataPanel
 						popupError("Invalid threshold value.");
 					}
 			}
-			else if( e.getSource() == node1 )
+			else if( source == node1 )
 			{
-				//System.out.println("Selected: "+ node1.getSelectedItem() );
 				StructureModel.SNode s = model.nodes.get(node1.getSelectedItem().toString());
 				Point3d p = s.getBasePosition();
 				p1.setText(p.toString());
 			}
-			else if( e.getSource() == node2 )
+			else if( source == node2 )
 			{
 				StructureModel.SNode s = model.nodes.get(node2.getSelectedItem().toString());
 				Point3d p = s.getBasePosition();
 				p2.setText(p.toString());
 			}
-			
+			else if(source == left)
+			{
+				mview.rotateModel(-15, true);
+			}
+			else if(source == right)
+			{
+				mview.rotateModel(15, true);
+			}
+			else if(source == right_face)
+			{
+				mview.rotateModel(90, true);
+			}
+			else if(source == left_face)
+			{
+				mview.rotateModel(-90, true);
+			}
+			// and then linking buttons
+			else if( model.nodeCount() > 0 )
+			{
+				if( source == next_node)
+				{
+					if( selectednode == "" )
+					{
+						selectednode = (String)model.nodes.keySet().toArray()[0];
+					}
+					else
+					{
+						// select next, loop to beginning
+						Object[] nodearray = model.nodes.keySet().toArray();
+						boolean found = false;
+						int index;
+						for( index = 0; index < nodearray.length && !found; index++ )
+						{
+							if( nodearray[index] == selectednode)
+							{	found = true;	}
+						}
+						if(found)
+						{
+							// leavign for loop advances one further, now ensure wrap
+							index = (index)% nodearray.length;
+							selectednode = (String)nodearray[index];
+							if( selectedaxis == STR ) // check if we have Strs/Strn axis selected
+							{   // if so check if we are viewing a ScaleNode
+								if(!(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode) )
+								{ // if not, deselect axis
+									selectedaxis = -1;
+								}
+							}
+							if ( model.nodes.get(selectednode) instanceof StructureModel.ScaleNode )
+							{ // if we select a ScaleNode, make sure rotation axes are not selected
+								if (selectedaxis > 2 && selectedaxis < 6 )
+								{	selectedaxis = -1;	}
+							}
+						}
+						else
+						{
+							selectednode = "";
+							selectedaxis = -1;
+						}
+					}	
+				}
+				else if( source == prev_node )
+				{
+					if(selectednode == "")
+					{
+						selectednode = (String)model.nodes.keySet().toArray()[model.nodes.keySet().size()-1];
+					}
+					else
+					{
+						Object[] nodearray = model.nodes.keySet().toArray();
+						boolean found = false;
+						int index;
+						for( index = 0; index < nodearray.length && !found; index++ )
+						{
+							if( nodearray[index] == selectednode)
+							{	found = true;	}
+						}
+						if(found)
+						{
+							index = (index+nodearray.length-2)%nodearray.length;
+							selectednode = (String) nodearray[index];
+							if( selectedaxis == STR ) // check if we have Strs/Strn axis selected
+							{   // if so check if we are viewing a ScaleNode
+								if(!(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode) )
+								{ // if not, deselect axis
+									selectedaxis = -1;
+								}
+							}
+							if ( model.nodes.get(selectednode) instanceof StructureModel.ScaleNode )
+							{ // if we select a ScaleNode, make sure rotation axes are not selected
+								if (selectedaxis > Z_AXIS && selectedaxis < STR )
+								{	selectedaxis = -1;	}
+							}
+						}
+						else
+						{
+							selectednode = "";
+							selectedaxis = -1;
+						}
+					}
+				}
+				else if( source == next_axis)
+				{
+					if(selectednode != "")
+					{
+						if(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode)
+						{
+							do
+							{	selectedaxis = (selectedaxis+1) % 7; }
+							while (selectedaxis > 2 && selectedaxis < 6);
+						}
+						else
+						{
+							selectedaxis = (selectedaxis+1) % 6;
+						}
+					}
+				}
+				else if ( source == prev_axis)
+				{
+					if(selectednode != "")
+					{
+						if(model.nodes.get(selectednode) instanceof StructureModel.ScaleNode)
+						{ 
+							do
+							{// wrap 6->2->1->0->6
+								selectedaxis = (selectedaxis+6) % 7;	
+							}while (selectedaxis >2 && selectedaxis < 6);
+						}
+						else
+						{	// wrap 5-->0
+							selectedaxis = (selectedaxis+5) % 6;
+						}
+					}
+				}
+				updatescreen();
+			}
 		}
-
 	}
 	
+	// helper class for realtime data mapping
 	class NodeAxisPair
 	{
 		String nodename;
@@ -3728,6 +3840,7 @@ public class ModelPanel extends AbstractDataPanel
 			axis = a;
 		}
 	}
+	// helper class for exception handling
 	class PointFormatException extends Exception
 	{
 		private String errorline;
