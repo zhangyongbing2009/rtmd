@@ -52,7 +52,7 @@ import java.awt.event.MouseEvent;
 import javax.vecmath.*;
 import javax.media.j3d.*;
 import javax.media.j3d.BoundingSphere;
-import javax.swing.Box;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -199,26 +199,44 @@ public class ModelPanel extends AbstractDataPanel
 		// add an MotionNode to the set
 		unlink(node,axis);
 		link(node,axis,channelname);
-		// maybe editor.updatescreen() but not setChanName....
-		// editor.setChanName(channelname);
-		
-		
+  	editor.updatescreen();
 	}
 	
 	/* link the index and axis to the given channel name*/
-	private void link(String node, int axis, String channelname)
+	protected void link(String node, int axis, String channelname)
 	{
 		actionLinks.get(channelname).add(new NodeAxisPair(node,axis));
 	}
 	/* unlink any channels from the given index/axis pair*/
-	private void unlink(String node, int axis)
+	protected void unlink(String node, int axis)
 	{
 		String cname = getChannel(node,axis);
 		if(cname != "--")
 		{
-			actionLinks.get(cname).remove(new NodeAxisPair(node,axis));
+		  Iterator<NodeAxisPair> napairs = actionLinks.get(cname).iterator();
+		  while(napairs.hasNext())
+		  {
+		    NodeAxisPair next = napairs.next();
+		    if(next.axis == axis && next.nodename.equals(node))
+		    {
+		      napairs.remove();
+		    }
+		  }
 		}
 	}
+	
+	/* 
+	 * Check if the channel has any links, unsubscribe if none.
+	 */
+	protected void checkLinks(String channelname)
+	{
+	  if( !channelname.equals("--") && actionLinks.get(channelname).isEmpty() )
+	  {
+	    super.removeChannel(channelname);
+	    // this will unsubscribe and then call channelRemoved (remove from actionLinks)
+	  }
+	}
+	
 	/**
 	 * Overridden from AbstractDataPanel to do extra work.
 	 * Unlinks a channel from all node and axes with which it may be associated.
@@ -226,7 +244,7 @@ public class ModelPanel extends AbstractDataPanel
 	protected void channelRemoved(String channelname)
 	{
 		actionLinks.remove(channelname);
-		editor.setChanName(channelname);
+		editor.updatescreen();
 	}
 	
 	/**
@@ -1175,7 +1193,14 @@ public class ModelPanel extends AbstractDataPanel
 	 // open the associated file for parsing
 		private void openFile()
 		{		try{
-			reader = new BufferedReader(new FileReader(fileds));
+		  if(fileds != null)
+		  {
+		    reader = new BufferedReader(new FileReader(fileds));  
+		  }
+		  else
+		  {
+		    System.out.println("No model file to load channels from");
+		  }
 				}
 				catch(FileNotFoundException e)
 				{
@@ -1187,7 +1212,8 @@ public class ModelPanel extends AbstractDataPanel
 		private void closeFile()
 		{
 				try{
-			reader.close();
+			if( reader != null )
+			{   reader.close();  }
 				}
 				catch(IOException e)
 				{
@@ -1263,7 +1289,7 @@ public class ModelPanel extends AbstractDataPanel
 		// Get members from the associated file.
 		private void parseMembers()
 		{
-			Pattern memberpattern = Pattern.compile("([\\w]+)\\s+([\\w]+)((?:[^\\[]*)([^\\]]+)(?:\\]))?\\s*(#?[\\w]+)?");
+			Pattern memberpattern = Pattern.compile("([\\w]+)\\s+([\\w]+)((?:[^\\[]*)([^\\]]+)(?:\\]))?\\s*(#?[\\w]+)?\\s*");
 			boolean done = false, valid = true;
 				try{
 			if(reader.ready())
@@ -1461,9 +1487,11 @@ public class ModelPanel extends AbstractDataPanel
 		 */
 		HashMap<String,ArrayList<String>> parseChannels()
 		{
-			// new plan, parse every line for either node or scalenode compliance, feed to appropriate channel parser
+		  boolean valid = true, nodesection = true;
+		  
+		  // new plan, parse every line for either node or scalenode compliance, feed to appropriate channel parser
 			// if anything fails, abort before we return the list
-			openFile();
+		  openFile();
 			
 			// minimum requirements for node: name[whitespace](  )
 			//  and we already know that part is valid or the model wouldn't be loaded
@@ -1481,14 +1509,12 @@ public class ModelPanel extends AbstractDataPanel
 			// HashMap to store found channels in
 			HashMap<String,ArrayList<String>> channels = new HashMap<String,ArrayList<String>>();
 			
-			boolean valid = true, nodesection = true;
-			
 				try
 				{
 			String line;
 			boolean done = false;
 			
-			while( reader.ready() && !done  && valid )
+			while( reader != null && reader.ready() && !done  && valid )
 			{
 				line = reader.readLine();
 				while( reader.ready() && (line.length() == 0 || line.trim().charAt(0) == '#'))
@@ -1930,6 +1956,16 @@ public class ModelPanel extends AbstractDataPanel
 			suni = new SimpleUniverse(canvas);
 			suni.getViewingPlatform().setNominalViewingTransform();
 			
+			/* Following DepthBufferFreeze is magic to make lines render with correct occlusion.
+			 * Actually, due to the way the underlying OpenGL/hardware processes decide to render
+			 * things, opaque and antialiased objects are rendered on different passes and the 
+			 * hardware buffered is updated in specific ways. In general, this causes the Z-order
+			 * of antialiased objects to effectively be ignored, the following freeze prevents this,
+			 * probably sacrificing some amount of computation overhead to do so, but it gives us what
+			 * we want here (correctly rendered member depth) and I don't see the potential performance
+			 * hit causing a problem
+			 */
+			suni.getViewer().getView().setDepthBufferFreezeTransparent(false);
 			suni.addBranchGraph(modelBranch);
 			
 			// setup mouse picker
@@ -2031,6 +2067,9 @@ public class ModelPanel extends AbstractDataPanel
 					
 					Shape3D lineShape = new Shape3D(l,lineAppearance);
 					lineShape.setCapability(Shape3D.ALLOW_PICKABLE_WRITE);
+					lineShape.setBoundsAutoCompute(true);
+					lineShape.setCapability(Shape3D.ALLOW_BOUNDS_WRITE);
+					
 					lineShape.setPickable( (editor.getMode() == ModelEditor.MEMBER) ); // set Pickable based on current mode
 					memberbranch.addChild(lineShape);
 					membermap.put(nextmember,lineShape);
@@ -2301,7 +2340,7 @@ public class ModelPanel extends AbstractDataPanel
 					cx = nodetwo.getPosition().x + (percentage)*(endone.x-endtwo.x);
 					cy = nodetwo.getPosition().y + (percentage)*(endone.y-endtwo.y);
 					cz = nodetwo.getPosition().z + (percentage)*(endone.z-endtwo.z);
-					Point3d controltwo = rotatePoint(new Point3d(cx,cy,cz),nodetwo.getPosition(),nodeone.getRotation());
+					Point3d controltwo = rotatePoint(new Point3d(cx,cy,cz),nodetwo.getPosition(),nodetwo.getRotation());
 					// update endone and endtwo to displaced positions
 					endone = nodeone.getPosition();
 					endtwo = nodetwo.getPosition();
@@ -2521,23 +2560,35 @@ public class ModelPanel extends AbstractDataPanel
 		private JMenuItem close			= new JMenuItem("Close model");
 		private JMenuItem frontview		= new JMenuItem("Front View");
 		private JMenuItem topview		= new JMenuItem("Top View");
-		private JMenuItem cornerview	= new JMenuItem("Corner View");
+		private JMenuItem cornerview  = new JMenuItem("Corner View");
+		private JMenuItem ccw15  = new JMenuItem("Rotate CCW 15°");
+		private JMenuItem cw15  = new JMenuItem("Rotate CW 15°");
+		private JMenuItem ccw90  = new JMenuItem("Rotate CCW 90°");
+    private JMenuItem cw90  = new JMenuItem("Rotate CW 90°");
+    
 		private JMenuItem deselect		= new JMenuItem("Deselect All");
 		private JMenuItem loadchans		= new JMenuItem("Load Channels");
 		private JMenuItem zoomin		= new JMenuItem("Zoom In");
 		private JMenuItem zoomout		= new JMenuItem("Zoom Out");
 		private JMenuItem save			= new JMenuItem("Save Model");
 		private JMenuItem savewchans	= new JMenuItem("Save Model with Channels");
+		private JCheckBoxMenuItem editlinks   = new JCheckBoxMenuItem("Edit Channel Links");
 		private JCheckBoxMenuItem editnodes		= new JCheckBoxMenuItem("Edit Nodes");
 		private JCheckBoxMenuItem editmembers	= new JCheckBoxMenuItem("Edit Members");
 		private JCheckBoxMenuItem editsnodes	= new JCheckBoxMenuItem("Edit Stress/Strain Nodes");
 		private ButtonGroup editgroup			= new ButtonGroup();
-		private JMenuItem stopedit		= new JMenuItem("Leave Edit Mode");
 		
-		private JButton menuzoomin = new JButton("+");
-		private JButton menuzoomout = new JButton("-");
-    
+		private JButton zoominbutton = new JButton("+");
+		private JButton zoomoutbutton = new JButton("-");
+		private JButton left_face   = new JButton("<-");
+    private JButton left        = new JButton("<-");
+    private JButton right_face  = new JButton("->");
+    private JButton right       = new JButton("->");
+    private JLabel fifteen = new JLabel("15°");
+    private JLabel ninety = new JLabel("90°");
 		
+		private JPanel bottompane = new JPanel(new BorderLayout());
+		private JPanel viewcontrols = new JPanel(new GridBagLayout());
 		/** reference for edit pane */
 		// should look into rebuilding this so that axis selection is replace by edit tools
 		private JPanel editpanel;
@@ -2556,24 +2607,30 @@ public class ModelPanel extends AbstractDataPanel
 			modelmenu.add(save);
 			modelmenu.add(savewchans);
 
-			viewmenu.add(zoomin); zoomin.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,KeyEvent.CTRL_DOWN_MASK));
-			viewmenu.add(zoomout); zoomout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,KeyEvent.CTRL_DOWN_MASK));
-			viewmenu.addSeparator();
+			
 			viewmenu.add(frontview);
 			viewmenu.add(topview);
 			viewmenu.add(cornerview);
 			viewmenu.addSeparator();
 			viewmenu.add(deselect);
-			
+			viewmenu.addSeparator();
+      viewmenu.add(zoomin);   zoomin.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS,KeyEvent.CTRL_DOWN_MASK));
+      viewmenu.add(zoomout);  zoomout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS,KeyEvent.CTRL_DOWN_MASK));
+      viewmenu.add(ccw15);    ccw15.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.CTRL_DOWN_MASK));
+      viewmenu.add(cw15);     cw15.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.CTRL_DOWN_MASK));
+      viewmenu.add(ccw90);    ccw90.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, KeyEvent.CTRL_DOWN_MASK|KeyEvent.SHIFT_DOWN_MASK));
+      viewmenu.add(cw90);     cw90.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, KeyEvent.CTRL_DOWN_MASK|KeyEvent.SHIFT_DOWN_MASK));
+      
+      
+      editmenu.add(editlinks);
 			editmenu.add(editnodes);
 			editmenu.add(editmembers);
 			editmenu.add(editsnodes);
+			editgroup.add(editlinks);
 			editgroup.add(editnodes);
 			editgroup.add(editmembers);
 			editgroup.add(editsnodes);
-			
-			editmenu.addSeparator();
-			editmenu.add(stopedit);
+			editgroup.setSelected(editlinks.getModel(), true); // edit links selected by default
 			
 			modelmenu.getPopupMenu().setLightWeightPopupEnabled(false);
 			viewmenu.getPopupMenu().setLightWeightPopupEnabled(false);
@@ -2582,15 +2639,52 @@ public class ModelPanel extends AbstractDataPanel
 			menubar.add(modelmenu);
 			menubar.add(viewmenu);
 			menubar.add(editmenu);
-			menubar.add(Box.createHorizontalGlue());
-			menubar.add(menuzoomin);
-			menubar.add(menuzoomout);
+			
+			// configure the buttons
+			Insets inset = new Insets(1,3,1,3);
+			zoominbutton.setFocusPainted(false);
+			zoominbutton.setMargin(inset);
+			zoomoutbutton.setFocusPainted(false);
+			zoomoutbutton.setMargin(inset);
+			left.setFocusPainted(false);
+			left.setMargin(inset);
+			right.setFocusPainted(false);
+			right.setMargin(inset);
+			left_face.setFocusPainted(false);
+			left_face.setMargin(inset);
+      right_face.setFocusPainted(false);
+      right_face.setMargin(inset);
+      // creating the view control button panel
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridx = 0;
+			c.gridy = 0;
+			viewcontrols.add(zoominbutton,c);
+			c.gridx = 2;
+			viewcontrols.add(zoomoutbutton,c);
+			c.gridy = 1;
+			c.gridx = 0;
+			viewcontrols.add(left,c);
+			c.gridx = 1;
+			viewcontrols.add(fifteen,c);
+			c.gridx = 2;
+			viewcontrols.add(right,c);
+			c.gridx = 0;
+			c.gridy = 2;
+			viewcontrols.add(left_face,c);
+      c.gridx = 1;
+      viewcontrols.add(ninety,c);
+      c.gridx = 2;
+      viewcontrols.add(right_face,c);
       
 			
 			add(menubar,BorderLayout.NORTH);
 			add(mview, BorderLayout.CENTER);
 			editpanel = editor.getAxisPanel();
-			add(editpanel,BorderLayout.SOUTH);
+			add(bottompane,BorderLayout.SOUTH);
+			viewcontrols.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,2,0,0,Color.DARK_GRAY),BorderFactory.createEmptyBorder(1, 2, 1, 2)));
+			bottompane.add(editpanel,BorderLayout.CENTER);
+			bottompane.add(viewcontrols,BorderLayout.EAST);
 						
 			// adding listeners
 			open.addActionListener(this);
@@ -2601,25 +2695,40 @@ public class ModelPanel extends AbstractDataPanel
 			editnodes.addActionListener(this);
 			editmembers.addActionListener(this);
 			editsnodes.addActionListener(this);
-			stopedit.addActionListener(this);
+			editlinks.addActionListener(this);
 			zoomin.addActionListener(this);
 			zoomout.addActionListener(this);
 			frontview.addActionListener(this);
 			topview.addActionListener(this);
 			cornerview.addActionListener(this);
 			deselect.addActionListener(this);
-			menuzoomin.addActionListener(this);
-			menuzoomout.addActionListener(this);
+			zoominbutton.addActionListener(this);
+			zoomoutbutton.addActionListener(this);
+			right.addActionListener(this);
+      left.addActionListener(this);
+      right_face.addActionListener(this);
+      left_face.addActionListener(this);
+      ccw15.addActionListener(this);
+      cw15.addActionListener(this);
+      ccw90.addActionListener(this);
+      cw90.addActionListener(this);
+      
 		}// end constructor
 		
-		// remove the current panel in the edit pane
-		private void cleareditpanel()
+	/*
+	 * Sets the editing panel to the passed panel and validates layouts and repaints screen as needed
+	 */
+		private void setEditPanel(JPanel newpanel)
 		{
-			if( editpanel != null )
-			{
-				remove(editpanel);
-				validate();
-			}
+		  if( editpanel != null )
+      {
+        bottompane.remove(editpanel);
+        bottompane.revalidate();
+      }
+		  editpanel = newpanel;
+		  bottompane.add(editpanel,BorderLayout.CENTER);
+		  bottompane.revalidate();
+		  bottompane.repaint();
 		}
 		
 		/**
@@ -2633,13 +2742,7 @@ public class ModelPanel extends AbstractDataPanel
 			if( source == close )
 			{
 				// reset into linking mode
-				cleareditpanel();
-				editgroup.clearSelection();
-				editpanel = editor.getAxisPanel();
-				add(editpanel,BorderLayout.SOUTH);
-				validate();
-				editor.updatescreen();
-				
+			  setEditPanel(editor.getAxisPanel());
 				mpanel.destroyModel();
 			}
 			else if( source == open )
@@ -2654,12 +2757,7 @@ public class ModelPanel extends AbstractDataPanel
 			  {	return;	} // break out if file does not exist
 				
 				// reset into linking mode
-        cleareditpanel();
-        editgroup.clearSelection();
-        editpanel = editor.getAxisPanel();
-        add(editpanel,BorderLayout.SOUTH);
-        validate();
-        editor.updatescreen();
+        setEditPanel(editor.getAxisPanel());
 				// and create new model
         mpanel.destroyModel();
 				loader.setFile(tempfile);
@@ -2678,32 +2776,19 @@ public class ModelPanel extends AbstractDataPanel
 			}
 			else if( source == editnodes )
 			{
-				cleareditpanel();
-				editpanel = editor.getNodePanel();
-				add(editpanel,BorderLayout.SOUTH);
-				validate();
+			  setEditPanel(editor.getNodePanel());
 			}
 			else if( source == editmembers )
 			{
-				cleareditpanel();
-				editpanel = editor.getMemberPanel();
-				add(editpanel,BorderLayout.SOUTH);
-				validate();
+			  setEditPanel(editor.getMemberPanel());
 			}
 			else if( source == editsnodes )
 			{
-				cleareditpanel();
-				editpanel = editor.getScaleNodePanel();
-				add(editpanel,BorderLayout.SOUTH);
-				validate();
+			  setEditPanel(editor.getScaleNodePanel());
 			}
-			else if( source == stopedit )
+			else if( source == editlinks )
 			{
-				cleareditpanel();
-				editgroup.clearSelection();
-				editpanel = editor.getAxisPanel();
-				add(editpanel,BorderLayout.SOUTH);
-				validate();
+			  setEditPanel(editor.getAxisPanel());
 			}
 			else if(source == frontview)
 			{
@@ -2721,15 +2806,30 @@ public class ModelPanel extends AbstractDataPanel
 				mview.tiltModel(20, true); // second modification must be relative
 				mview.zoomCamera(0.9f, true);
 			}
-			else if(source == zoomin || source == menuzoomin)
+			else if(source == zoomin || source == zoominbutton)
 			{
 				mview.zoomCamera(1.1f, true);
 			}
-			else if(source == zoomout || source == menuzoomout)
+			else if(source == zoomout || source == zoomoutbutton)
 			{
 				mview.zoomCamera(0.9f, true);
 			}
-			
+			else if(source == left || source == cw15 )
+      {
+        mview.rotateModel(-15, true);
+      }
+      else if(source == right || source == ccw15 )
+      {
+        mview.rotateModel(15, true);
+      }
+      else if(source == right_face || source == ccw90 )
+      {
+        mview.rotateModel(90, true);
+      }
+      else if(source == left_face || source == cw90)
+      {
+        mview.rotateModel(-90, true);
+      }
 			else if( source == deselect )
 			{
 				editor.deselectAll(); // deselect all
@@ -2737,12 +2837,8 @@ public class ModelPanel extends AbstractDataPanel
 			else if( source == loadchans)
 			{
 				// reset into linking mode
-				cleareditpanel();
-				editgroup.clearSelection();
-				editpanel = editor.getAxisPanel();
-				add(editpanel,BorderLayout.SOUTH);
-				validate();
-				
+			  editgroup.clearSelection();
+        setEditPanel(editor.getAxisPanel());
 				mpanel.loadchannels();
 			}
 		} // end actionPerformed()
@@ -3075,10 +3171,7 @@ public class ModelPanel extends AbstractDataPanel
 		private JButton prev_node		= new JButton("<");
 		private JButton next_axis		= new JButton(">");
 		private JButton prev_axis		= new JButton("<");
-		private JButton left_face		= new JButton("<-|");
-		private JButton	left			= new JButton("<-");
-		private JButton right_face		= new JButton("|->");
-		private JButton	right			= new JButton("->");
+		private JButton unlink      = new JButton("Unlink");
 		
 		private JTextField 	nodename, xpos, ypos,zpos,
 							snname, snxpos, snypos, snzpos,
@@ -3110,8 +3203,11 @@ public class ModelPanel extends AbstractDataPanel
 			// axispane
 			JLabel	axislabel = new JLabel("Axis: ");
 			JLabel	nodelabel = new JLabel("Node: ");
-			JLabel fifteen = new JLabel("15°");
-			JLabel ninety = new JLabel("90°");
+			next_node.setFocusPainted(false);
+			prev_node.setFocusPainted(false);
+			next_axis.setFocusPainted(false);
+			prev_axis.setFocusPainted(false);
+			unlink.setFocusPainted(false);
 			JLabel spacer = new JLabel();
 			
 			axispane = new JPanel(grid);
@@ -3136,14 +3232,6 @@ public class ModelPanel extends AbstractDataPanel
 			axispane.add(spacer,c);
 			c.gridx = 5;
 			c.weightx = 0;
-			c.anchor = GridBagConstraints.LINE_END;
-			axispane.add(left,c);
-			c.anchor = GridBagConstraints.CENTER;
-			c.gridx = 6;
-			axispane.add(fifteen,c);
-			c.anchor = GridBagConstraints.LINE_START;
-			c.gridx = 7;
-			axispane.add(right,c);
 			// second row
 			c.gridx = 0;
 			c.gridy = 2;
@@ -3160,23 +3248,13 @@ public class ModelPanel extends AbstractDataPanel
 			axispane.add( apchanname, c );
 			c.weightx = 0;
 			c.gridx = 5;
-			axispane.add(left_face,c);
-			c.gridx = 6;
-			c.anchor = GridBagConstraints.CENTER;
-			axispane.add(ninety,c);
-			c.anchor = GridBagConstraints.LINE_END;
-			c.gridx = 7;
-			axispane.add(right_face,c);
+			axispane.add(unlink,c);
 			prev_axis.addActionListener(this);
 			next_axis.addActionListener(this);
 			prev_node.addActionListener(this);
 			next_node.addActionListener(this);
-			right.addActionListener(this);
-			left.addActionListener(this);
-			right_face.addActionListener(this);
-			left_face.addActionListener(this);
-			
-			
+			unlink.addActionListener(this);
+		
 			// nodepane fields
 			nodepane = new JPanel(grid);
 			addnode	= new JButton(" Add ");
@@ -3207,21 +3285,21 @@ public class ModelPanel extends AbstractDataPanel
 			c.gridy = 1;
 			c.gridx = 0;
 			c.fill = GridBagConstraints.HORIZONTAL;
-			c.weightx = 0.4;
+			c.weightx = 0.3;
 			nodepane.add(nodename,c);
 			c.gridx = 1;
-			c.weightx = 0.1;
+			c.weightx = 0.3;
 			nodepane.add(xpos,c);
 			c.gridx = 2;
 			nodepane.add(ypos,c);
 			c.gridx = 3;
 			nodepane.add(zpos,c);
 			c.gridx = 4;
-			c.weightx = 0.2;
+			c.weightx = 0.3;
 			nodepane.add(nodecolor,c);
 			c.gridy = 0;
 			c.gridx = 5;
-			c.weightx = 0.1;
+			c.weightx = 0.2;
 			c.gridheight = 2;
 			c.fill = GridBagConstraints.BOTH;
 			nodepane.add(addnode,c);
@@ -3242,7 +3320,7 @@ public class ModelPanel extends AbstractDataPanel
 			node2		= new JComboBox();
 			node2.addActionListener(this); node2.setLightWeightPopupEnabled(false);
 			String[] curves = {"Linear","Cubic"};
-			type		= new JComboBox(curves);
+			type		= new JComboBox(curves); type.setLightWeightPopupEnabled(false);
 			membercolor = new JComboBox(basecolors); 
 			membercolor.setSelectedIndex(1); membercolor.setLightWeightPopupEnabled(false);
 			
@@ -3275,16 +3353,14 @@ public class ModelPanel extends AbstractDataPanel
 			c.gridx = 1;
 			c.weightx = 0.5;
 			memberpane.add(node2,c);
-			c.weightx = 0;
 			c.gridx = 2;
-			c.weightx = 0.2;
 			memberpane.add(p2,c);
 			c.gridx = 3;
 			memberpane.add(membercolor,c);
 			c.gridx = 4;
 			c.gridy = 0;
 			c.gridheight = 3;
-			c.weightx = 0.1;
+			c.weightx = 0.2;
 			c.fill = GridBagConstraints.BOTH;
 			memberpane.add(addmember,c);
 			addmember.addActionListener(this);
@@ -3375,6 +3451,7 @@ public class ModelPanel extends AbstractDataPanel
 		public JPanel getAxisPanel()
 		{
 			setMode(AXIS);
+			editor.updatescreen();
 			return axispane;
 		}
     
@@ -3478,24 +3555,27 @@ public class ModelPanel extends AbstractDataPanel
 			updatescreen(); // update text in panels
 			if( (this.mode == MEMBER || this.mode == NODE || this.mode == SNODE) && mode == AXIS)
 			{
-			  // prompt to save on leaving edit mode
-			  Object[] options  = {"Save","Save with channels","No"};
-			  int n = JOptionPane.showOptionDialog(
-			      dataComponent,
-			      "Would you like to save the edited model?",
-			      "Save Model?",
-			      JOptionPane.DEFAULT_OPTION, // option type
-			      JOptionPane.QUESTION_MESSAGE,
-			      null, // icon
-			      options,
-			      options[2]);
-			  if(n == 0)
+			  if( model.nodeCount() > 0 )
 			  {
-			    saveModel();
-			  }
-			  else if( n == 1)
-			  {
-			    saveModel(true);
+  			  // prompt to save on leaving edit mode, IFF there is a model
+  			  Object[] options  = {"Save","Save with channels","No"};
+  			  int n = JOptionPane.showOptionDialog(
+  			      dataComponent,
+  			      "Would you like to save the edited model?",
+  			      "Save Model?",
+  			      JOptionPane.DEFAULT_OPTION, // option type
+  			      JOptionPane.QUESTION_MESSAGE,
+  			      null, // icon
+  			      options,
+  			      options[2]);
+  			  if(n == 0)
+  			  {
+  			    saveModel();
+  			  }
+  			  else if( n == 1)
+  			  {
+  			    saveModel(true);
+  			  }
 			  }
 			}
 			this.mode = mode;
@@ -3661,7 +3741,6 @@ public class ModelPanel extends AbstractDataPanel
 				mpanel.model.addScaleNode(name, point, low, mid, high, lowc, midc, highc, failc);
 				mview.sync();
 				mview.viewsync();
-				//mview.resetScene(); // back to front view
 				mview.update();
 				snname.setText(findNext("snode"));
 					}
@@ -3690,22 +3769,7 @@ public class ModelPanel extends AbstractDataPanel
 				Point3d p = s.getBasePosition();
 				p2.setText(p.toString());
 			}
-			else if(source == left)
-			{
-				mview.rotateModel(-15, true);
-			}
-			else if(source == right)
-			{
-				mview.rotateModel(15, true);
-			}
-			else if(source == right_face)
-			{
-				mview.rotateModel(90, true);
-			}
-			else if(source == left_face)
-			{
-				mview.rotateModel(-90, true);
-			}
+			
 			// and then linking buttons
 			else if( model.nodeCount() > 0 )
 			{
@@ -3824,6 +3888,12 @@ public class ModelPanel extends AbstractDataPanel
 						}
 					}
 				}
+				else if( source == unlink )
+				{
+				  String channel = mpanel.getChannel(selectednode, selectedaxis);
+				  mpanel.unlink(selectednode, selectedaxis);
+				  mpanel.checkLinks(channel);
+				}
 				updatescreen();
 			}
 		}
@@ -3848,5 +3918,5 @@ public class ModelPanel extends AbstractDataPanel
 		{
 			this.errorline = errorline;
 		}
-	} // might extend this later...
+	}
 }
