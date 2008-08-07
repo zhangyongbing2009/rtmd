@@ -151,7 +151,7 @@ public class ModelPanel extends AbstractDataPanel
 	 * sepcified node and axis.
 	 * @param	channelname		name of the channel to add
 	 * @param	node		    name of the node to link the channel to
-	 * @param	linkaxis		node axis to link the channel to
+	 * @param	axis		node axis to link the channel to
 	 * @return	<code>true</code> if the channel was successfully linked,
 	 * <code>false</code> otherwise
 	 */
@@ -677,13 +677,13 @@ public class ModelPanel extends AbstractDataPanel
 
 		/**
 		*	Adds a node to the <code>StructureModel</code> with a default color (gray).
-		*	@param s        the name of the node being added
-		* @param p	     	the location of the node being added
+		*	@param name        the name of the node being added
+		* @param point	     	the location of the node being added
 		*	@see 	#addNode(String,Point3d,Color3f)
 		*/
-		public void addNode(String s, Point3d node) throws ModelException
+		public void addNode(String name, Point3d point) throws ModelException
 		{
-			addNode(s,node,null);
+			addNode(name,point,null);
 		}
 		
 		public void addScaleNode(String s, Point3d p, float lower, float middle, float upper, Color3f lowercolor, Color3f middlecolor, Color3f uppercolor, Color3f failcolor)
@@ -951,7 +951,7 @@ public class ModelPanel extends AbstractDataPanel
 		* should be treated as a displacement from the node's base position (not the
 		* node's currently displaced position). An absolute movement changes the node's 
 		* base position to the <code>Point3d</code> supplied and zeroes its displacement.
-		*	@param index		the index of the node to move
+		*	@param name		the name of the node to move
 		* @param p 			the Point3d to move the node to or displace it by
 		*	@param relative 	<code>true</code> if this is a relative movement, <code>false</code> if this an absolute movement
 		*/
@@ -2485,7 +2485,7 @@ public class ModelPanel extends AbstractDataPanel
 		
 		/**
 		*	Zooms the camera in or out
-		*	@param	depth	amount to zoom, may be positive (zoom-in) or negative (zoom out).
+		*	@param	factor	scale percentage (>1.0 to zoom in, <1.0 to zoom out)
 		* @param relative whether this zoom is relative to current position or absolute (relative to initial position)
 		*/
 		public void zoomCamera(float factor, boolean relative)
@@ -2580,10 +2580,10 @@ public class ModelPanel extends AbstractDataPanel
 		
 		private JButton zoominbutton = new JButton("+");
 		private JButton zoomoutbutton = new JButton("-");
-		private JButton left_face   = new JButton("<-");
-    private JButton left        = new JButton("<-");
-    private JButton right_face  = new JButton("->");
-    private JButton right       = new JButton("->");
+		private JButton ccw90b   = new JButton("CCW");
+    private JButton ccw15b       = new JButton("CCW");
+    private JButton cw90b  = new JButton("CW");
+    private JButton cw15b       = new JButton("CW");
     private JLabel fifteen = new JLabel("15°");
     private JLabel ninety = new JLabel("90°");
 		
@@ -2646,14 +2646,14 @@ public class ModelPanel extends AbstractDataPanel
 			zoominbutton.setMargin(inset);
 			zoomoutbutton.setFocusPainted(false);
 			zoomoutbutton.setMargin(inset);
-			left.setFocusPainted(false);
-			left.setMargin(inset);
-			right.setFocusPainted(false);
-			right.setMargin(inset);
-			left_face.setFocusPainted(false);
-			left_face.setMargin(inset);
-      right_face.setFocusPainted(false);
-      right_face.setMargin(inset);
+			ccw15b.setFocusPainted(false);
+			ccw15b.setMargin(inset);
+			cw15b.setFocusPainted(false);
+			cw15b.setMargin(inset);
+			ccw90b.setFocusPainted(false);
+			ccw90b.setMargin(inset);
+      cw90b.setFocusPainted(false);
+      cw90b.setMargin(inset);
       // creating the view control button panel
 			GridBagConstraints c = new GridBagConstraints();
 			c.fill = GridBagConstraints.HORIZONTAL;
@@ -2664,18 +2664,18 @@ public class ModelPanel extends AbstractDataPanel
 			viewcontrols.add(zoomoutbutton,c);
 			c.gridy = 1;
 			c.gridx = 0;
-			viewcontrols.add(left,c);
+			viewcontrols.add(ccw15b,c);
 			c.gridx = 1;
 			viewcontrols.add(fifteen,c);
 			c.gridx = 2;
-			viewcontrols.add(right,c);
+			viewcontrols.add(cw15b,c);
 			c.gridx = 0;
 			c.gridy = 2;
-			viewcontrols.add(left_face,c);
+			viewcontrols.add(ccw90b,c);
       c.gridx = 1;
       viewcontrols.add(ninety,c);
       c.gridx = 2;
-      viewcontrols.add(right_face,c);
+      viewcontrols.add(cw90b,c);
       
 			
 			add(menubar,BorderLayout.NORTH);
@@ -2704,10 +2704,10 @@ public class ModelPanel extends AbstractDataPanel
 			deselect.addActionListener(this);
 			zoominbutton.addActionListener(this);
 			zoomoutbutton.addActionListener(this);
-			right.addActionListener(this);
-      left.addActionListener(this);
-      right_face.addActionListener(this);
-      left_face.addActionListener(this);
+			cw15b.addActionListener(this);
+      ccw15b.addActionListener(this);
+      cw90b.addActionListener(this);
+      ccw90b.addActionListener(this);
       ccw15.addActionListener(this);
       cw15.addActionListener(this);
       ccw90.addActionListener(this);
@@ -2743,6 +2743,7 @@ public class ModelPanel extends AbstractDataPanel
 			{
 				// reset into linking mode
 			  setEditPanel(editor.getAxisPanel());
+			  editgroup.setSelected(editlinks.getModel(), true);
 				mpanel.destroyModel();
 			}
 			else if( source == open )
@@ -2758,6 +2759,7 @@ public class ModelPanel extends AbstractDataPanel
 				
 				// reset into linking mode
         setEditPanel(editor.getAxisPanel());
+        editgroup.setSelected(editlinks.getModel(), true);
 				// and create new model
         mpanel.destroyModel();
 				loader.setFile(tempfile);
@@ -2814,19 +2816,19 @@ public class ModelPanel extends AbstractDataPanel
 			{
 				mview.zoomCamera(0.9f, true);
 			}
-			else if(source == left || source == cw15 )
+			else if(source == cw15b || source == cw15 )
       {
         mview.rotateModel(-15, true);
       }
-      else if(source == right || source == ccw15 )
+      else if(source == ccw15b || source == ccw15 )
       {
         mview.rotateModel(15, true);
       }
-      else if(source == right_face || source == ccw90 )
+      else if(source == ccw90b || source == ccw90 )
       {
         mview.rotateModel(90, true);
       }
-      else if(source == left_face || source == cw90)
+      else if(source == cw90b || source == cw90)
       {
         mview.rotateModel(-90, true);
       }
@@ -2837,8 +2839,8 @@ public class ModelPanel extends AbstractDataPanel
 			else if( source == loadchans)
 			{
 				// reset into linking mode
-			  editgroup.clearSelection();
         setEditPanel(editor.getAxisPanel());
+        editgroup.setSelected(editlinks.getModel(), true);
 				mpanel.loadchannels();
 			}
 		} // end actionPerformed()
@@ -2846,6 +2848,9 @@ public class ModelPanel extends AbstractDataPanel
 	
 	// controls which listeners are acting on the canvas
 	//   either for editing of linking, etc
+	/**
+	 * Responsible for controlling the listeners in the view area for mouse selection of the model elements.
+	 */
 	class MousePicker
 	{
 		PickCanvas pcanvas;
@@ -3900,6 +3905,9 @@ public class ModelPanel extends AbstractDataPanel
 	}
 	
 	// helper class for realtime data mapping
+	/**
+	 * Helper class for channel subscriptions.
+	 */
 	class NodeAxisPair
 	{
 		String nodename;
@@ -3910,7 +3918,9 @@ public class ModelPanel extends AbstractDataPanel
 			axis = a;
 		}
 	}
-	// helper class for exception handling
+	/**
+	 *  Helper class for exception handling
+	 */
 	class PointFormatException extends Exception
 	{
 		private String errorline;
