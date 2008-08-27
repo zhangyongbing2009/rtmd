@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<NEESsim>
+  <Integrator ON="false" />
+  <Kinematics ON="false" />
+  <RampGenerator ON="false" />
+  <Scramnet ON="true">
+    <CtrlBlock Offset="0" Stream="false" Description="Simulation Running" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="1.0" />
+    <CtrlBlock Offset="1" Stream="false" Description="Disp1_Actuator_Cmd" Units="in" Scale="1" LowerLimit="-500.0" UpperLimit="500.0" />
+    <CtrlBlock Offset="2" Stream="true" Description="Disp1_Cmd" Units="in" Scale="1" LowerLimit="-2.0" UpperLimit="2.0" />
+    <CtrlBlock Offset="3" Stream="false" Description="Disp1_Meas_Act" Units="in" Scale="1" LowerLimit="-20.0" UpperLimit="20.0" />
+    <CtrlBlock Offset="4" Stream="true" Description="Disp1_Meas" Units="in" Scale="1" LowerLimit="-2000.0" UpperLimit="2000.0" />
+    <CtrlBlock Offset="5" Stream="true" Description="Load1" Units="kip" Scale="1" LowerLimit="-120000.0" UpperLimit="120000.0" />
+    <CtrlBlock Offset="6" Stream="false" Description="Displacement Command 2" Units="mm" Scale="1" LowerLimit="-500.0" UpperLimit="500.0" />
+    <CtrlBlock Offset="7" Stream="false" Description="Velocity Command 2" Units="m_s" Scale="1" LowerLimit="-2.0" UpperLimit="2.0" />
+    <CtrlBlock Offset="8" Stream="false" Description="Disp2_Actuator_Cmd" Units="in" Scale="1" LowerLimit="-500.0" UpperLimit="500.0" />
+    <CtrlBlock Offset="9" Stream="true" Description="Disp2_Cmd" Units="in" Scale="1" LowerLimit="-2.0" UpperLimit="2.0" />
+    <CtrlBlock Offset="10" Stream="false" Description="Disp2_Meas_Act" Units="in" Scale="1" LowerLimit="-20.0" UpperLimit="20.0" />
+    <CtrlBlock Offset="11" Stream="true" Description="Disp2_Meas" Units="in" Scale="1" LowerLimit="-2000.0" UpperLimit="2000.0" />
+    <CtrlBlock Offset="12" Stream="true" Description="Load2" Units="kip" Scale="1" LowerLimit="-120000.0" UpperLimit="120000.0" />
+    <CtrlBlock Offset="13" Stream="false" Description="Acceleration Command 3" Units="m_s2" Scale="1" LowerLimit="-20.0" UpperLimit="20.0" />
+    <CtrlBlock Offset="14" Stream="false" Description="Force Command 3" Units="kN" Scale="1" LowerLimit="-2000.0" UpperLimit="2000.0" />
+    <CtrlBlock Offset="15" Stream="false" Description="Force Derivative Command 3" Units="kN_s" Scale="1" LowerLimit="-120000.0" UpperLimit="120000.0" />
+    <CtrlBlock Offset="16" Stream="false" Description="Disp3_Actuator_Cmd" Units="in" Scale="1" LowerLimit="-500.0" UpperLimit="500.0" />
+    <CtrlBlock Offset="17" Stream="true" Description="Disp3_Cmd" Units="in" Scale="1" LowerLimit="-2.0" UpperLimit="2.0" />
+    <CtrlBlock Offset="18" Stream="false" Description="Disp3_Meas_Act" Units="in" Scale="1" LowerLimit="-20.0" UpperLimit="20.0" />
+    <CtrlBlock Offset="19" Stream="true" Description="Disp3_Meas" Units="in" Scale="1" LowerLimit="-2000.0" UpperLimit="2000.0" />
+    <CtrlBlock Offset="20" Stream="true" Description="Load3" Units="kip" Scale="1" LowerLimit="-120000.0" UpperLimit="120000.0" />
+    <CtrlBlock Offset="21" Stream="false" Description="Displacement Command 5" Units="mm" Scale="1" LowerLimit="-500.0" UpperLimit="500.0" />
+    <CtrlBlock Offset="22" Stream="false" Description="Velocity Command 5" Units="m_s" Scale="1" LowerLimit="-2.0" UpperLimit="2.0" />
+    <CtrlBlock Offset="23" Stream="false" Description="Acceleration Command 5" Units="m_s2" Scale="1" LowerLimit="-20.0" UpperLimit="20.0" />
+    <CtrlBlock Offset="24" Stream="false" Description="Disp4_Actuator_Cmd" Units="in" Scale="1" LowerLimit="-500.0" UpperLimit="500.0" />
+    <CtrlBlock Offset="25" Stream="true" Description="Disp4_Cmd" Units="in" Scale="1" LowerLimit="-2.0" UpperLimit="2.0" />
+    <CtrlBlock Offset="26" Stream="false" Description="Disp4_Meas_Act" Units="in" Scale="1" LowerLimit="-20.0" UpperLimit="20.0" />
+    <CtrlBlock Offset="27" Stream="true" Description="Disp4_Meas" Units="in" Scale="1" LowerLimit="-2000.0" UpperLimit="2000.0" />
+    <CtrlBlock Offset="28" Stream="true" Description="Load4" Units="kip" Scale="1" LowerLimit="-120000.0" UpperLimit="120000.0" />
+    <CtrlBlock Offset="29" Stream="false" Description="Force Command 6" Units="kN" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="30" Stream="false" Description="Force Derivative Command 6" Units="kN_s" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="31" Stream="false" Description="Displacement Command 7" Units="mm" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="32" Stream="true" Description="Step" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="33" Stream="false" Description="Acceleration Command 7" Units="m_s2" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="34" Stream="false" Description="Force Command 7" Units="kN" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="35" Stream="false" Description="Force Derivative Command 7" Units="kN_s" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="36" Stream="false" Description="Displacement Command 8" Units="mm" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="37" Stream="false" Description="Velocity Command 8" Units="m_s" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="38" Stream="false" Description="Acceleration Command 8" Units="m_s2" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="39" Stream="false" Description="Force Command 8" Units="kN" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="40" Stream="false" Description="Force Derivative Command 8" Units="kN_s" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="41" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="42" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="43" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="44" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="45" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="46" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="47" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="48" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="49" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="50" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="51" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="52" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="53" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="54" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="55" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="56" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="57" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="58" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="59" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="60" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="61" Stream="true" Description="Camera_Trigger" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="62" Stream="false" Description="Pause Bit" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="63" Stream="false" Description="Pulse Trigger" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="64" Stream="false" Description="Global Counter" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="65" Stream="false" Description="Supply Pressure 1" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="66" Stream="false" Description="Supply Pressure 2" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="67" Stream="false" Description="Displacement 1" Units="mm" Scale="500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="68" Stream="false" Description="Load 1" Units="kN" Scale="2000" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="69" Stream="false" Description="Differential Pressure 1" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="70" Stream="false" Description="Actuator Pressure 1" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="71" Stream="false" Description="Velocity 1" Units="m_s" Scale="2" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="72" Stream="false" Description="Displacement Ctrl 1 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="73" Stream="false" Description="Valve Lin 1 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="74" Stream="false" Description="Displacement 2" Units="mm" Scale="500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="75" Stream="false" Description="Load 2" Units="kN" Scale="2000" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="76" Stream="false" Description="Differential Pressure 2" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="77" Stream="false" Description="Actuator Pressure 2" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="78" Stream="false" Description="Velocity 2" Units="m_s" Scale="2" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="79" Stream="false" Description="Displacement Ctrl 2 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="80" Stream="false" Description="Valve Lin 2 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="81" Stream="false" Description="Displacement 3" Units="mm" Scale="500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="82" Stream="false" Description="Load 3" Units="kN" Scale="2000" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="83" Stream="false" Description="Differential Pressure 3" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="84" Stream="false" Description="Actuator Pressure 3" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="85" Stream="false" Description="Velocity 3" Units="m_s" Scale="2" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="86" Stream="false" Description="Displacement Ctrl 3 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="87" Stream="false" Description="Valve Lin 3 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="88" Stream="false" Description="Displacement 4" Units="mm" Scale="500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="89" Stream="false" Description="Load 4" Units="kN" Scale="2500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="90" Stream="false" Description="Differential Pressure 4" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="91" Stream="false" Description="Actuator Pressure 4" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="92" Stream="false" Description="Velocity 4" Units="m_s" Scale="2" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="93" Stream="false" Description="Displacement Ctrl 4 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="94" Stream="false" Description="Valve Lin 4 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="95" Stream="false" Description="Displacement 5" Units="mm" Scale="500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="96" Stream="false" Description="Load 5" Units="kN" Scale="2500" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="97" Stream="false" Description="Differential Pressure 5" Units="Bar" Scale="400" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="98" Stream="false" Description="Actuator Pressure 5" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="99" Stream="false" Description="Velocity 5" Units="m_s" Scale="2" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="100" Stream="false" Description="Displacement Ctrl 5 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="101" Stream="false" Description="Valve Lin 5 OP" Units="DSP" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="102" Stream="false" Description="Valve A Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="103" Stream="false" Description="Valve B Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="104" Stream="false" Description="Valve C Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="105" Stream="false" Description="Valve D Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="106" Stream="false" Description="Valve E Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="107" Stream="false" Description="Valve F Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="108" Stream="false" Description="Valve G Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="109" Stream="false" Description="Valve H Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="110" Stream="false" Description="Valve J Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="111" Stream="false" Description="Valve K Spool" Units="%" Scale="100" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="112" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="113" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="114" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="115" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="116" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="117" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="118" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="119" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="120" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="121" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="122" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="123" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="124" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="125" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="126" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <CtrlBlock Offset="127" Stream="false" Description="Spare" Units="n_a" Scale="1" LowerLimit="0.0" UpperLimit="0.0" />
+    <SimBlock Offset="2000" Name="1FPT" />
+    <SimBlock Offset="2001" Name="2FPT" />
+    <SimBlock Offset="2002" Name="3FPT" />
+    <SimBlock Offset="2003" Name="4FPT" />
+    <SimBlock Offset="2004" Name="1FDrift" />
+    <SimBlock Offset="2005" Name="2FDrift" />
+    <SimBlock Offset="2006" Name="3FDrift" />
+    <SimBlock Offset="2007" Name="4FDrift" />
+    <SimBlock Offset="2008" Name="1FStoryShear" />
+    <SimBlock Offset="2009" Name="2FStoryShear" />
+    <SimBlock Offset="2010" Name="3FStoryShear" />
+    <SimBlock Offset="2011" Name="4FStoryShear" />
+  </Scramnet>
+</NEESsim>
+
