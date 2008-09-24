@@ -13,10 +13,10 @@ Vars.M = [0.977  0       0       0;
          0      0       0       1.056];
 Vars.Minv = inv(Vars.M);     %Mass matrix inverse
 
-Vars.C = [1.369      -0.89      0.233       -0.035;
-         -0.898     1.591       -0.874      0.191;
-         0.271     -0.903      1.326      -0.480;
-         -0.044     0.186       -0.472      0.502];
+Vars.C = [1.301      -0.861      0.234       -0.038;
+        -0.84     1.562       -0.889      0.197;
+         0.212     -0.894      1.342      -0.482;
+         -0.029     0.193       -0.484      0.498];
 Vars.Co = Vars.C;
      
 Vars.K = [1079       -802.544    210.252     -31.993;
@@ -41,9 +41,9 @@ Vars.beta2=Vars.beta1;
 
 % External excitation force loading
 Vars.DOF = ones(Vars.nDOF,1);                 % Define the DOF nodes
-load 'history files\test.txt';            %ground acceleration record
+load 'history files\H_CXO225_FOE.txt';            %ground acceleration record
 scalefactor = 1;
-Vars.F=-386*scalefactor*Vars.M*Vars.DOF*test';   %external excitation force calculation
+Vars.F=-386*scalefactor*Vars.M*Vars.DOF*H_CXO225_FOE';   %external excitation force calculation
 shift=zeros(Vars.nDOF,1);
 Vars.F=cat(2,shift,Vars.F);
 Vars.steps=length(Vars.F(1,:));
@@ -165,7 +165,7 @@ Vars.LVDT3 = Vars.scr.readDAQ(Vars.daqchannelinfo.offset(Vars.LVDT3loc),Vars.daq
 Vars.LVDT4 = Vars.scr.readDAQ(Vars.daqchannelinfo.offset(Vars.LVDT4loc),Vars.daqchannelinfo.gain(Vars.LVDT4loc),Vars.daqchannelinfo.Voffset(Vars.LVDT4loc),Vars.daqchannelinfo.Vslope(Vars.LVDT4loc),Vars.daqchannelinfo.EUoffset(Vars.LVDT4loc),Vars.daqchannelinfo.EUslope(Vars.LVDT4loc));        
 
 % Global configuration for LVDTs
-Vars.LVDTnoise = 0.005; % Global LVDT noise threshold in inches
+Vars.LVDTnoise = 0.008; % Global LVDT noise threshold in inches
 Vars.LVDTerror = 1.0; % Global LVDT error detect
 
 %% Read initial displacement offsets

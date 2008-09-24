@@ -179,8 +179,9 @@ if (convergeradiobutton)
     % Read in LVDT data
     getLVDTdata
     
-    %Check LVDTs for convergence
-    checkConverged
+    %Check LVDTs for convergence (don't do this because it won't record
+    %data if they are converged)
+    %checkConverged
     
     % While the convergence hasn't been achieve, keep imposing increments
     while(LVDT1conv == 0 || LVDT2conv == 0 || LVDT3conv == 0 || LVDT4conv == 0)                
@@ -299,7 +300,7 @@ elseif (converge80radiobutton)
     getLVDTdata
     
     %Check LVDTs for convergence
-    checkConverged
+    %checkConverged
     
     % While the convergence hasn't been achieve, keep imposing increments
     while(LVDT1conv == 0 || LVDT2conv == 0 || LVDT3conv == 0 || LVDT4conv == 0)                
@@ -857,7 +858,7 @@ function enablecontrols(handles)
     set(handles.executionwait,'Enable','on');
     set(handles.convergencepercentage,'Enable','on');
 
-function writedatatofile(handles,target1,target2,target3,target4,cmd1,cmd2,cmd3,cmd4,gencmd1,gencmd2,gencmd3,gencmd4)
+function writedatatofile(handles,target1,target2,target3,target4,cmd1,cmd2,cmd3,cmd4,gencmd1,gencmd2,gencmd3,gencmd4)    
     % Get displacements at the actuators 
     disp1 = handles.Vars.scr.readFloat(handles.Vars.disp1_in_scr) - handles.Vars.ch1offset;
     disp2 = handles.Vars.scr.readFloat(handles.Vars.disp2_in_scr) - handles.Vars.ch2offset;
@@ -882,8 +883,9 @@ function writedatatofile(handles,target1,target2,target3,target4,cmd1,cmd2,cmd3,
     handles.Vars.scr.writeFloat(handles.Vars.disp4_in_off_scr,disp4); % Offset Displacement 4 in inches                
        
     % Update camera trigger    
-    triggercount = str2double(get(handles.triggercount,'String'));
-    handles.Vars.scr.writeInt(handles.Vars.CAMERA_TRIGGER,int32(triggercount));
+    % Using updateStep.m to control Camera Grabber now
+    triggercount = str2double(get(handles.triggercount,'String'));        
+    %handles.Vars.scr.writeInt(handles.Vars.CAMERA_TRIGGER,int32(triggercount));    
     set(handles.triggercount,'String',num2str(triggercount+1));   
 
 function axialload_Callback(hObject, eventdata, handles)
