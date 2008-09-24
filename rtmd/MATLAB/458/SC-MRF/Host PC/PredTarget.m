@@ -172,7 +172,7 @@ if (convergeradiobutton)
     getLVDTdata
     
     %Check LVDTs for convergence
-    checkConverged
+    %checkConverged
     
     % While the convergence hasn't been achieve, keep imposing increments
     while(LVDT1conv == 0 || LVDT2conv == 0 || LVDT3conv == 0 || LVDT4conv == 0)                
@@ -278,7 +278,7 @@ elseif (converge80radiobutton)
     getLVDTdata
     
     %Check LVDTs for convergence
-    checkConverged
+    %checkConverged
     
     % While the convergence hasn't been achieve, keep imposing increments
     while(LVDT1conv == 0 || LVDT2conv == 0 || LVDT3conv == 0 || LVDT4conv == 0)                
@@ -866,9 +866,10 @@ function writedatatofile(handles,target1,target2,target3,target4,cmd1,cmd2,cmd3,
     handles.Vars.scr.writeFloat(handles.Vars.disp4_in_off_scr,disp4); % Offset Displacement 4 in inches                
        
     % Update camera trigger    
-    triggercount = str2double(get(handles.triggercount,'String'));
-    handles.Vars.scr.writeInt(handles.Vars.CAMERA_TRIGGER,int32(triggercount));
-    set(handles.triggercount,'String',num2str(triggercount+1));   
+    % Using updateStep.m to control Camera Grabber now
+    triggercount = str2double(get(handles.triggercount,'String'));        
+    %handles.Vars.scr.writeInt(handles.Vars.CAMERA_TRIGGER,int32(triggercount));    
+    set(handles.triggercount,'String',num2str(triggercount+1));
 
 function axialload_Callback(hObject, eventdata, handles)
 % hObject    handle to axialload (see GCBO)

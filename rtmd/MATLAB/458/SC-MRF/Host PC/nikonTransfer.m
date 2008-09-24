@@ -1,4 +1,4 @@
-useNikon = 0;
+useNikon = 1;
 
 if (useNikon) 
     %% Copy latest image in the directory to the new directory
