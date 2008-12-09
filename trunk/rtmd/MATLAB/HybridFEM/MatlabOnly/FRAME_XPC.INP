@@ -1,0 +1,38 @@
+UNITS: KN-M
+STRUCTURE DATA BLOCK
+NN  NE  NM NDIM  NEN  NDN  ND
+ 6   7   2    2    2    3   6
+NODAL COORDINATE DATA BLOCK
+NODE   X     Y
+ 1     0     3
+ 2     3     3 
+ 3     6     3
+ 4     2.8   3
+ 5     0     0
+ 6     6     0
+MATERIAL DATA BLOCK     
+MATERIAL   E  
+ 1         2.0e8
+ 2         0
+ELEMENT TYPE AND CONNECTIVITY DATA BLOCK
+ELEM     TYPE   NODE1   NODE2   MATERIAL_ID  AREA       INERTIA    ELEM_DISTR_LOAD   STIFFNESS    hard      Av          v     (Zpl*fy)    (A*fy) 
+ 1         1      5       1         1        4.59e-3    5.79e-5    0.01           0             0         0         0         0          0
+ 2         1      6       3         1        4.59e-3    5.79e-5    0.01           0             0         0         0         0          0    
+ 3         1      1       2         1        4.59e-3    5.79e-5    20           0             0         0         0         0          0
+ 4         1      2       3         1        4.59e-3    5.79e-5    20           0             0         0         0         0          0
+ 5         1      5       4         1        4.59e-3    5.79e-5    0.01          0             0         0         0         0          0
+ 6         1      6       4         1        4.59e-3    5.79e-5    0.01         0             0         0         0         0          0
+ 7         2      4       2         2          0          0          0               60             0         0         0         0          0
+HYBRID TESTING DATA BLOCK
+T1      T2      KSI   SF  DT
+0.19  0.02     0.02  0.5   0.005
+--------END OF CONFIGURATION------------------
+
+ELEMENT LIBRARY AND ELEMENT DATA
+type1: elastic beam column element
+type2: experimental link element with initial stiffness
+type3: self-centering link element
+type4: hinge beam column element (under development)
+type5: fiber beam column element (future development)
+
+
