@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+"
-  codebase="http://www.nees.lehigh.edu/uploads/RDV/"
-  href="RDV-3D.jnlp">
+  codebase="http://rdv.googlecode.com/svn/wiki/"
+  href="rdv.jnlp">
 	<information>
 		<title>RDV</title>
 		<vendor>Palta Software</vendor>
@@ -9,22 +9,16 @@
 		<description>A visualization environment for scientific and engineering data.</description>
 		<icon href="rdv.png"/>
 		<offline-allowed/>
-		<shortcut online="false">
-			<desktop/>
-			<menu submenu="RDV"/>
-		</shortcut>
 	</information>
 	<security>
 		<all-permissions/>
 	</security>
 	<resources>
 		<j2se version="1.5+" initial-heap-size="64m" max-heap-size="256m"/>
-		<jar href="RDV-3D.jar" main="true"/>
-                <extension href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp"/>
+		<jar href="rdv.jar" main="true"/>
+			<extension href="http://download.java.net/media/java3d/webstart/release/java3d-latest.jnlp"/>
 	</resources>
-	<application-desc main-class="org.rdv.RDV">
+	<application-desc>
 		<property name="org.apache.commons.logging.Log" value="org.apache.commons.logging.impl.NoOpLog"/>
-		<argument>--host</argument>
-        <argument>neestele.nees.lehigh.edu</argument>        
 	</application-desc>
 </jnlp>

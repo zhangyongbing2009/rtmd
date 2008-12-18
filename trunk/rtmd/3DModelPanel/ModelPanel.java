@@ -26,7 +26,7 @@
 
 package org.rdv.datapanel;
 
-import org.rdv.rbnb.Channel;
+import org.rdv.data.Channel;
 import org.rdv.ui.MessagePopup;
 import com.rbnb.sapi.ChannelMap;
 
