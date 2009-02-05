@@ -20,7 +20,7 @@ for i=1:Structure.NumElements
     dof(4,1)=Elements{i}.Nodes(2).UX;
     dof(5,1)=Elements{i}.Nodes(2).UY;
     dof(6,1)=Elements{i}.Nodes(2).THETA;
-    
+        
 % go through each dof and set the mass and stiffness matrices
       for ii=1:6
           for jj=1:6

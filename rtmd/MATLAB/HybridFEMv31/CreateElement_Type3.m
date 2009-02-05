@@ -258,6 +258,7 @@ vars.relas = 0;
         end
 %% SHEAR
         if (vars.ftyp(imbt,8)==0.) 
+        else
           shfac=eil/(vars.ftyp(imbt,1)/(2.*(1.+vars.ftyp(imbt,9)))*vars.ftyp(imbt,8)*vars.fl*ppsh);
           det=facl*facr-faclr^2;
           fii=facr/det+shfac;
