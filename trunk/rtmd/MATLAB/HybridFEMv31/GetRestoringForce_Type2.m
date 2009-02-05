@@ -24,4 +24,3 @@ for i=1:6
     end
 end
 RestoringForce = SE*Ue;  %resisting (6x1) resisting force vector of element in global coordinates
-Element.relas = 0; % necessary
