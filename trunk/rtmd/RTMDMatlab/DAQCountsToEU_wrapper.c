@@ -18,7 +18,7 @@
   *   in the Real-Time Workshop User's Manual in the Chapter titled,
   *   "Wrapper S-functions".
   *
-  *   Created: Fri Feb 10 11:37:01 2006
+  *   Created: Fri Feb  6 10:49:49 2009
   */
 
 
@@ -63,6 +63,7 @@ int val;
   
   if (val > 0x7FFF)
      val = -((val ^ 0xFFFF) + 1);
+     val = val / 65536;
   
   y0[0] = ((((((10000.0 / gain[0])/32768.0) * val) * Vslope[0]) + Voffset[0]) * EUslope[0]) + EUoffset[0];
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */

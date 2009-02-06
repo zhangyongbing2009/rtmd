@@ -18,7 +18,7 @@
   *   in the Real-Time Workshop User's Manual in the Chapter titled,
   *   "Wrapper S-functions".
   *
-  *   Created: Fri Feb 10 11:29:59 2006
+  *   Created: Fri Feb  6 10:50:11 2009
   */
 
 
@@ -58,6 +58,7 @@ int val;
   
   if (val > 0x7FFF)
      val = -((val ^ 0xFFFF) + 1);
+     val = val / 65536;
   
   y0[0] = val;
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */
