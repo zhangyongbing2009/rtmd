@@ -26,7 +26,7 @@
   *  -------------------------------------------------------------------------
   * | See matlabroot/simulink/src/sfuntmpl_doc.c for a more detailed template |
   *  ------------------------------------------------------------------------- 
- * Created: Fri Feb 10 11:29:59 2006
+ * Created: Fri Feb  6 10:50:11 2009
  * 
  *
  */
@@ -78,7 +78,7 @@
 #define CONT_STATES_IC       [0]
 
 #define SFUNWIZ_GENERATE_TLC 1
-#define SOURCEFILES "__SFB____SFB__"
+#define SOURCEFILES "__SFB__"
 #define PANELINDEX           6
 #define USE_SIMSTRUCT        0
 #define SHOW_COMPILE_STEPS   0                   
@@ -132,7 +132,7 @@ static void mdlInitializeSizes(SimStruct *S)
 
     /* Take care when specifying exception free code - see sfuntmpl_doc.c */
     ssSetOptions(S, (SS_OPTION_EXCEPTION_FREE_CODE |
-                     SS_OPTION_USE_TLC_WITH_ACCELERATOR |
+                     SS_OPTION_USE_TLC_WITH_ACCELERATOR | 
 		     SS_OPTION_WORKS_WITH_CODE_REUSE));
 }
 
