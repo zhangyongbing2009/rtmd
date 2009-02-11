@@ -1,0 +1,6 @@
+% update acceleration vector
+function Integrator = UpdateAcceleration(Integrator, Structure, step)
+
+Integrator.Acceleration = Structure.MassMatrixFreeInv * ...
+                          (Integrator.PEFF(step,:)' - Structure.DampingMatrixFree * ...
+                           Integrator.Velocity - Integrator.RestoringForce);
