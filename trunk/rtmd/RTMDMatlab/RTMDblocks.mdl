@@ -32,11 +32,11 @@ Library {
   Creator		  "Tommy"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "Tommy"
+  LastModifiedBy	  "NEESsim1"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Feb 06 12:02:40 2009"
+  LastModifiedDate	  "Tue Feb 10 14:55:23 2009"
   RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:25>"
+  ModelVersionFormat	  "1.%<AutoIncrement:26>"
   ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
@@ -155,9 +155,6 @@ Library {
       SamplingMode	      "auto"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
-    }
-    Block {
-      BlockType		      Reference
     }
     Block {
       BlockType		      "S-Function"
@@ -397,7 +394,7 @@ Library {
       SourceType	      "xpcscopeblock"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
-      FunctionWithSeparateData "off"
+      FunctionWithSeparateData off
       RTWMemSecFuncInitTerm   "Inherit from model"
       RTWMemSecFuncExecute    "Inherit from model"
       RTWMemSecDataConstants  "Inherit from model"
@@ -405,10 +402,10 @@ Library {
       RTWMemSecDataParameters "Inherit from model"
       scopeno		      "1"
       scopetype		      "File"
-      autostart		      "on"
+      autostart		      on
       viewmode		      "Graphical redraw"
       formatstr		      "'%15.6f'"
-      grid		      "on"
+      grid		      on
       ylimits		      "[0,0]"
       nosamples		      "250"
       noprepostsamples	      "0"
@@ -422,11 +419,11 @@ Library {
       filename		      "data.dat"
       mode		      "Lazy"
       writesize		      "512"
-      autorestart	      "on"
+      autorestart	      on
     }
     Block {
       BlockType		      SubSystem
-      Name		      "Limit \nChecker"
+      Name		      "Limit Checker"
       Ports		      [1, 1]
       Position		      [185, 267, 220, 283]
       BackgroundColor	      "red"
@@ -451,7 +448,7 @@ Library {
       MaskValueString	      "1|-1"
       MaskTabNameString	      ","
       System {
-	Name			"Limit \nChecker"
+	Name			"Limit Checker"
 	Location		[48, 620, 546, 920]
 	Open			off
 	ModelBrowserVisibility	off
@@ -1152,7 +1149,7 @@ Library {
       SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 read "
       SourceType	      "SC150 Read"
       partition		      "[]"
-      errorport		      "off"
+      errorport		      off
       ts		      "sample"
       pci		      "-1"
     }
@@ -1165,7 +1162,7 @@ Library {
       SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 write "
       SourceType	      "SC150 Write"
       partition		      "[]"
-      errorport		      "off"
+      errorport		      off
       ts		      "sample"
       pci		      "-1"
     }
@@ -1407,7 +1404,7 @@ Stateflow {
   }
   chart {
     id			    2
-    name		    "Limit \nChecker/Embedded\nMATLAB Function"
+    name		    "Limit Checker/Embedded\nMATLAB Function"
     windowPosition	    [341.813 269.45 200.25 189.75]
     viewLimits		    [0 156.75 0 153.75]
     screen		    [1 1 1280 1024 1.333333333333333]
@@ -1621,7 +1618,7 @@ Stateflow {
   }
   instance {
     id			    13
-    name		    "Limit \nChecker/Embedded\nMATLAB Function"
+    name		    "Limit Checker/Embedded\nMATLAB Function"
     machine		    1
     chart		    2
   }
@@ -1636,8 +1633,6 @@ Stateflow {
     firstJunction	    16
     viewObj		    14
     machine		    1
-    subviewS {
-    }
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
     firstData		    18
