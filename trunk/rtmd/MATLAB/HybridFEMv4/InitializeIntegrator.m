@@ -10,4 +10,4 @@ Integrator.Alpha2 = Integrator.Alpha1;
 % initial array conditions
 Integrator.Displacement = zeros(Structure.NumFreeDOF, 1);
 Integrator.Velocity = zeros(Structure.NumFreeDOF, 1);
-Integrator.Acceleration = Structure.MassMatrixFreeInv * Integrator.PEFF(1,:)';
+Integrator.Acceleration = Structure.MassMatrixFreeInv * Integrator.PEFF(1,:)' * Integrator.EQScaleFactor;
