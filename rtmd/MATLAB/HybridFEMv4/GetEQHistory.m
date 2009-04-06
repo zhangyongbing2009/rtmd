@@ -11,7 +11,8 @@ for i = 1:Structure.NumElements
 		end
     end
 end
-NegativeEFF = -1.0 * Integrator.EQScaleFactor * Structure.MassMatrixFree * InfluenceVector;
+%NegativeEFF = -1.0 * Integrator.EQScaleFactor * Structure.MassMatrixFree * InfluenceVector;
+NegativeEFF = -1.0 * Structure.MassMatrixFree * InfluenceVector;
 
 % save number of steps and effective force array to Integrator
 Integrator.Steps = length(EQ);
