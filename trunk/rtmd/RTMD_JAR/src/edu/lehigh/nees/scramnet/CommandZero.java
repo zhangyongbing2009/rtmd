@@ -16,6 +16,7 @@ import edu.lehigh.nees.IntegratedControl.Ramp.ToZeroRampGenerator;
  * <p>
  * <b><u>Revisions</u></b><br>
  *  2 Mar 06  T. Marullo   Initial
+ * 21 Apr 09  T. Marullo   Fixed some sawtoothing effects.  Now runs smooth
  *  						
  ********************************/
 public class CommandZero extends JFrame implements ActionListener {
@@ -692,7 +693,7 @@ public class CommandZero extends JFrame implements ActionListener {
 	    label.setBounds(350,410,125,25);       		    
 	    this.getContentPane().add(label);
 	    // Label
-		label = new JLabel("Ticks");
+		label = new JLabel("ms (Ticks)");
 	    label.setBounds(400,440,125,25);       		    
 	    this.getContentPane().add(label);
 	    // Rate TextField   		    
@@ -746,9 +747,17 @@ public class CommandZero extends JFrame implements ActionListener {
 		  ToZeroRampGenerator[] toZero = new ToZeroRampGenerator[30];		  		 		  
 		  
 		  // Get Rate
-		  int lengthOfRamp = 5120;	// default value
+		  int lengthOfRamp = 1024;	// default value
+		  // Check if it has a value that is a number		 
 		  if (!rateTextField.getText().equals(""))	// get updated value 		  
-			  lengthOfRamp = Integer.parseInt(rateTextField.getText().trim());  
+			  lengthOfRamp = Integer.parseInt(rateTextField.getText().trim());
+		  else
+			  rateTextField.setText("1024");
+		  // Can't be less than 1 second
+		  if (lengthOfRamp < 1024) {
+			  lengthOfRamp = 1024;
+			  rateTextField.setText("1024");
+		  }
           
           // Read the current SCRAMNet command data            
           for (int i = 0; i < 30; i++) {
@@ -761,21 +770,23 @@ public class CommandZero extends JFrame implements ActionListener {
         	  }
           }
 		  
+          baseTick = scr.readGlobalCounter();
+          long nextTick = baseTick;
+          long count = 1;          
+          System.out.println("Basetick: " + baseTick);          
           // Ramp Selected down to 0
-          for (int j = 1; j <= lengthOfRamp/10; j++) {              
+          while (count <= lengthOfRamp) {            
         	  for (int i = 0; i < 30; i++) {
         		  if (blockCheckBox[i].isSelected() == true) {
         			  if (!addressTextField[i].getText().equals(""))
-        				  scr.writeFloat(Integer.parseInt(addressTextField[i].getText().trim()), (float)toZero[i].generate(currentCommand[i], lengthOfRamp/10, j));        			  
+        				  scr.writeFloat(Integer.parseInt(addressTextField[i].getText().trim()), (float)toZero[i].generate(currentCommand[i], lengthOfRamp, count));        			  
         		  }        		  
         	  }
               // Wait for next tick
-              baseTick = scr.readGlobalCounter();
-              while(baseTick == scr.readGlobalCounter()) {
-            	  try {
-            		  Thread.sleep(10);        	          	  
-            	  } catch (Exception e) {}
-              }
+              nextTick = scr.readGlobalCounter();
+              while(nextTick == scr.readGlobalCounter()) {}              
+        	  //Increment the ramp to the next tick value to try to maintain speed
+              count = 1 + nextTick - baseTick;                                
           }
           zeroButton.setEnabled(true);  
 	  }
