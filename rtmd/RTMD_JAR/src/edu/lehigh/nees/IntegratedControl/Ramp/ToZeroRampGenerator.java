@@ -3,7 +3,7 @@ package edu.lehigh.nees.IntegratedControl.Ramp;
 /********************************* 
  * To Zero Ramp Generator
  * <p>
- * This ramps a command from its current position to 0
+ * This ramps a command from its current position to 0 and must start with current step = 1
  * <p>
  * @author Thomas Marullo
  * <p>
@@ -21,19 +21,19 @@ public class ToZeroRampGenerator{
     }
     
     /** Generate the proper interpolated value depending on step count
-     * @param currentVal Current value (not used if useFeedback flag is not set)
+     * @param finalVal Final value
      * @param totalSteps Total number of steps to ramp over
      * @param currentStep Current step in ramp
      * @return Generated value of ramp
      */
-    public double generate(double currentVal, long totalSteps, long currentStep) {
+    public double generate(double finalVal, long totalSteps, long currentStep) {
         double nextVal = 0.0;
         double slope = 0.0; 
              
         // Initial step for ramp
         if (currentStep == 1)
         	// Store the current value to adjust the starting point of the ramp
-        	initVal = currentVal;        
+        	initVal = finalVal;        
         
         // Linear
         // Determine the slope of the equation
