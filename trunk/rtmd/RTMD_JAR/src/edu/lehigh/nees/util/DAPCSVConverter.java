@@ -105,7 +105,7 @@ public class DAPCSVConverter {
         // Create a progress bar
         JProgressBar progressBar = new JProgressBar();
 		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame("CSVDecimator");
+		JFrame popup = new JFrame("CSV to DAP Conversion");
 		popup.setBounds(0,0,200,70);
 		popup.setLocationRelativeTo(null);
 		popup.getContentPane().setLayout(new BorderLayout());
@@ -157,9 +157,9 @@ public class DAPCSVConverter {
                 outputFile.close();
                 popup.setVisible(false);
             } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-        } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-            
-        JOptionPane.showMessageDialog(null,"Conversion Complete");
+        } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}      
+        
+        popup.setVisible(false);
     }   
     
     /** Convert from DAP ASCII to CSV */
@@ -170,7 +170,7 @@ public class DAPCSVConverter {
         // Create a progress bar
         JProgressBar progressBar = new JProgressBar();
 		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame("CSVDecimator");
+		JFrame popup = new JFrame("DAP to CSV Conversion");
 		popup.setBounds(0,0,200,70);
 		popup.setLocationRelativeTo(null);
 		popup.getContentPane().setLayout(new BorderLayout());
