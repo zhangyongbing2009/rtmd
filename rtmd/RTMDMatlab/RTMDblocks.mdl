@@ -32,11 +32,11 @@ Library {
   Creator		  "Tommy"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "NEESsim1"
+  LastModifiedBy	  "Tommy"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Feb 10 14:55:23 2009"
+  LastModifiedDate	  "Wed Apr 22 14:08:37 2009"
   RTWModifiedTimeStamp	  0
-  ModelVersionFormat	  "1.%<AutoIncrement:26>"
+  ModelVersionFormat	  "1.%<AutoIncrement:27>"
   ConfigurationManager	  "None"
   SimulationMode	  "normal"
   LinearizationMsg	  "none"
@@ -155,6 +155,9 @@ Library {
       SamplingMode	      "auto"
       OutputWhenDisabled      "held"
       InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Reference
     }
     Block {
       BlockType		      "S-Function"
@@ -394,7 +397,7 @@ Library {
       SourceType	      "xpcscopeblock"
       ShowPortLabels	      "FromPortIcon"
       SystemSampleTime	      "-1"
-      FunctionWithSeparateData off
+      FunctionWithSeparateData "off"
       RTWMemSecFuncInitTerm   "Inherit from model"
       RTWMemSecFuncExecute    "Inherit from model"
       RTWMemSecDataConstants  "Inherit from model"
@@ -402,10 +405,10 @@ Library {
       RTWMemSecDataParameters "Inherit from model"
       scopeno		      "1"
       scopetype		      "File"
-      autostart		      on
+      autostart		      "on"
       viewmode		      "Graphical redraw"
       formatstr		      "'%15.6f'"
-      grid		      on
+      grid		      "on"
       ylimits		      "[0,0]"
       nosamples		      "250"
       noprepostsamples	      "0"
@@ -419,7 +422,7 @@ Library {
       filename		      "data.dat"
       mode		      "Lazy"
       writesize		      "512"
-      autorestart	      on
+      autorestart	      "on"
     }
     Block {
       BlockType		      SubSystem
@@ -467,22 +470,6 @@ Library {
 	  Name			  ">"
 	  Position		  [110, 63, 140, 77]
 	  IconDisplay		  "Port number"
-	  OutDataType		  "sfix(16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Constant
-	  Name			  "Constant"
-	  Position		  [85, 137, 140, 163]
-	  Value			  "upperlimit"
-	  OutDataType		  "sfix(16)"
-	  OutScaling		  "2^0"
-	}
-	Block {
-	  BlockType		  Constant
-	  Name			  "Constant1"
-	  Position		  [85, 176, 140, 204]
-	  Value			  "lowerlimit"
 	  OutDataType		  "sfix(16)"
 	  OutScaling		  "2^0"
 	}
@@ -707,9 +694,25 @@ Library {
 	  }
 	}
 	Block {
+	  BlockType		  Constant
+	  Name			  "Lower Limit"
+	  Position		  [85, 176, 140, 204]
+	  Value			  "lowerlimit"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
+	}
+	Block {
 	  BlockType		  Stop
 	  Name			  "Stop Simulation"
 	  Position		  [355, 162, 390, 198]
+	}
+	Block {
+	  BlockType		  Constant
+	  Name			  "Upper Limit"
+	  Position		  [85, 137, 140, 163]
+	  Value			  "upperlimit"
+	  OutDataType		  "sfix(16)"
+	  OutScaling		  "2^0"
 	}
 	Block {
 	  BlockType		  Outport
@@ -733,14 +736,14 @@ Library {
 	  DstPort		  2
 	}
 	Line {
-	  SrcBlock		  "Constant"
+	  SrcBlock		  "Upper Limit"
 	  SrcPort		  1
 	  Points		  [25, 0]
 	  DstBlock		  "Embedded\nMATLAB Function"
 	  DstPort		  3
 	}
 	Line {
-	  SrcBlock		  "Constant1"
+	  SrcBlock		  "Lower Limit"
 	  SrcPort		  1
 	  Points		  [25, 0]
 	  DstBlock		  "Embedded\nMATLAB Function"
@@ -1149,7 +1152,7 @@ Library {
       SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 read "
       SourceType	      "SC150 Read"
       partition		      "[]"
-      errorport		      off
+      errorport		      "off"
       ts		      "sample"
       pci		      "-1"
     }
@@ -1162,7 +1165,7 @@ Library {
       SourceBlock	      "xpcsystranlib/Shared\nMemory/SC150 write "
       SourceType	      "SC150 Write"
       partition		      "[]"
-      errorport		      off
+      errorport		      "off"
       ts		      "sample"
       pci		      "-1"
     }
