@@ -1,0 +1,9 @@
+
+      /     Copyright (c) 2009                                            
+     /           Lehigh University                                       
+    /_           Advanced Technology for Large Structural Systems (ATLSS)
+   // \          Research Center                                         
+  /| A T L S S                                                           
+ /  \_/          Funded primarily by grant CMS 02-17393 from the National
+/______________  Science Foundation as part of NEES project. 
+
