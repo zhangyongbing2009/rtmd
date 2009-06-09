@@ -19,20 +19,25 @@ import javax.swing.*;
  *  6 Nov 08  T. Marullo  Allowed to run as Application
  * 
  ********************************/
-public class CSVDecimator extends JApplet implements ActionListener {
+public class CSVDecimator extends JFrame implements ActionListener {
 	
     private static final long serialVersionUID = 3492850886789702570L;
     
 	/** Creates a new instance of CSVDecimator */
-    public CSVDecimator() {    	
+    public CSVDecimator() { 
+    	super("CSV Decimator");
+    	
     	// Initialize the decimate variable to 1 lines (no decimating) 
         decimate = 1;
         linesToSkip = 0;       
+        init();
+        this.setVisible(true);
     }
     
-    public void init() {
-    	this.setSize(220,220);
-    	this.getContentPane().setLayout(null);
+    public void init() {    	
+    	this.setSize(225,270);
+    	this.getContentPane().setLayout(null);    	
+    	this.setLocationRelativeTo(null);
     	
     	// CSV File 
     	openCSVFileButton = new JButton("Open CSV File");
@@ -215,34 +220,7 @@ public class CSVDecimator extends JApplet implements ActionListener {
     }            
     
     public static void main(String args[]) {
-    	//Create the frame this applet will run in
-    	JFrame appletFrame = new JFrame("CSV Decimator");
-
-    	//The frame needs a layout manager, use the GridLayout to maximize
-    	//the applet size to the frame.
-    	appletFrame.setLayout(new GridLayout(1,0));
-
-    	//Have to give the frame a size before it is visible
-        appletFrame.resize(250,280);
-
-		//Make the frame appear on the screen. You should make the frame appear
-		//before you call the applet's init method. On some Java implementations,
-		//some of the graphics information is not available until there is a frame.
-		//If your applet uses certain graphics functions like getGraphics() in the
-		//init method, it may fail unless there is a frame already created and
-		//showing.
-        appletFrame.show();
-
-        //Create an instance of the applet
-        JApplet myApplet = new CSVDecimator();
-
-        //Add the applet to the frame
-        appletFrame.add(myApplet);
-
-        //Initialize and start the applet
-        myApplet.init();
-        myApplet.start();
-
+    	new CSVDecimator();    	
     }
 
     

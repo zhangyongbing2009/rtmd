@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 
 import edu.lehigh.nees.xml.*;
+import edu.lehigh.nees.util.filefilter.*;
 
 /********************************* 
  * xPCDataConverter
@@ -37,6 +38,24 @@ public class xPCDataConverter {
 		xmlfile = xmlfile_;
 		outfile = outfile_;
 		isDone = false;
+	}
+	
+	public xPCDataConverter() {
+		// Get the input file name
+    	String xmlFileName;
+        if ((xmlFileName = FileHandler.getFilePath("Open xPC XML File", new XMLFileFilter())) == null) {    	        	
+        	return;
+        }
+        
+    	// Get the output file name
+    	String outputFileName;
+        if ((outputFileName = FileHandler.getFilePath("Open Output CSV File", new CSVFileFilter())) == null) {
+        	return;
+        }
+        
+        // Create the conveter object
+        xPCDataConverter xpc = new xPCDataConverter(xmlFileName,outputFileName);		
+		xpc.convert();		
 	}
 	
 	/** Convert the Data files to CSV format */
@@ -240,24 +259,8 @@ public class xPCDataConverter {
 	
 	public static void main(String[] args) 
 	 {
-		// Get the input file name
-    	String xmlFileName;
-        if ((xmlFileName = FileHandler.getFilePath("Open xPC XML File")) == null)
-        	System.exit(1);               
-        
-    	// Get the output file name
-    	String outputFileName;
-        if ((outputFileName = FileHandler.getFilePath("Open Output CSV File")) == null)
-        	System.exit(1);
-        
-        // Create the conveter object
-        xPCDataConverter xpc = new xPCDataConverter(xmlFileName,outputFileName);
-		System.out.println("Converting...");
-		xpc.convert();
-		System.out.println("Done");
-		
-		System.exit(0);
-		
+		new xPCDataConverter();
+		System.exit(0);		
 	 }
 	
 	// Variables
