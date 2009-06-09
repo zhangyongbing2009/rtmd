@@ -1,5 +1,7 @@
 package edu.lehigh.nees.scramnet;
 
+import edu.lehigh.nees.xml.XMLDAQConfig;
+
 /********************************* 
  * SCRAMNet Java Driver
  * <p>
@@ -12,6 +14,7 @@ package edu.lehigh.nees.scramnet;
  *  7 Mar 06  T. Marullo   Library Load is OS independant now
  *                         DAQ functions no longer change transaction mode
  *  8 Oct 07  T. Marullo   Major rework for native types
+ *  9 Jun 09  T. Marullo   Added a readDaq function for using DAQ XML file
  */
 
 public class ScramNetIO
@@ -21,8 +24,7 @@ public class ScramNetIO
     /** Unmaps the Scramnet */
     public native int unmapScramnet();
     /** Set the Memory mode: 0 = long, 1 = word, 2 = byte */
-    public native int setTransMode(int mode);        
-    
+    public native int setTransMode(int mode);            
     /** Read an integer value from a Scramnet location */
     public native int readInt(int loc);    
     /** Read a long value from a Scramnet location */
@@ -30,8 +32,7 @@ public class ScramNetIO
     /** Read a floating point value from a Scramnet location */
     public native float readFloat(int loc);
     /** Read a double value from a Scramnet location */
-    public native double readDouble(int loc);
-       
+    public native double readDouble(int loc);       
     /** Write an integer value to a Scramnet location */
     public native int writeInt(int loc, int value);
     /** Write a long value to a Scramnet location */
@@ -39,8 +40,7 @@ public class ScramNetIO
     /** Write a floating point value to a Scramnet location */
     public native int writeFloat(int loc, float value);       
     /** Write a double value to a Scramnet location */
-    public native int writeDouble(int loc, double value);
-           
+    public native int writeDouble(int loc, double value);           
     /** Clear SCRAMNet Memory */
     public native int clear();
     /** Read the Global Counter */
@@ -69,6 +69,18 @@ public class ScramNetIO
 		// Equation to convert counts to double value
         double value = ((((((10000.0 / gain)/32768.0) * val) * Vslope) +Voffset) * EUslope) + EUoffset;
         return value;		
+    }
+    
+    /** Read a double value from a location using a DAQ XML config */
+    public double readDAQ(String loc, XMLDAQConfig daqConfig) {
+    	// Get params
+    	double gain = daqConfig.getDaqGainFromOffset(loc);
+    	double Voffset = daqConfig.getDaqVoffsetFromOffset(loc);
+    	double Vslope = daqConfig.getDaqVslopeFromOffset(loc);
+    	double EUoffset = daqConfig.getDaqEUoffsetFromOffset(loc);
+    	double EUslope = daqConfig.getDaqEUslopeFromOffset(loc);    	
+    	
+    	return this.readDAQ(loc, gain, Voffset, Vslope, EUoffset, EUslope);
     }
 	
     /** Read counts value from a location on the DAQ system */

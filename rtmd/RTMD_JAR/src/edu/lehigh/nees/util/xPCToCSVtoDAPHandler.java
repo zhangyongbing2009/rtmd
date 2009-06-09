@@ -17,8 +17,13 @@ import java.io.*;
  ********************************/
 public class xPCToCSVtoDAPHandler {
 	public static void main(String[] args) {
-		// Get the xPC xml file
-		File xpcfile = new File(args[0]);
+		new xPCToCSVtoDAPHandler(new File(args[0]));
+		
+		System.exit(0);
+	}	
+	
+	public xPCToCSVtoDAPHandler(File xpcfile) {
+		// Get the xPC xml file		
 		String abspath = xpcfile.getAbsolutePath();
 		String curpath = abspath.substring(0,abspath.lastIndexOf("\\"));
 		
@@ -32,8 +37,6 @@ public class xPCToCSVtoDAPHandler {
 		String txtfilename = new String(curpath + "\\results.txt");
 		DAPCSVConverter csvtodap = new DAPCSVConverter();
 		csvtodap.convertCSVtoDAPNoPopup(csvfilename, txtfilename, 1024);		
-		csvtodap = null;
-		
-		System.exit(0);
+		csvtodap = null;	
 	}
 }

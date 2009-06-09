@@ -52,8 +52,8 @@ public class CommandZero extends JFrame implements ActionListener {
         this.setResizable(false);                
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);             
         // Set up UI Look and Feel
-        try {            
-            UIManager.setLookAndFeel(new com.oyoaha.swing.plaf.oyoaha.OyoahaLookAndFeel());
+        try {                        
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch(Exception e) {System.out.println("Error setting Look and Feel: " + e);}
 
         // Set up arrays for all 30 blocks
@@ -772,8 +772,7 @@ public class CommandZero extends JFrame implements ActionListener {
 		  
           baseTick = scr.readGlobalCounter();
           long nextTick = baseTick;
-          long count = 1;          
-          System.out.println("Basetick: " + baseTick);          
+          long count = 1;                             
           // Ramp Selected down to 0
           while (count <= lengthOfRamp) {            
         	  for (int i = 0; i < 30; i++) {

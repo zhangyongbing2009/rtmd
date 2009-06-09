@@ -67,10 +67,13 @@ public class XMLGenerator extends JFrame {
 	public void init() {
 		this.setSize(800, 600);
 		this.setLocationRelativeTo(null);
+		// Set up UI Look and Feel
+        try {                        
+        	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch(Exception e) {System.out.println("Error setting Look and Feel: " + e);}
 		this.getContentPane().setLayout(new BorderLayout());
 		this.setResizable(false);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
 
 		// Create "FILE" menu bar
 		generateMenuBar();
@@ -201,12 +204,11 @@ public class XMLGenerator extends JFrame {
 		label.setHorizontalAlignment(JLabel.LEFT);
 		label.setBounds(10, 10, 150, 30);
 		integratorPanel.add(label);
-		integrationMethodComboBox = new JComboBox(
-										new DefaultComboBoxModel(
-											new String[] { "Select Integration Method", 
-													  	   "Pseudo Dynamic",
-													  	   "Effective Force", 
-														   "Predefined History" }));
+		String[] integrationTypes = { 	"Select Integration Method", 
+			  	   						"Pseudo Dynamic",
+		  	   							"Effective Force", 
+				   						"Predefined History" };
+		integrationMethodComboBox = new JComboBox(new DefaultComboBoxModel(integrationTypes));											
 		integrationMethodComboBox.setBounds(150, 10, 200, 30);
 		integrationMethodComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1027,7 +1029,7 @@ public class XMLGenerator extends JFrame {
 				{ "57", new Boolean(false), "Spare", "n_a", "1", "0", "0" },
 				{ "58", new Boolean(false), "Spare", "n_a", "1", "0", "0" },
 				{ "59", new Boolean(false), "Spare", "n_a", "1", "0", "0" },
-				{ "60", new Boolean(false), "Spare", "n_a", "1", "0", "0" },
+				{ "60", new Boolean(false), "Stop Bit", "n_a", "1", "0", "0" },
 				{ "61", new Boolean(false), "Camera Trigger", "n_a", "1", "0", "0" },
 				{ "62", new Boolean(false), "Pause Bit", "n_a", "1", "0", "0" },
 				{ "63", new Boolean(false), "Pulse Trigger", "n_a", "1", "0","0" },
@@ -1982,8 +1984,9 @@ public class XMLGenerator extends JFrame {
 	}
 
 	public static void main(String[] args) {
-		XMLGenerator.setDefaultLookAndFeelDecorated(true);
-		new XMLGenerator();
+		//XMLGenerator.setDefaultLookAndFeelDecorated(true);
+		XMLGenerator xml = new XMLGenerator();
+		xml.setVisible(true);	
 	}
 
 	/** Variables */

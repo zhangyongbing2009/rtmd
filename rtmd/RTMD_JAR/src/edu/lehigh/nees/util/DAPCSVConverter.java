@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import edu.lehigh.nees.util.filefilter.*;
 
 /********************************* 
  * DAPCSVConverter
@@ -22,7 +23,40 @@ import javax.swing.JProgressBar;
 public class DAPCSVConverter {
 	
     /** Creates a new instance of DAPCSVConverter */
-    public DAPCSVConverter() {    	
+    public DAPCSVConverter() {
+    	int selection = 0;
+    	try {
+    		selection = Integer.parseInt(JOptionPane.showInputDialog(null,"1- Convert CSV to DAP\n2- Convert DAP to CSV","1"));
+    	} catch (Exception e) {return;}
+    	
+    	if (selection == 1) {    	
+	    	// Get the input file name
+	    	String inputFileName;
+	        if ((inputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
+	        	return;
+	    	
+	    	// Get the output file name
+	    	String outputFileName;
+	        if ((outputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
+	        	return;
+	
+	    	convertCSVtoDAP(inputFileName, outputFileName);
+    	}
+    	else if (selection == 2) {    	
+	    	// Get the input file name    
+    		String inputFileName;
+	        if ((inputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
+	        	System.exit(1);
+	    	
+	    	// Get the output file name
+	        String outputFileName;
+	        if ((outputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
+	        	System.exit(1);
+	
+	    	convertDAPtoCSV(inputFileName, outputFileName);
+    	}
+    	else
+    		return;
     }
 
     
@@ -223,34 +257,7 @@ public class DAPCSVConverter {
     }  
   
     public static void main(String[] args) {
-    	DAPCSVConverter converter = new DAPCSVConverter();
-
-    	if ((Integer.parseInt(JOptionPane.showInputDialog(null,"1- Convert CSV to DAP\n2- Convert DAP to CSV","1"))) == 1) {    	
-	    	// Get the input file name
-	    	String inputFileName;
-	        if ((inputFileName = FileHandler.getFilePath("Open CSV File")) == null)
-	        	System.exit(1);
-	    	
-	    	// Get the output file name
-	    	String outputFileName;
-	        if ((outputFileName = FileHandler.getFilePath("Open .txt DAP File")) == null)
-	        	System.exit(1);
-	
-	    	converter.convertCSVtoDAP(inputFileName, outputFileName);
-    	}
-    	else {    	
-	    	// Get the input file name    
-    		String inputFileName;
-	        if ((inputFileName = FileHandler.getFilePath("Open DAP ASCII File")) == null)
-	        	System.exit(1);
-	    	
-	    	// Get the output file name
-	        String outputFileName;
-	        if ((outputFileName = FileHandler.getFilePath("Open CSV File")) == null)
-	        	System.exit(1);
-	
-	    	converter.convertDAPtoCSV(inputFileName, outputFileName);
-    	}
+    	new DAPCSVConverter();    	
         System.exit(0);
     }    
 }

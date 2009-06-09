@@ -2,6 +2,8 @@ package edu.lehigh.nees.scramnet;
 
 import java.util.*;
 
+import edu.lehigh.nees.xml.XMLDAQConfig;
+
 /********************************* 
  * Fake SCRAMNet Java Driver
  * <p>
@@ -11,11 +13,12 @@ import java.util.*;
  * <p>
  * <b><u>Revisions</u></b><br>
  *  5 Jul 06  T. Marullo   Initial Version
+ *  9 Jun 09  T. Marullo   Added a readDaq function for using DAQ XML file
  *  
  */
 
 /** Fake Scramnet Drivers <br> 
- * Address 0 contains a 1Hz unit sine wave for testing
+ * Address 1000 contains a 1Hz unit sine wave for testing
  */
 public class FakeScramNetIO implements Runnable
 {
@@ -55,65 +58,46 @@ public class FakeScramNetIO implements Runnable
     public long readGlobalCounter() {    	
     	return Long.valueOf(Float.toString(memorymap.get(64)).split("\\.")[0]);
     }
-    /** Read a floating point value from a Scramnet location */
-    public float readSCR(int loc) {
-    	return memorymap.get(loc);
-    }
     /** Read an integer value from a Scramnet location */
-    public int readSCRint(int loc) {
+    public int readInt(int loc) {
     	return Float.floatToIntBits(memorymap.get(loc));
     }
-    /** Read a floating point value from the Scramnet and scale it */
-    public float readSCRscaled(int loc, int scale) {
-    	return memorymap.get(loc) * scale;
+    /** Read a long value from a Scramnet location */
+    public long readLong(int loc) {
+    	return (long)Float.floatToIntBits(memorymap.get(loc));
     }
-    /** Read a block of data starting from a Scramnet base location */
-    public int readSCRblock(int loc, float[] values, int length) {
-    	ArrayList tempList = (ArrayList)memorymap.subList(loc,loc+length);
-    	for (int i = 0; i < tempList.size(); i++) {
-    		values[i] = memorymap.get(loc);
-    	}
-    	return 0;    	    	
+    /** Read a floating point value from a Scramnet location */
+    public float readFloat(int loc) {
+    	return memorymap.get(loc);
     }
-    /** Read a block of data from the Scramnet and scale them all */
-    public int readSCRblockScaled(int loc, float[] values, int length, int[] scale) {
-    	ArrayList tempList = (ArrayList)memorymap.subList(loc,loc+length);
-    	for (int i = 0; i < tempList.size(); i++) {
-    		values[i] = memorymap.get(loc) * scale[i];
-    	}
-    	return 0;  
-    }
-    /** Write a floating point value to a Scramnet location */
-    public int writeSCR(int loc, float value) {
-    	memorymap.set(loc,value);
-    	return 0;
+    /** Read a double value from a Scramnet location */
+    public double readDouble(int loc) {
+    	return (double)memorymap.get(loc);
     }
     /** Write an integer value to a Scramnet location */
-    public int writeSCRint(int loc, int value) {
+    public int writeInt(int loc, int value) {
     	memorymap.set(loc,Float.intBitsToFloat(value));
     	return 0;
     }
-    /** Write a floating point value to a Scramnet location and scale it */
-    public int writeSCRscaled(int loc, float value, int scale) {
-    	memorymap.set(loc,value*scale);
+    /** Write a long value to a Scramnet location */
+    public int writeLong(int loc, long value) {
+    	memorymap.set(loc,Float.intBitsToFloat((int)value));
     	return 0;
     }
-    /** Write a block of data starting from a Scramnet base location */
-    public int writeSCRblock(int loc, float[] value, int length) {
-    	for (int i = 0; i < length; i++) {
-    		memorymap.set(loc+i,value[i]);
-    	}
+    /** Write a floating point value to a Scramnet location */
+    public int writeFloat(int loc, float value) {
+    	memorymap.set(loc,value);
     	return 0;
     }
-    /** Write a block of data starting from a Scramnet base location and scale it */
-    public int writeSCRblockScaled(int loc, float[] value, int length, int[] scale) {
-    	for (int i = 0; i < length; i++) {
-    		memorymap.set(loc+i,value[i]*scale[i]);
-    	}
+    /** Write a double value to a Scramnet location */
+    public int writeDouble(int loc, double value) {
+    	memorymap.set(loc,(float)value);
     	return 0;
     }
+    
+
     /** Clear SCRAMNet Memory */
-    public int clearSCR() {
+    public int clear() {
     	memorymap.clear();
     	return 0;
     }
@@ -131,11 +115,23 @@ public class FakeScramNetIO implements Runnable
         double value = ((((((10000.0 / gain)/32768.0) * val) * Vslope) +Voffset) * EUslope) + EUoffset;
         return value;		
     }
+    
+    /** Read a double value from a location using a DAQ XML config */
+    public double readDAQ(String loc, XMLDAQConfig daqConfig) {
+    	// Get params
+    	double gain = daqConfig.getDaqGainFromOffset(loc);
+    	double Voffset = daqConfig.getDaqVoffsetFromOffset(loc);
+    	double Vslope = daqConfig.getDaqVslopeFromOffset(loc);
+    	double EUoffset = daqConfig.getDaqEUoffsetFromOffset(loc);
+    	double EUslope = daqConfig.getDaqEUslopeFromOffset(loc);    	
+    	
+    	return this.readDAQ(loc, gain, Voffset, Vslope, EUoffset, EUslope);
+    }
 	
     /** Read counts value from a location on the DAQ system */
-    public int readDAQcounts(int loc) {
+    public int readDAQcounts(String loc) {
     	// Read 32 bit integer and shift 16 bits to the right
-    	int val = Float.floatToIntBits(memorymap.get(loc));
+    	int val = Float.floatToIntBits(memorymap.get(Integer.parseInt(loc)));
 
         // Take 2's Complement if sign bit set to get negative value
         if (val > 0x7FFF)
@@ -144,55 +140,14 @@ public class FakeScramNetIO implements Runnable
         return val;
     }
        
-    /** Scramnet workaround write to use 2 blocks (Not needed anymore) */
-    public void writeSCRsplit(int loc, double value) {
-        float val = (float)value;
-        if (val == 0) {
-            memorymap.set(loc, 0f);
-            memorymap.set(loc+1, 0f);
-        }
-        else {
-            try {
-                String s = Integer.toHexString(Float.floatToIntBits(val));
-                float m = Float.intBitsToFloat(Long.decode("0x"+s).intValue());
-                if (writeSCR(loc, m) != 0) 
-                    System.err.println("Scramnet Write Error at " + loc + " for value " + value);
-                String s2 = s.substring(2) + "00";
-                m = Float.intBitsToFloat(Long.decode("0x"+s2).intValue());
-                if (writeSCR(loc+1, m) != 0) 
-                    System.err.println("Scramnet Write Error at " + loc + " for value " + value);
-            } catch (Exception e) {e.printStackTrace();}
-        }  
-    }
-       
-    /** Scramnet workaround write to use 2 blocks (Not needed anymore) */
-    public void writeSCRscaledSplit(int loc, double value, int scale) {
-        float val = (float)value/(float)scale;
-        if (val == 0) {
-        	memorymap.set(loc, 0f);
-            memorymap.set(loc+1, 0f);
-        }
-        else {
-            try {
-                String s = Integer.toHexString(Float.floatToIntBits(val));
-                float m = Float.intBitsToFloat(Long.decode("0x"+s).intValue());
-                if (writeSCR(loc, m) != 0) 
-                    System.err.println("Scramnet Write Error at " + loc + " for value " + value);
-                String s2 = s.substring(2) + "00";
-                m = Float.intBitsToFloat(Long.decode("0x"+s2).intValue());
-                if (writeSCR(loc+1, m) != 0) 
-                    System.err.println("Scramnet Write Error at " + loc + " for value " + value);
-            } catch (Exception e) {e.printStackTrace();}
-        }  
-    }
     
     // Fake signal
 	public synchronized void run() {		
 		float i = 0;
 		isRunning = true;
 		while (isRunning == true) {
-			memorymap.set(0,(float)Math.sin(2*Math.PI*i/102.4));
-			memorymap.set(64,i++);			
+			writeFloat(100,(float)Math.sin(2*Math.PI*i/102.4));
+			writeFloat(64,i++);			
 			try {Thread.sleep(10);} catch(Exception e) {e.printStackTrace();}
 		}
 	}
@@ -203,23 +158,23 @@ public class FakeScramNetIO implements Runnable
     	scr.initScramnet();
     	
     	System.out.println("GC = " + scr.readGlobalCounter());    	    	
-    	System.out.println("Read address 0: " + scr.readSCR(0));
-    	System.out.println("Read address 1: " + scr.readSCR(1));
-    	System.out.println("Read address 1000: " + scr.readSCR(1000));
+    	System.out.println("Read address 0: " + scr.readFloat(0));
+    	System.out.println("Read address 1: " + scr.readFloat(1));
+    	System.out.println("Read address 1000: " + scr.readFloat(1000));
     	try {Thread.sleep(1000);} catch(Exception e) {e.printStackTrace();}
     	System.out.println("GC = " + scr.readGlobalCounter());
-    	System.out.println("Read address 0: " + scr.readSCR(0));
+    	System.out.println("Read address 0: " + scr.readFloat(0));
     	System.out.println("Write 1.234 to address 1 ");
-    	scr.writeSCR(1,1.234F);
+    	scr.writeFloat(1,1.234F);
     	System.out.println("Write 2.234 to address 1000 ");
-    	scr.writeSCR(1000,2.234F);
-    	System.out.println("Read address 1: " + scr.readSCR(1));
-    	System.out.println("Read address 1000: " + scr.readSCR(1000));
+    	scr.writeFloat(1000,2.234F);
+    	System.out.println("Read address 1: " + scr.readFloat(1));
+    	System.out.println("Read address 1000: " + scr.readFloat(1000));
     	try {Thread.sleep(1000);} catch(Exception e) {e.printStackTrace();}
     	System.out.println("GC = " + scr.readGlobalCounter());
-    	System.out.println("Read address 0: " + scr.readSCR(0));
-    	System.out.println("Read address 1: " + scr.readSCR(1));
-    	System.out.println("Read address 1000: " + scr.readSCR(1000));
+    	System.out.println("Read address 0: " + scr.readFloat(0));
+    	System.out.println("Read address 1: " + scr.readFloat(1));
+    	System.out.println("Read address 1000: " + scr.readFloat(1000));
     	
     	System.out.println("Press any key to continue");
     	try {System.in.read();} catch(Exception e){}

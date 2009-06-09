@@ -57,7 +57,7 @@ public class Spy extends JFrame implements ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);             
         // Set up UI Look and Feel
         try {            
-            UIManager.setLookAndFeel(new com.oyoaha.swing.plaf.oyoaha.OyoahaLookAndFeel());
+        	UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch(Exception e) {System.out.println("Error setting Look and Feel: " + e);}
 
 	
