@@ -20,6 +20,7 @@ import org.xml.sax.SAXParseException;
  * <b><u>Revisions</u></b><br>
  * 10 Mar 06  T. Marullo  Initial
  *  7 Aug 07  T. Marullo  Added LowerLimit and UpperLimit to Control blocks for xPC
+ * 17 Aug 09  T. Marullo  Changed SCRAMNet gain from int to double
  * 
  ********************************/
 public class ReadxPCXMLConfig{

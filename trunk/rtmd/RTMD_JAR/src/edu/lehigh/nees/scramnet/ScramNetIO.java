@@ -15,6 +15,7 @@ import edu.lehigh.nees.xml.XMLDAQConfig;
  *                         DAQ functions no longer change transaction mode
  *  8 Oct 07  T. Marullo   Major rework for native types
  *  9 Jun 09  T. Marullo   Added a readDaq function for using DAQ XML file
+ * 15 Jul 09  T. Marullo   Added readByte function
  */
 
 public class ScramNetIO
@@ -24,7 +25,9 @@ public class ScramNetIO
     /** Unmaps the Scramnet */
     public native int unmapScramnet();
     /** Set the Memory mode: 0 = long, 1 = word, 2 = byte */
-    public native int setTransMode(int mode);            
+    public native int setTransMode(int mode);
+    /** Read a byte value from a Scramnet location */
+    public native byte readByte(int loc);
     /** Read an integer value from a Scramnet location */
     public native int readInt(int loc);    
     /** Read a long value from a Scramnet location */

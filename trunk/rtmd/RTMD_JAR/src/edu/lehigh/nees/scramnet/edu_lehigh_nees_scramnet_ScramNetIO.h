@@ -30,6 +30,14 @@ JNIEXPORT jint JNICALL Java_edu_lehigh_nees_scramnet_ScramNetIO_unmapScramnet
  */
 JNIEXPORT jint JNICALL Java_edu_lehigh_nees_scramnet_ScramNetIO_setTransMode
   (JNIEnv *, jobject, jint);
+  
+/*
+ * Class:     edu_lehigh_nees_scramnet_ScramNetIO
+ * Method:    readByte
+ * Signature: (I)B
+ */
+JNIEXPORT jbyte JNICALL Java_edu_lehigh_nees_scramnet_ScramNetIO_readByte
+  (JNIEnv *, jobject, jint);
 
 /*
  * Class:     edu_lehigh_nees_scramnet_ScramNetIO
