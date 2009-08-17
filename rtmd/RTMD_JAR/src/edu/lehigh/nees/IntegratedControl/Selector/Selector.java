@@ -30,8 +30,8 @@ public class Selector extends JFrame implements ActionListener, Runnable {
 	// SCRAMNet
 	protected ScramNetIO scr = new ScramNetIO();
 	protected static final int simBitLocation = 0;		// SCRAMNet location
-	protected static final int pauseBitLocation = 60;	// SCRAMNet location
-	protected static final int stopBitLocation = 62;	// SCRAMNet location
+	protected static final int pauseBitLocation = 62;	// SCRAMNet location
+	protected static final int stopBitLocation = 60;	// SCRAMNet location
 	// Buttons	
 	protected JButton clearSCRButton;
 	protected JButton rampZeroButton;
@@ -172,6 +172,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         xpcConvertButton = new JButton(xPCIcon);
         xpcConvertButton.setToolTipText("Convert xPC Binary Data to Text Data");
         xpcConvertButton.setBorder(null);
+        xpcConvertButton.setContentAreaFilled(false);
         xpcConvertButton.setFocusPainted(false);
         xpcConvertButton.addActionListener(this);
         
@@ -179,6 +180,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         csvDecimatorButton = new JButton(csvIcon);
         csvDecimatorButton.setToolTipText("Decimate CSV file");
         csvDecimatorButton.setBorder(null);
+        csvDecimatorButton.setContentAreaFilled(false);
         csvDecimatorButton.setFocusPainted(false);
         csvDecimatorButton.addActionListener(this);
         
@@ -186,6 +188,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         dapcsvConvertButton = new JButton(csvdapIcon);
         dapcsvConvertButton.setToolTipText("Convert CSV->DAP or DAP->CSV");
         dapcsvConvertButton.setBorder(null);
+        dapcsvConvertButton.setContentAreaFilled(false);
         dapcsvConvertButton.setFocusPainted(false);
         dapcsvConvertButton.addActionListener(this);  
         
@@ -193,6 +196,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         dapButton = new JButton(dapIcon);
         dapButton.setToolTipText("Start Data Analysis Package or drag DAP file(s) here");
         dapButton.setBorder(null);
+        dapButton.setContentAreaFilled(false);
         dapButton.setFocusPainted(false);
         dapButton.addActionListener(this); 
         new FileDrop( null, dapButton, new FileDrop.Listener()
@@ -232,9 +236,13 @@ public class Selector extends JFrame implements ActionListener, Runnable {
     	
     	// Clear SCRAMNet 
     	if (source == clearSCRButton) {
-    		// Clear every address
-            for (int i = 0 ; i <= 2097151; i++)
-            	scr.writeInt(i,0);
+    		// Confirm
+    		int response = javax.swing.JOptionPane.showConfirmDialog(this, "Are you sure you want to clear the SCRAMNet Memory?");
+    		if (response == javax.swing.JOptionPane.YES_OPTION) {
+	    		// Clear every address
+	            for (int i = 0 ; i <= 2097151; i++)
+	            	scr.writeInt(i,0);
+    		}
     	}
     	// Ramp to Zero program
     	else if (source == rampZeroButton) {
@@ -296,7 +304,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
     	
     	// csv Decimator
     	else if (source == csvDecimatorButton) {
-    		new CSVDecimator();
+       		new CSVDecimator();
     	} 
     	
     	// csv - dap Converter

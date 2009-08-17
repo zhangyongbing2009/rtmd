@@ -30,7 +30,7 @@ public class CSVWriter {
     /** Write the header of the CSV file based on a String array */
     public void writeHeader(String[] header) {
     	// Empty string to hold header
-    	String s_header = "Time,";
+    	String s_header = "";
     	
     	// Create the header string in a CSV format
     	for (int j = 0; j < header.length; j++) {
@@ -50,7 +50,7 @@ public class CSVWriter {
     	String[] headerArray = header.split(",");
     	
     	// Empty string to hold header
-    	String s_header = "Time,";
+    	String s_header = "";
     	
     	// Create the header string in a CSV format
     	for (int j = 0; j < headerArray.length; j++) {
@@ -68,7 +68,7 @@ public class CSVWriter {
     /** Write a set of values to the CSV file based on an array */
     public void write(double[] values) {
     	// Empty string to hold values
-    	String s_values = dateFormat.format(new Date()) + ",";
+    	String s_values = "";
     	
     	// Create the values string in a CSV format
     	for (int j = 0; j < values.length; j++) {
@@ -88,7 +88,7 @@ public class CSVWriter {
     	String[] valuesArray = values.split(",");
     	
     	// Empty string to hold values
-    	String s_values = dateFormat.format(new Date()) + ",";
+    	String s_values = "";
     	
     	// Create the values string in a CSV format
     	for (int j = 0; j < valuesArray.length; j++) {

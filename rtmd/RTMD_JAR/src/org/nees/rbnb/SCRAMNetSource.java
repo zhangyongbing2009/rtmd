@@ -26,6 +26,7 @@ import com.rbnb.sapi.Source;
  * <b><u>Revisions</u></b><br>
  * 16 Nov 06  T. Marullo  Initial 
  *  6 Apr 07  T. Marullo  Added units to channel names
+ * 17 Aug 09  T. Marullo  Changed gain from int to float 
  * 
  ********************************/
 public class SCRAMNetSource extends RBNBBase {
@@ -302,7 +303,7 @@ public class SCRAMNetSource extends RBNBBase {
 				else {
 					scrdata[0] = scr.readFloat(
 										Integer.parseInt(xml.getxPCReadLocation(i)))*
-										(int)xml.getxPCReadGain(i);				
+										(float)xml.getxPCReadGain(i);				
 				}
 			
 				// Push data to turbine

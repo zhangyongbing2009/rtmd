@@ -14,6 +14,7 @@ package edu.lehigh.nees.xml;
  * 06 Jul 06  T. Marullo  Added units to SCRNodeconfig
  * 13 Jul 06  T. Marullo  Changed Scan to Stream 
  * 28 Jul 06  T. Marullo  Changed Node Name to Node ID
+ * 17 Aug 09  T. Marullo  Changed gain from int to double
  * 
  ********************************/
 public class XMLScramnetConfig {
@@ -117,15 +118,15 @@ public class XMLScramnetConfig {
         return scrCtrl[blockID].units;
     }
     /** Set scale for controller block */
-    public void setCtrlScale(int blockID, int i) {
+    public void setCtrlScale(int blockID, double i) {
         scrCtrl[blockID].scale = i;
     }
     /** Get scale for controller block */
-    public int getCtrlScale(int blockID) {
+    public double getCtrlScale(int blockID) {
         return scrCtrl[blockID].scale;
     }
     /** Get scale from offset for controller block */
-    public int getCtrlScaleFromOffset(String offset) {
+    public double getCtrlScaleFromOffset(String offset) {
         int blockID = -1;
         try {
             blockID = getCtrlBlockIDFromOffset(offset);
@@ -405,7 +406,7 @@ class SCRCtrlconfig {
     public String stream;
     public String description;
     public String units;
-    public int scale;
+    public double scale;
     public double lowerLimit;
     public double upperLimit;   
     

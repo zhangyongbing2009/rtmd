@@ -73,7 +73,7 @@ public class XMLGenerator extends JFrame {
         } catch(Exception e) {System.out.println("Error setting Look and Feel: " + e);}
 		this.getContentPane().setLayout(new BorderLayout());
 		this.setResizable(false);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);		
 
 		// Create "FILE" menu bar
 		generateMenuBar();
@@ -153,7 +153,7 @@ public class XMLGenerator extends JFrame {
 			}});
 		exititem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				System.exit(0);
+				exitApp();
 			}});
 		previewitem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -1740,6 +1740,11 @@ public class XMLGenerator extends JFrame {
 	private void saveAs() {
 		configFilename = null;
 		saveConfiguration();
+	}
+	
+	/** Exit App */
+	private void exitApp() {
+		this.dispose();
 	}
 
 	/** Open the Generator configuration */

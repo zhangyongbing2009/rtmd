@@ -48,6 +48,13 @@ JNIEXPORT jint JNICALL Java_edu_lehigh_nees_scramnet_ScramNetIO_unmapScramnet(JN
  *********************************************/
 
 /* Read an int from a particular address location, loc */
+JNIEXPORT jbyte JNICALL Java_edu_lehigh_nees_scramnet_ScramNetIO_readByte(JNIEnv *env, jobject obj, jint loc)
+{
+  // Return the value at that location
+  return ((volatile byte *)get_base_mem())[loc];
+}
+
+/* Read an int from a particular address location, loc */
 JNIEXPORT jint JNICALL Java_edu_lehigh_nees_scramnet_ScramNetIO_readInt(JNIEnv *env, jobject obj, jint loc)
 {
   // Return the value at that location

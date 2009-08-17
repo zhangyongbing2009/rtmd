@@ -23,6 +23,7 @@ import Jama.*;
  * 12 May 06  T. Marullo  Removed SCRAMNet CTRL Limits (not needed)
  * 06 Jul 06  T. Marullo  Added SCRNodeconfig to SCRAMNet configuration
  * 28 Jul 06  T. Marullo  Changed Node Name to Node ID and added Node Units
+ * 17 Aug 09  T. Marullo  Changed SCRAMNet gain from int to double
  * 
  ********************************/
 public class ReadXMLConfig{
@@ -80,7 +81,7 @@ public class ReadXMLConfig{
                     XMLconfig.setCtrlStream(i,((Element)ctrlblock.item(i)).getAttribute("Stream").trim());
                     XMLconfig.setCtrlDescription(i,((Element)ctrlblock.item(i)).getAttribute("Description").trim());
                     XMLconfig.setCtrlUnits(i,((Element)ctrlblock.item(i)).getAttribute("Units").trim());
-                    XMLconfig.setCtrlScale(i,Integer.parseInt(((Element)ctrlblock.item(i)).getAttribute("Scale")));                
+                    XMLconfig.setCtrlScale(i,Double.parseDouble(((Element)ctrlblock.item(i)).getAttribute("Scale")));                
                     XMLconfig.setLowerLimit(i,Double.parseDouble(((Element)ctrlblock.item(i)).getAttribute("LowerLimit")));
                     XMLconfig.setUpperLimit(i,Double.parseDouble(((Element)ctrlblock.item(i)).getAttribute("UpperLimit")));                    
                 }

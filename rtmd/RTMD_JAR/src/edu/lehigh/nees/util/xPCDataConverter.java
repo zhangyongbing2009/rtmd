@@ -8,9 +8,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
-
 import edu.lehigh.nees.xml.*;
 import edu.lehigh.nees.util.filefilter.*;
+import javax.swing.SwingUtilities;
 
 /********************************* 
  * xPCDataConverter
@@ -24,10 +24,20 @@ import edu.lehigh.nees.util.filefilter.*;
  * 27 Apr 06  T. Marullo  Added path to convert for flexible XPC.DAT locations
  * 28 Apr 06  T. Marullo  Changed xpc data file loading to user selected rather than hardcoded
  *  6 Apr 07  T. Marullo  Added units to header
+ *  1 Jul 09  T. Marullo  Converted to R2009a where it only needs 1 XPC1.DAT file
  * 
  ********************************/
 public class xPCDataConverter {
 
+	// Variables
+	private boolean isDone;
+	private DataInputStream data;
+	private PrintStream out;
+	private String outfile;
+	private String xmlfile;
+	private JProgressBar progressBar;	
+	private JFrame popup;	
+	
 	/** Create a new xPCDataConverter Object *
 	 * 
 	 * @param xmlfile_ xPC XML File
@@ -62,21 +72,14 @@ public class xPCDataConverter {
 	public void convert() {	
 		// Open XML file
 		XMLxPCConfig xml = (new ReadxPCXMLConfig(new File(xmlfile))).getxPCConfig();		
-		
-		// Set Data File array based on how many read blocks there are (10 reads per block)
-		data = new DataInputStream[(xml.getnumxPCReadBlocks()-1)/10 + 1];
-		for (int i = 0; i < data.length; i++) {
-			data[i] = null;			
-		}
-		
-		// Open each Data File and seek ahead 512 bytes
-		for (int i = 0; i < data.length; i++) {
-			try {      
-				//data[i] = new DataInputStream(new BufferedInputStream(new FileInputStream(new String(pathOfData + "XPC" + (i+1) + ".DAT"))));
-				data[i] = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File " + (i+1)))));
-				data[i].skipBytes(512);
-			} catch (Exception e) {e.printStackTrace();}
-		}
+			
+		// Open the Data File and get header information
+		try {      
+			data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));					
+			data.skipBytes(9);
+			int headerSize = data.readUnsignedByte()*256;
+			data.skipBytes(headerSize-10);					
+		} catch (Exception e) {e.printStackTrace();}
 			
 		// Open Output File
 		try {
@@ -90,35 +93,32 @@ public class xPCDataConverter {
 		}
 		out.println(s + "Time");
 		
-		// Create a progress bar
-		JProgressBar progressBar = new JProgressBar();
+		// Create a progress bar				
+    	progressBar = new JProgressBar();
 		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame();
+		popup = new JFrame("xPC Converter");
 		popup.setBounds(0,0,200,70);
 		popup.setLocationRelativeTo(null);
 		popup.getContentPane().setLayout(new BorderLayout());
+		popup.setAlwaysOnTop(true);
 		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
 		JLabel label = new JLabel("Converting");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		popup.getContentPane().add(label,BorderLayout.NORTH);
-		popup.setVisible(true);
-        progressBar.setIndeterminate(true);
+		popup.setVisible(true);	
+        progressBar.setIndeterminate(true);			
 		
 		// Go through all xPC Read Blocks and get data from files		
 		int i = 0;
 		while (isDone == false) {
-			int fileID = -1;
 			s = "";	
 			for (i = 0; i < xml.getnumxPCReadBlocks(); i++) {
-				// Increment file ID on each 10th data block				
-				if (i % 10 == 0)
-					fileID++;
 				if (xml.getxPCReadisDAQ(i).equals("false"))
 					// Sim-Ctrl Block
-					s = s + (getData(data[fileID])*xml.getxPCReadGain(i)) + ",";
+					s = s + (getData(data)*xml.getxPCReadGain(i)) + ",";
 				else {
 					// DAQ Block needs to be converted to a 16-Bit 2-Cs Int					
-					double daqval = getData(data[fileID]);
+					double daqval = getData(data);
 					daqval = daqval/65536;
 					if (daqval > 0x7FFF)
 						daqval = -(((int)daqval ^ 0xFFFF) + 1);
@@ -127,22 +127,18 @@ public class xPCDataConverter {
 				}
 			}			
 			
-			// Throw away all Time columns except last file
-			for (i = 0; i < data.length-1; i++) {
-				getData(data[i]);
-			}			
+			// Get the time
 			// Skip the last line because it's garbage numbers
 			if (isDone != true)
-				out.println(s + getData(data[i]));
+				out.println(s + getData(data));			
 		}
 		
 		// Close files
-		for (i = 0; i < data.length; i++) {
-			try {data[i].close();} catch (Exception e) {e.printStackTrace();}
-		}
+		try {data.close();} catch (Exception e) {e.printStackTrace();}		
 		out.close();
 		
-		popup.setVisible(false);
+		// Close progress bar
+		popup.setVisible(false);	
 		
 		JOptionPane.showMessageDialog(null,"Conversion Complete");
 	}
@@ -154,21 +150,14 @@ public class xPCDataConverter {
 		XMLxPCConfig xml = (new ReadxPCXMLConfig(xmlFILE)).getxPCConfig();	
 		String abspath = xmlFILE.getAbsolutePath();
 		String pathOfData = abspath.substring(0,abspath.lastIndexOf("\\"));		
-		
-		// Set Data File array based on how many read blocks there are (10 reads per block)
-		data = new DataInputStream[(xml.getnumxPCReadBlocks()-1)/10 + 1];
-		for (int i = 0; i < data.length; i++) {
-			data[i] = null;			
-		}
-		
-		// Open each Data File and seek ahead 512 bytes
-		for (int i = 0; i < data.length; i++) {
-			try {      
-				data[i] = new DataInputStream(new BufferedInputStream(new FileInputStream(new String(pathOfData + "\\XPC" + (i+1) + ".DAT"))));
-				System.out.println("Processed " + new String(pathOfData + "\\XPC" + (i+1) + ".DAT"));
-				data[i].skipBytes(512);
-			} catch (Exception e) {e.printStackTrace();}
-		}
+				
+		// Open the Data File and get header information
+		try {      
+			data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));					
+			data.skipBytes(9);
+			int headerSize = data.readUnsignedByte()*256;
+			data.skipBytes(headerSize-10);					
+		} catch (Exception e) {e.printStackTrace();}	
 			
 		// Open Output File
 		try {
@@ -182,35 +171,32 @@ public class xPCDataConverter {
 		}
 		out.println(s + "Time");
 		
-		// Create a progress bar
-		JProgressBar progressBar = new JProgressBar();
+		// Create a progress bar		
+    	progressBar = new JProgressBar();
 		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame();
+		popup = new JFrame("xPC Converter");
 		popup.setBounds(0,0,200,70);
 		popup.setLocationRelativeTo(null);
 		popup.getContentPane().setLayout(new BorderLayout());
+		popup.setAlwaysOnTop(true);
 		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
 		JLabel label = new JLabel("Converting");
 		label.setHorizontalAlignment(JLabel.CENTER);
 		popup.getContentPane().add(label,BorderLayout.NORTH);
-		popup.setVisible(true);
-        progressBar.setIndeterminate(true);
+		popup.setVisible(true);	
+        progressBar.setIndeterminate(true);		
 		
 		// Go through all xPC Read Blocks and get data from files		
 		int i = 0;
-		while (isDone == false) {
-			int fileID = -1;
+		while (isDone == false) {			
 			s = "";	
 			for (i = 0; i < xml.getnumxPCReadBlocks(); i++) {
-				// Increment file ID on each 10th data block				
-				if (i % 10 == 0)
-					fileID++;
 				if (xml.getxPCReadisDAQ(i).equals("false"))
 					// Sim-Ctrl Block
-					s = s + (getData(data[fileID])*xml.getxPCReadGain(i)) + ",";
+					s = s + (getData(data)*xml.getxPCReadGain(i)) + ",";
 				else {
 					// DAQ Block needs to be converted to a 16-Bit 2-Cs Int					
-					double daqval = getData(data[fileID]);
+					double daqval = getData(data);
 					daqval = daqval/65536;
 					if (daqval > 0x7FFF)
 						daqval = -(((int)daqval ^ 0xFFFF) + 1);
@@ -219,22 +205,18 @@ public class xPCDataConverter {
 				}
 			}			
 			
-			// Throw away all Time columns except last file
-			for (i = 0; i < data.length-1; i++) {
-				getData(data[i]);
-			}			
+			// Get the time
 			// Skip the last line because it's garbage numbers
 			if (isDone != true)
-				out.println(s + getData(data[i]));
+				out.println(s + getData(data));					
 		}
 		
 		// Close files
-		for (i = 0; i < data.length; i++) {
-			try {data[i].close();} catch (Exception e) {e.printStackTrace();}
-		}
+		try {data.close();} catch (Exception e) {e.printStackTrace();}		
 		out.close();
 		
-		popup.setVisible(false);			
+		// Close progress bar
+		popup.setVisible(false);			   
 	}
 	
 	/** Read Binary Data into String (double) format *
@@ -261,12 +243,5 @@ public class xPCDataConverter {
 	 {
 		new xPCDataConverter();
 		System.exit(0);		
-	 }
-	
-	// Variables
-	private boolean isDone;
-	private DataInputStream data[];
-	private PrintStream out;
-	private String outfile;
-	private String xmlfile;
+	 }		
 }
