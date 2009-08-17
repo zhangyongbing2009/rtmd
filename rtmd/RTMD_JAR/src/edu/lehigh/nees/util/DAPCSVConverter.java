@@ -25,7 +25,38 @@ import edu.lehigh.nees.util.filefilter.*;
 public class DAPCSVConverter {
 		
     /** Creates a new instance of DAPCSVConverter */
-    public DAPCSVConverter() {    	    	
+    public DAPCSVConverter() {   
+    	int selection = 0;
+    	try {
+    		selection = Integer.parseInt(JOptionPane.showInputDialog(null,"1- Convert CSV to DAP\n2- Convert DAP to CSV","1"));
+    	} catch (Exception e) {return;}
+    	
+    	if (selection == 1) {    	
+	    	// Get the input file name
+	    	String inputFileName;
+	        if ((inputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
+	        	return;
+	    	
+	    	// Get the output file name
+	    	String outputFileName;
+	        if ((outputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
+	        	return;
+	
+	        convertCSVtoDAP(inputFileName, outputFileName);
+    	}
+    	else if (selection == 2) {    	
+	    	// Get the input file name    
+    		String inputFileName;
+	        if ((inputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
+	        	return;
+	    	
+	    	// Get the output file name
+	        String outputFileName;
+	        if ((outputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
+	        	return;
+	
+	        convertDAPtoCSV(inputFileName, outputFileName);
+    	}    	
     }
 
     
