@@ -1,13 +1,16 @@
 package edu.lehigh.nees.IntegratedControl.Selector;
 
 import javax.swing.*;
-
+import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import edu.lehigh.nees.scramnet.*;
 import edu.lehigh.nees.xml.*;
 import edu.lehigh.nees.util.*;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 
 /********************************* 
  * Selector
@@ -44,7 +47,6 @@ public class Selector extends JFrame implements ActionListener, Runnable {
 	protected JButton csvDecimatorButton;
 	protected JButton dapcsvConvertButton;
 	protected JButton dapButton;	
-
 	// Panels
 	protected SCRAMNetSpy spyPanel;
     // Icons
@@ -63,11 +65,12 @@ public class Selector extends JFrame implements ActionListener, Runnable {
     protected ImageIcon csvdapIcon = new ImageIcon("/RTMD/res/csvdap.png");    
     protected ImageIcon dapIcon = new ImageIcon("/RTMD/res/dap.png");
     // Ramp to Zero Frame
-    protected CommandZero commandZeroFrame = new CommandZero();
+    protected CommandZero commandZeroFrame;
     // Integrated Control Configurator Frame
     protected XMLGenerator iccFrame = new XMLGenerator();
-    // Thread for background task
-    protected Thread backgroundThread;
+    // Threads for tasks
+    protected Thread updateThread;    
+    private Thread actionThread;    
     
     /** Creates a new instance of Selector */
     public Selector() {
@@ -105,8 +108,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         rampZeroButton.setBorder(null);
         rampZeroButton.setContentAreaFilled(false);
         rampZeroButton.setFocusPainted(false);
-        rampZeroButton.addActionListener(this);        
-        commandZeroFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        rampZeroButton.addActionListener(this);             
         
         // Simulation Running Bit Button
         simbitButton = new JButton(simbitOffIcon);
@@ -154,17 +156,36 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         autoxPCConvertButton.setFocusPainted(false);                	
         autoxPCConvertButton.addActionListener(this);       
         new FileDrop( null, autoxPCConvertButton, new FileDrop.Listener()
-        {   public void filesDropped( java.io.File[] files )
+        {   
+        	public void filesDropped( java.io.File[] files )
             {   
-        		if (files.length > 0) {
-        			if (files[0].getName().contains(".xml")) {
-        				new xPCToCSVtoDAPHandler(files[0]);
-        			}
-        			else
-        				javax.swing.JOptionPane.showMessageDialog(null, "Must be the xPC XML file for the binary data format");
+        		// Create a separate runnable class to perform the action
+        		class xpcAutoConvert implements Runnable {
+        			private File file;
+    				public xpcAutoConvert(File _file) {file=_file;}
+        			public void run() {        				
+        				File xpcfile = file;
+        				String abspath = xpcfile.getAbsolutePath();
+        				String curpath = abspath.substring(0,abspath.lastIndexOf("\\"));
+        				FileHandler.setPath(abspath);		
+        				String now = getDateTime();
+        				xPCDataConverter xpctocsv = new xPCDataConverter(abspath, curpath + "\\results_"+now+".csv");    				    				
+        				// Convert RAW XPC data to a CSV file    				
+        				boolean ret = xpctocsv.convert();					
+    					// Only proceed if the dialog box wasn't canceled.		
+        				if (ret) {
+    						// Convert CSV file to DAP file        					
+    						String csvfilename = new String(curpath + "\\results_"+now+".csv");
+    						String txtfilename = new String(curpath + "\\results_"+now+".txt");			
+    						DAPCSVConverter csvtodap = new DAPCSVConverter(false);
+    			        	csvtodap.convertCSVtoDAP(csvfilename, txtfilename, 1024);
+    			        	JOptionPane.showMessageDialog(null,"Conversion Complete");
+        				}
+    				}    			
         		}
-        		else 
-        			javax.swing.JOptionPane.showMessageDialog(null, "Must be the xPC XML file for the binary data format");   		
+        		// Run action 
+        		actionThread = new Thread(new xpcAutoConvert(files[0]));
+        		actionThread.start();  
             }   
         }); 
         
@@ -221,35 +242,58 @@ public class Selector extends JFrame implements ActionListener, Runnable {
         this.getContentPane().add(xpcConvertButton);
         this.getContentPane().add(csvDecimatorButton);
         this.getContentPane().add(dapcsvConvertButton);
-        this.getContentPane().add(dapButton); 
+        this.getContentPane().add(dapButton);
         
-        // Start the background Thread process
-        backgroundThread = new Thread(this);
-        backgroundThread.start();
-        
-        pack();
+        // Pack the Frame
+        pack();                       
+    }
+    
+    public void startUpdating() {
+    	// Start the background update process
+        updateThread = new Thread(this);
+        updateThread.start();         
+        this.setVisible(true);
     }
     
     /** Button capture **/
     public void actionPerformed(ActionEvent evt) {
     	Object source = evt.getSource();
     	
+    	if (actionThread != null && actionThread.isAlive()) {
+    		javax.swing.JOptionPane.showMessageDialog(this, "Still working...");
+    		return;
+    	}
+    	
     	// Clear SCRAMNet 
     	if (source == clearSCRButton) {
-    		// Confirm
-    		int response = javax.swing.JOptionPane.showConfirmDialog(this, "Are you sure you want to clear the SCRAMNet Memory?");
-    		if (response == javax.swing.JOptionPane.YES_OPTION) {
-	    		// Clear every address
-	            for (int i = 0 ; i <= 2097151; i++)
-	            	scr.writeInt(i,0);
+    		// Create a separate runnable class to perform the action
+    		class clearSCRAMNet implements Runnable {
+    			private ScramNetIO scr;
+				public clearSCRAMNet(ScramNetIO _scr) {scr=_scr;}
+    			public void run() {
+    				// Confirm
+    	    		int response = javax.swing.JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the SCRAMNet Memory?");
+    	    		if (response == javax.swing.JOptionPane.YES_OPTION) {
+    		    		// Clear every address
+    		            for (int i = 0 ; i <= 2097151; i++)
+    		            	scr.writeInt(i,0);
+    	    		}
+				}    			
     		}
+    		// Run action 
+    		actionThread = new Thread(new clearSCRAMNet(scr));
+    		actionThread.start();
     	}
     	// Ramp to Zero program
     	else if (source == rampZeroButton) {
-    		if (commandZeroFrame.isVisible())
-    			commandZeroFrame.setVisible(false);
-    		else
+    		if (commandZeroFrame == null || !commandZeroFrame.isVisible()) {
+    			commandZeroFrame = new CommandZero();
     			commandZeroFrame.setVisible(true);
+    		}
+    		else {
+    			commandZeroFrame.dispose();
+    			commandZeroFrame = null;
+    		}
     	}
     	// Sim Bit Button
     	else if (source == simbitButton) {
@@ -294,7 +338,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
     	
     	// Auto xPC Button
     	else if (source == autoxPCConvertButton) {
-    		javax.swing.JOptionPane.showMessageDialog(null, "Drag an xPC XML file here to convert the Binary data into Text");
+    		javax.swing.JOptionPane.showMessageDialog(null, "Drag an xPC XML file here to convert the Binary data into Text");    		    		  		    		    				    		   
     	}  
     	
     	// xPC Convert Button
@@ -304,19 +348,19 @@ public class Selector extends JFrame implements ActionListener, Runnable {
     	
     	// csv Decimator
     	else if (source == csvDecimatorButton) {
-       		new CSVDecimator();
+       		new CSVDecimator();    		
     	} 
     	
     	// csv - dap Converter
     	else if (source == dapcsvConvertButton) {
-    		new DAPCSVConverter();
+    		new DAPCSVConverter(true);
     	} 
     	
     	// dap Button
     	else if (source == dapButton) {
     		try { Runtime.getRuntime().exec("C:\\Data Analysis Package\\sDAP.exe"); }
             catch (Exception ex) {ex.printStackTrace();}
-    	} 
+    	}    	    	    
 	}   
     
     /** Timer for performing background tasks **/
@@ -341,19 +385,22 @@ public class Selector extends JFrame implements ActionListener, Runnable {
 			// Update the Spy
 			spyPanel.updateValues();
 			
-			// Sleep for 0.1 seconds
 			try {
-				Thread.sleep(100);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+				Thread.sleep(200);
+			} catch (Exception e) {}
 		}
-	}
+	}	
+	
+	/** Get time and date **/
+	private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        Date date = new Date();
+        return dateFormat.format(date);
+    }
     
 	/** Main GUI Start **/
     public static void main(String[] args) {
-        Selector selector = new Selector();
-        selector.setVisible(true);            
+    	Selector selector = new Selector();
+        selector.startUpdating();                       
     }
 }
-
