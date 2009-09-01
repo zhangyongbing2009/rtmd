@@ -1,16 +1,10 @@
 package edu.lehigh.nees.util;
 
-import java.awt.BorderLayout;
 import java.io.*;
 import java.nio.*;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
 import edu.lehigh.nees.xml.*;
 import edu.lehigh.nees.util.filefilter.*;
-import javax.swing.SwingUtilities;
+
 
 /********************************* 
  * xPCDataConverter
@@ -29,90 +23,91 @@ import javax.swing.SwingUtilities;
  ********************************/
 public class xPCDataConverter {
 
-	// Variables
-	private boolean isDone;
+	// Variables	
 	private DataInputStream data;
-	private PrintStream out;
+	private PrintStream out = null;
 	private String outfile;
-	private String xmlfile;
-	private JProgressBar progressBar;	
-	private JFrame popup;	
+	private String xmlfile;		
+	private boolean isDone;		
+	
 	
 	/** Create a new xPCDataConverter Object *
 	 * 
 	 * @param xmlfile_ xPC XML File
 	 * @param outfile_ CSV Output file
 	 */
-	public xPCDataConverter(String xmlfile_, String outfile_) {					
-		out = null;	
+	public xPCDataConverter(String xmlfile_, String outfile_) {							
 		xmlfile = xmlfile_;
 		outfile = outfile_;
-		isDone = false;
+		
+		// Open the Data file
+		openDataFile();
 	}
 	
+	/** Create a new xPCDataConverter Object with dialog boxes to get files */
 	public xPCDataConverter() {
-		// Get the input file name
-    	String xmlFileName;
-        if ((xmlFileName = FileHandler.getFilePath("Open xPC XML File", new XMLFileFilter())) == null) {    	        	
+		out = null;			
+		
+		// Get the input file name    	
+        if ((xmlfile = FileHandler.getFilePath("Open xPC XML File", new XMLFileFilter())) == null) {    	        	
+        	return;
+        }        
+        
+    	// Get the output file name    	
+        if ((outfile = FileHandler.getFilePath("Open Output CSV File", new CSVFileFilter())) == null) {
         	return;
         }
         
-    	// Get the output file name
-    	String outputFileName;
-        if ((outputFileName = FileHandler.getFilePath("Open Output CSV File", new CSVFileFilter())) == null) {
-        	return;
-        }
-        
-        // Create the conveter object
-        xPCDataConverter xpc = new xPCDataConverter(xmlFileName,outputFileName);		
-		xpc.convert();		
+		// Open the Data file        
+        openDataFile();
 	}
 	
-	/** Convert the Data files to CSV format */
-	public void convert() {	
-		// Open XML file
-		XMLxPCConfig xml = (new ReadxPCXMLConfig(new File(xmlfile))).getxPCConfig();		
-			
+	private boolean openDataFile() {
 		// Open the Data File and get header information
 		try {      
-			data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));					
+			data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));
+			if (data == null)
+				return false;
 			data.skipBytes(9);
 			int headerSize = data.readUnsignedByte()*256;
 			data.skipBytes(headerSize-10);					
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {e.printStackTrace(); return false;}
+		return true;
+	}
+	
+	/** Convert the Data files to CSV format */
+	public boolean convert() {
+		if (xmlfile == null || outfile == null || data == null) {
+			javax.swing.JOptionPane.showMessageDialog(null, "No files opened for conversion");
+			return false;
+		}
+		
+		// Start progress bar
+		ProgressPopup progressBar = new ProgressPopup("Converting", "XPC->CSV");
+		progressBar.setIndeterminate(true);
+		Thread progressBarThread = new Thread(progressBar);
+		progressBarThread.start();
+		
+		// Open XML file
+		XMLxPCConfig xml = (new ReadxPCXMLConfig(new File(xmlfile))).getxPCConfig();
 			
 		// Open Output File
 		try {
 			out = new PrintStream(new FileOutputStream(new File(outfile)));
-		} catch (Exception e) {e.printStackTrace();}
+		} catch (Exception e) {e.printStackTrace(); return false;}
 		
 		// Write Header
 		String s = "";
 		for (int i = 0; i < xml.getnumxPCReadBlocks(); i++) {
 			s = s + xml.getxPCReadName(i) + " (" + xml.getxPCReadUnits(i) + "),";
 		}
-		out.println(s + "Time");
+		out.println(s + "Time");				
 		
-		// Create a progress bar				
-    	progressBar = new JProgressBar();
-		progressBar.setBounds(0,0,100,25);
-		popup = new JFrame("xPC Converter");
-		popup.setBounds(0,0,200,70);
-		popup.setLocationRelativeTo(null);
-		popup.getContentPane().setLayout(new BorderLayout());
-		popup.setAlwaysOnTop(true);
-		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
-		JLabel label = new JLabel("Converting");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		popup.getContentPane().add(label,BorderLayout.NORTH);
-		popup.setVisible(true);	
-        progressBar.setIndeterminate(true);			
-		
-		// Go through all xPC Read Blocks and get data from files		
-		int i = 0;
+		// Get xPC Data
+		// Go through all xPC Read Blocks and get data from files			
 		while (isDone == false) {
 			s = "";	
-			for (i = 0; i < xml.getnumxPCReadBlocks(); i++) {
+			for (int i = 0; i < xml.getnumxPCReadBlocks(); i++) {
 				if (xml.getxPCReadisDAQ(i).equals("false"))
 					// Sim-Ctrl Block
 					s = s + (getData(data)*xml.getxPCReadGain(i)) + ",";
@@ -130,100 +125,19 @@ public class xPCDataConverter {
 			// Get the time
 			// Skip the last line because it's garbage numbers
 			if (isDone != true)
-				out.println(s + getData(data));			
-		}
+				out.println(s + getData(data));						
+		}	
 		
 		// Close files
 		try {data.close();} catch (Exception e) {e.printStackTrace();}		
-		out.close();
+		out.close();	
 		
-		// Close progress bar
-		popup.setVisible(false);	
+		// Stop Progress Bar
+		progressBar.setIsDone(true);    	
 		
-		JOptionPane.showMessageDialog(null,"Conversion Complete");
+		return true;
 	}
 	
-	/** Convert the Data files to CSV format assuming all XPC files are in the path */
-	public void convertNoPopup() {	
-		// Open XML file
-		File xmlFILE = new File(xmlfile);
-		XMLxPCConfig xml = (new ReadxPCXMLConfig(xmlFILE)).getxPCConfig();	
-		String abspath = xmlFILE.getAbsolutePath();
-		String pathOfData = abspath.substring(0,abspath.lastIndexOf("\\"));		
-				
-		// Open the Data File and get header information
-		try {      
-			data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));					
-			data.skipBytes(9);
-			int headerSize = data.readUnsignedByte()*256;
-			data.skipBytes(headerSize-10);					
-		} catch (Exception e) {e.printStackTrace();}	
-			
-		// Open Output File
-		try {
-			out = new PrintStream(new FileOutputStream(new File(pathOfData + "\\" + outfile)));
-		} catch (Exception e) {e.printStackTrace();}
-		
-		// Write Header
-		String s = "";
-		for (int i = 0; i < xml.getnumxPCReadBlocks(); i++) {
-			s = s + xml.getxPCReadName(i) + " (" + xml.getxPCReadUnits(i) + "),";
-		}
-		out.println(s + "Time");
-		
-		// Create a progress bar		
-    	progressBar = new JProgressBar();
-		progressBar.setBounds(0,0,100,25);
-		popup = new JFrame("xPC Converter");
-		popup.setBounds(0,0,200,70);
-		popup.setLocationRelativeTo(null);
-		popup.getContentPane().setLayout(new BorderLayout());
-		popup.setAlwaysOnTop(true);
-		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
-		JLabel label = new JLabel("Converting");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		popup.getContentPane().add(label,BorderLayout.NORTH);
-		popup.setVisible(true);	
-        progressBar.setIndeterminate(true);		
-		
-		// Go through all xPC Read Blocks and get data from files		
-		int i = 0;
-		while (isDone == false) {			
-			s = "";	
-			for (i = 0; i < xml.getnumxPCReadBlocks(); i++) {
-				if (xml.getxPCReadisDAQ(i).equals("false"))
-					// Sim-Ctrl Block
-					s = s + (getData(data)*xml.getxPCReadGain(i)) + ",";
-				else {
-					// DAQ Block needs to be converted to a 16-Bit 2-Cs Int					
-					double daqval = getData(data);
-					daqval = daqval/65536;
-					if (daqval > 0x7FFF)
-						daqval = -(((int)daqval ^ 0xFFFF) + 1);
-					daqval = ((((((10000.0 / xml.getxPCReadGain(i))/32768.0) * daqval) * xml.getxPCReadVslope(i)) + xml.getxPCReadVoffset(i)) * xml.getxPCReadEUslope(i)) + xml.getxPCReadEUoffset(i);					
-					s = s + daqval + ",";
-				}
-			}			
-			
-			// Get the time
-			// Skip the last line because it's garbage numbers
-			if (isDone != true)
-				out.println(s + getData(data));					
-		}
-		
-		// Close files
-		try {data.close();} catch (Exception e) {e.printStackTrace();}		
-		out.close();
-		
-		// Close progress bar
-		popup.setVisible(false);			   
-	}
-	
-	/** Read Binary Data into String (double) format *
-	 * 
-	 * @param data Data File
-	 * @return Data value
-	 */
 	private double getData(DataInputStream data) {
 		byte b[] = new byte[8];
 		double value;
@@ -241,7 +155,9 @@ public class xPCDataConverter {
 	
 	public static void main(String[] args) 
 	 {
-		new xPCDataConverter();
-		System.exit(0);		
+		xPCDataConverter xpcconv = new xPCDataConverter();
+		xpcconv.convert();
+		System.out.println("Conversion Completed");
 	 }		
 }
+

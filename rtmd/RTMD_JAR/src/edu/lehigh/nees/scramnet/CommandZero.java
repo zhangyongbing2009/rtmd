@@ -1,11 +1,18 @@
 package edu.lehigh.nees.scramnet;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.Timer;
+
+import java.io.File;
 import java.text.DecimalFormat;
 import edu.lehigh.nees.IntegratedControl.Ramp.ToZeroRampGenerator;
+import edu.lehigh.nees.util.DAPCSVConverter;
+import edu.lehigh.nees.util.FileHandler;
+import edu.lehigh.nees.util.xPCDataConverter;
 
 /********************************* 
  * SCRAMNet CommandZero
@@ -19,11 +26,34 @@ import edu.lehigh.nees.IntegratedControl.Ramp.ToZeroRampGenerator;
  * 21 Apr 09  T. Marullo   Fixed some sawtoothing effects.  Now runs smooth
  *  						
  ********************************/
-public class CommandZero extends JFrame implements ActionListener {
- 
+public class CommandZero extends JDialog implements ActionListener, Runnable {
+	/** Variables */
+	private static final long serialVersionUID = -4520876572241672062L;	
+	// Textboxes
+	private JLabel label;
+	private JTextField[] addressTextField;
+	private JTextField[] valueTextField; 
+	private JTextField rateTextField;
+	private JLabel alertLabel;
+	// Checkboxes
+	private JCheckBox[] blockCheckBox;	 
+	// Buttons
+	private JButton zeroButton;
+	private JButton selectAllButton;
+	private JButton unselectAllButton;
+	// Counter objects
+	private long previousTickCount;
+	private long currentTickCount;
+	// SCRAMNet
+	private ScramNetIO scr;
+	// Formatter
+	private DecimalFormat format = new DecimalFormat();   
+	// Thread for updating
+	private Thread updateThread;
+	private Thread zeroThread;
+  
 	/** New CommandZero object */
-	public CommandZero() {
-		
+	public CommandZero() {		
 		// SCRAMNet
 		scr = new ScramNetIO();
 		scr.initScramnet();				
@@ -49,8 +79,9 @@ public class CommandZero extends JFrame implements ActionListener {
 	    this.setTitle("SCRAMNet Command Zero");
         this.setLocationRelativeTo(null);
         this.getContentPane().setLayout(null);
-        this.setResizable(false);                
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);             
+        this.setResizable(false);     
+        this.setAlwaysOnTop(true);
+        this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);             
         // Set up UI Look and Feel
         try {                        
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -672,19 +703,13 @@ public class CommandZero extends JFrame implements ActionListener {
     	// Select All Button
     	selectAllButton = new JButton("Select All");
     	selectAllButton.setBounds(180,410,95,25);
-    	selectAllButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent evt) {	   
-	        	selectAllButtonEvent();
-	        }});
+    	selectAllButton.addActionListener(this);
     	this.getContentPane().add(selectAllButton);
     	
     	// Unselect All Button
     	unselectAllButton = new JButton("Unselect All");
     	unselectAllButton.setBounds(180,440,95,25);
-    	unselectAllButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent evt) {	   
-	        	unselectAllButtonEvent();
-	        }});
+    	unselectAllButton.addActionListener(this);	        
     	this.getContentPane().add(unselectAllButton);
     	
     	// Rate TextField
@@ -705,10 +730,7 @@ public class CommandZero extends JFrame implements ActionListener {
 	    // Zero Button
     	zeroButton = new JButton("Zero Ramp");
     	zeroButton.setBounds(480,410,95,60);
-    	zeroButton.addActionListener(new ActionListener() {
-	        public void actionPerformed(ActionEvent evt) {	   
-	        	zeroButtonEvent();
-	        }});
+    	zeroButton.addActionListener(this);	        
     	this.getContentPane().add(zeroButton);
     	// Counter Alert
     	alertLabel = new JLabel("Set Pulsar SCRAMNet On");
@@ -718,134 +740,132 @@ public class CommandZero extends JFrame implements ActionListener {
     	alertLabel.setVisible(false);
 	    this.getContentPane().add(alertLabel);
            
-	    // Create a periodic Timer to update the Button state
-	    timer = new Timer(250,this);
-	    timer.start();
-	  }  
-	
-	  /** Select All Button Event */
-	  public void selectAllButtonEvent() {
-		  for (int i = 0; i < 30; i++) {
-			  blockCheckBox[i].setSelected(true);
-		  }
-	  }
+	    // Create a Thread to update the Button state
+	    updateThread = new Thread(this);
+	    updateThread.start();	    
+	  }  		  
 	  
-	  /** Unselect All Button Event */
-	  public void unselectAllButtonEvent() {
-		  for (int i = 0; i < 30; i++) {
-			  blockCheckBox[i].setSelected(false);
-		  }
-	  }
-	  
-	  /** Zero Button Event */
-	  public void zeroButtonEvent() {
-		  zeroButton.setEnabled(false);
-		  long baseTick;
-		  float[] currentCommand = new float[30];
-		  
-		  // Create To Zero Ramp generators
-		  ToZeroRampGenerator[] toZero = new ToZeroRampGenerator[30];		  		 		  
-		  
-		  // Get Rate
-		  int lengthOfRamp = 1024;	// default value
-		  // Check if it has a value that is a number		 
-		  if (!rateTextField.getText().equals(""))	// get updated value 		  
-			  lengthOfRamp = Integer.parseInt(rateTextField.getText().trim());
-		  else
-			  rateTextField.setText("1024");
-		  // Can't be less than 1 second
-		  if (lengthOfRamp < 1024) {
-			  lengthOfRamp = 1024;
-			  rateTextField.setText("1024");
-		  }
-          
-          // Read the current SCRAMNet command data            
-          for (int i = 0; i < 30; i++) {
-        	  if (blockCheckBox[i].isSelected() == true) {
-        		  toZero[i] = new ToZeroRampGenerator();
-        		  if (!addressTextField[i].getText().equals("")) {
-	        		  valueTextField[i].setText(format.format(scr.readFloat(Integer.parseInt(addressTextField[i].getText().trim()))));
-	        		  currentCommand[i] = scr.readFloat(Integer.parseInt(addressTextField[i].getText().trim()));
-        		  }
-        	  }
-          }
-		  
-          baseTick = scr.readGlobalCounter();
-          long nextTick = baseTick;
-          long count = 1;                             
-          // Ramp Selected down to 0
-          while (count <= lengthOfRamp) {            
-        	  for (int i = 0; i < 30; i++) {
-        		  if (blockCheckBox[i].isSelected() == true) {
-        			  if (!addressTextField[i].getText().equals(""))
-        				  scr.writeFloat(Integer.parseInt(addressTextField[i].getText().trim()), (float)toZero[i].generate(currentCommand[i], lengthOfRamp, count));        			  
-        		  }        		  
-        	  }
-              // Wait for next tick
-              nextTick = scr.readGlobalCounter();
-              while(nextTick == scr.readGlobalCounter()) {}              
-        	  //Increment the ramp to the next tick value to try to maintain speed
-              count = 1 + nextTick - baseTick;                                
-          }
-          zeroButton.setEnabled(true);  
-	  }
+		public void actionPerformed(ActionEvent arg0) {
+			Object source = arg0.getSource();			
+			
+			/** Select All Button Event */
+			if (source == selectAllButton) {
+				for (int i = 0; i < 30; i++) {
+					  blockCheckBox[i].setSelected(true);
+				}
+			}
+			  
+			  /** Unselect All Button Event */
+			if (source == unselectAllButton) {
+				for (int i = 0; i < 30; i++) {
+					blockCheckBox[i].setSelected(false);
+				}
+			}
+			  
+			  /** Zero Button Event */
+			if (source == this.zeroButton) {
+				  zeroButton.setEnabled(false);				  
+				  
+				  // Create To Zero Ramp generators
+				  ToZeroRampGenerator[] toZero = new ToZeroRampGenerator[30];		  		 		  
+				  
+				  // Get Rate
+				  int lengthOfRamp = 1024;	// default value
+				  // Check if it has a value that is a number		 
+				  if (!rateTextField.getText().equals(""))	// get updated value 		  
+					  lengthOfRamp = Integer.parseInt(rateTextField.getText().trim());
+				  else
+					  rateTextField.setText("1024");
+				  // Can't be less than 1 second
+				  if (lengthOfRamp < 1024) {
+					  lengthOfRamp = 1024;
+					  rateTextField.setText("1024");
+				  }
+		          
+				  // Create a separate runnable class to perform the action
+				  class clearSCRAMNet implements Runnable {
+					  private ToZeroRampGenerator[] toZero;
+					  private long baseTick;
+					  private int lengthOfRamp;
+					  private float[] currentCommand = new float[30];
+					  public clearSCRAMNet(ToZeroRampGenerator[] _toZero, int _lengthOfRamp) {
+						  toZero = _toZero;
+						  lengthOfRamp = _lengthOfRamp;
+					  }
+					  public void run() {
+						// Read the current SCRAMNet command data            
+				          for (int i = 0; i < 30; i++) {
+				        	  if (blockCheckBox[i].isSelected() == true) {
+				        		  toZero[i] = new ToZeroRampGenerator();
+				        		  if (!addressTextField[i].getText().equals("")) {
+					        		  valueTextField[i].setText(format.format(scr.readFloat(Integer.parseInt(addressTextField[i].getText().trim()))));
+					        		  currentCommand[i] = scr.readFloat(Integer.parseInt(addressTextField[i].getText().trim()));
+				        		  }
+				        	  }
+				          }
+						  
+				          baseTick = scr.readGlobalCounter();
+				          long nextTick = baseTick;
+				          long count = 1;                             
+				          // Ramp Selected down to 0
+				          while (count <= lengthOfRamp) {            
+				        	  for (int i = 0; i < 30; i++) {
+				        		  if (blockCheckBox[i].isSelected() == true) {
+				        			  if (!addressTextField[i].getText().equals(""))
+				        				  scr.writeFloat(Integer.parseInt(addressTextField[i].getText().trim()), (float)toZero[i].generate(currentCommand[i], lengthOfRamp, count));        			  
+				        		  }        		  
+				        	  }
+				              // Wait for next tick
+				              nextTick = scr.readGlobalCounter();
+				              while(nextTick == scr.readGlobalCounter()) {}              
+				        	  //Increment the ramp to the next tick value to try to maintain speed
+				              count = 1 + nextTick - baseTick;                                
+				          }
+				          
+				          zeroButton.setEnabled(true); 
+					  }
+				  }
+					
+					// Run action 
+					zeroThread = new Thread(new clearSCRAMNet(toZero, lengthOfRamp));
+					zeroThread.start();				  		          		          
+			  }
+		}
   
 	  /** Updates the values */
-	  public void actionPerformed(ActionEvent arg0) {
-		  // Update values		  
-		  for (int i = 0; i < 30; i++) {
-			  if (!addressTextField[i].getText().equals(""))
-				  valueTextField[i].setText(format.format(scr.readFloat(Integer.parseInt(addressTextField[i].getText().trim()))));
+	  public void run() {
+		  while (true) {
+			  // Update values		  
+			  for (int i = 0; i < 30; i++) {
+				  if (!addressTextField[i].getText().equals(""))
+					  valueTextField[i].setText(format.format(scr.readFloat(Integer.parseInt(addressTextField[i].getText().trim()))));
+			  }
+			  
+			  // Check if the SCRAMNet Global Counter is on
+			  currentTickCount = scr.readGlobalCounter();	
+			  if (currentTickCount == previousTickCount) {
+				  zeroButton.setEnabled(false);
+				  alertLabel.setVisible(true);
+			  }
+			  else {
+				  zeroButton.setEnabled(true);
+				  alertLabel.setVisible(false);
+			  }
+			  
+			  // Save the tick count for next check
+			  previousTickCount = currentTickCount;
+			  
+			  try {
+				  Thread.sleep(250);				  
+			  } catch (Exception e) {}
 		  }
-		  
-		  // Check if the SCRAMNet Global Counter is on
-		  currentTickCount = scr.readGlobalCounter();	
-		  if (currentTickCount == previousTickCount) {
-			  zeroButton.setEnabled(false);
-			  alertLabel.setVisible(true);
-		  }
-		  else {
-			  zeroButton.setEnabled(true);
-			  alertLabel.setVisible(false);
-		  }
-		  
-		  // Save the tick count for next check
-		  previousTickCount = currentTickCount;
-	  } 
+	  } 	  	 
 
 	  /** Main Process */
 	  public static void main(String[] args) {
 		  try {
-			  CommandZero cz = new CommandZero();
+			  CommandZero cz = new CommandZero();		
 			  cz.setVisible(true);
 		  } catch (Exception e) {e.printStackTrace();}
 	  }
-  
- 
-  
-	  // Variables
-	  private static final long serialVersionUID = -4520876572241672062L;	
-	  // Textboxes
-	  JLabel label;
-	  JTextField[] addressTextField;
-	  JTextField[] valueTextField; 
-	  JTextField rateTextField;
-	  JLabel alertLabel;
-	  // Checkboxes
-	  JCheckBox[] blockCheckBox;	 
-	  // Buttons
-	  JButton zeroButton;
-	  JButton selectAllButton;
-	  JButton unselectAllButton;
-	  // Timer
-	  protected Timer timer;	
-	  // Timer data objects
-	  long previousTickCount;
-	  long currentTickCount;
-	  // SCRAMNet
-	  ScramNetIO scr;
-	  // Formatter
-	  DecimalFormat format = new DecimalFormat();   	  
-	 
-
 } 

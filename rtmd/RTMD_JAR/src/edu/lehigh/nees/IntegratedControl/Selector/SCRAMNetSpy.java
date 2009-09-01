@@ -114,8 +114,7 @@ public class SCRAMNetSpy extends JPanel implements ActionListener {
 		daqCheckBox.setBackground(null);
 		daqCheckBox.setToolTipText("SCRAMNet Spy: Provide the template for showing a DAQ value");
 		daqCheckBox.addActionListener(this);
-		this.add(daqCheckBox);
-			
+		this.add(daqCheckBox);	
 	}  
 	
 	/** Perform actions */
@@ -132,10 +131,12 @@ public class SCRAMNetSpy extends JPanel implements ActionListener {
 		}		
 		// DAQ Check Box
 		if (source == daqCheckBox) {
-			if (daqCheckBox.isSelected()) 
-				exprTextField.setText("((((((10000.0 / gain)/32768.0) * value) * Vslope) + Voffset) * EUslope) + EUoffset");
-			else
-				exprTextField.setText("value");
+			if (daqCheckBox.isSelected()) { 
+				exprTextField.setText("((((((10000.0 / gain)/32768.0) * value) * Vslope) + Voffset) * EUslope) + EUoffset");			    
+			}
+			else {
+				exprTextField.setText("value");			    					
+			}
 		}		
 	}
 
@@ -150,14 +151,14 @@ public class SCRAMNetSpy extends JPanel implements ActionListener {
 		// Check whether to show the raw value or the expression value
 		if (valueCheckBox.isSelected()) {
 			// Show Raw value
-			valueTextField.setText(String.valueOf(format.format(value)));
+  			valueTextField.setText(String.valueOf(format.format(value)));									
 		}
 		else {			
 			// Show expression
 			expression.addVariable("value",value);
 			expression.parseExpression(expr);
 			euvalue = expression.getValue();
-			valueTextField.setText(String.valueOf(format.format(euvalue)));
+			valueTextField.setText(String.valueOf(format.format(euvalue)));		    											
 		}		
-	}	
+	}
 } 

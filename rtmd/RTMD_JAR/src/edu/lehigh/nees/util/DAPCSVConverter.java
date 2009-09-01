@@ -1,14 +1,7 @@
 package edu.lehigh.nees.util;
 
-import java.awt.BorderLayout;
 import java.io.*;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JProgressBar;
-import javax.swing.SwingUtilities;
-
 import edu.lehigh.nees.util.filefilter.*;
 
 /********************************* 
@@ -22,65 +15,61 @@ import edu.lehigh.nees.util.filefilter.*;
  * 22 Mar 06  T. Marullo  Initial
  * 
  ********************************/
-public class DAPCSVConverter {
-		
+public class DAPCSVConverter {		
+    
     /** Creates a new instance of DAPCSVConverter */
-    public DAPCSVConverter() {   
-    	int selection = 0;
-    	try {
-    		selection = Integer.parseInt(JOptionPane.showInputDialog(null,"1- Convert CSV to DAP\n2- Convert DAP to CSV","1"));
-    	} catch (Exception e) {return;}
-    	
-    	if (selection == 1) {    	
-	    	// Get the input file name
-	    	String inputFileName;
-	        if ((inputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
-	        	return;
+    public DAPCSVConverter(boolean useDialog) {
+    	if (useDialog) {
+	    	int selection = 0;
+	    	try {
+	    		selection = Integer.parseInt(JOptionPane.showInputDialog(null,"1- Convert CSV to DAP\n2- Convert DAP to CSV","1"));
+	    	} catch (Exception e) {return;}
 	    	
-	    	// Get the output file name
-	    	String outputFileName;
-	        if ((outputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
-	        	return;
-	
-	        convertCSVtoDAP(inputFileName, outputFileName);
+	    	if (selection == 1) {    	
+		    	// Get the input file name
+		    	String inputFileName;
+		        if ((inputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
+		        	return;
+		    	
+		    	// Get the output file name
+		    	String outputFileName;
+		        if ((outputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
+		        	return;
+		        
+		        int freq = Integer.parseInt(JOptionPane.showInputDialog(null,"What is the frequency of the CSV file data (Hz)?","DAPCSVConverter",JOptionPane.OK_OPTION));
+		
+		        convertCSVtoDAP(inputFileName, outputFileName, freq);
+	    	}
+	    	else if (selection == 2) {    	
+		    	// Get the input file name    
+	    		String inputFileName;
+		        if ((inputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
+		        	return;
+		    	
+		    	// Get the output file name
+		        String outputFileName;
+		        if ((outputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
+		        	return;
+		
+		        convertDAPtoCSV(inputFileName, outputFileName);
+	    	}
     	}
-    	else if (selection == 2) {    	
-	    	// Get the input file name    
-    		String inputFileName;
-	        if ((inputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
-	        	return;
-	    	
-	    	// Get the output file name
-	        String outputFileName;
-	        if ((outputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
-	        	return;
-	
-	        convertDAPtoCSV(inputFileName, outputFileName);
-    	}    	
     }
-
     
     /** Convert from CSV to DAP ASCII */
-    public void convertCSVtoDAP(String inputFileName, String outputFileName) {        
+    public void convertCSVtoDAP(String inputFileName, String outputFileName, int freq) {        
     	// Open output file
         PrintStream outputFile = FileHandler.openOutputFile(outputFileName);
         
         // Get file information
-        int numLines = FileHandler.getNumberOfLines(inputFileName);
-        int freq = Integer.parseInt(JOptionPane.showInputDialog(null,"What is the frequency of the CSV file data (Hz)?","DAPCSVConverter",JOptionPane.OK_OPTION));        
-        
-        // Create a progress bar
-        JProgressBar progressBar = new JProgressBar();
-		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame("CSV Decimator");
-		popup.setBounds(0,0,200,70);
-		popup.setLocationRelativeTo(null);
-		popup.getContentPane().setLayout(new BorderLayout());
-		popup.setAlwaysOnTop(true);
-		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
-		JLabel label = new JLabel("Converting");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		popup.getContentPane().add(label,BorderLayout.NORTH);
+        int numLines = FileHandler.getNumberOfLines(inputFileName);                               
+		
+		// Create progress bar
+		ProgressPopup progressBar = new ProgressPopup("Converting", "CSV->DAP");
+		progressBar.setMaximum(numLines);
+		progressBar.setMinimum(0);		
+		Thread progressBarThread = new Thread(progressBar);		
+		progressBarThread.start();
 				   			
         try {
         	// Open file 
@@ -89,11 +78,8 @@ public class DAPCSVConverter {
             int progress = 0;
             String s;
             try {	
-            	// Initialize progress bar
-            	progressBar.setMaximum(numLines);
-            	progressBar.setMinimum(0);
-            	progressBar.setValue(progress);
-            	popup.setVisible(true);
+            	// Start progress bar            	
+            	progressBar.setValue(progress);            	            	
                 // Write freq
                 outputFile.println(freq);
                 // Write Length
@@ -120,102 +106,25 @@ public class DAPCSVConverter {
 					// Increment progress bar
 					progressBar.setValue(progress++);
 				}                 
-            } catch (Exception e) {popup.setVisible(false);}
+            } catch (Exception e) {progressBar.setIsDone(true);}
             try {
                 input.close();
                 outputFile.close();
-                popup.setVisible(false);
-            } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-        } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-            
-        JOptionPane.showMessageDialog(null,"Conversion Complete");
-    }   
-    
-    public void convertCSVtoDAPNoPopup(String inputFileName, String outputFileName, int freq) {        
-    	// Open output file
-        PrintStream outputFile = FileHandler.openOutputFile(outputFileName);
-        
-        // Get file information
-        int numLines = FileHandler.getNumberOfLines(inputFileName);           
-        
-        // Create a progress bar
-        JProgressBar progressBar = new JProgressBar();
-		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame("CSV to DAP Conversion");
-		popup.setBounds(0,0,200,70);
-		popup.setLocationRelativeTo(null);
-		popup.getContentPane().setLayout(new BorderLayout());
-		popup.setAlwaysOnTop(true);
-		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
-		JLabel label = new JLabel("Converting");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		popup.getContentPane().add(label,BorderLayout.NORTH);
-        try {
-        	// Open file 
-            BufferedReader input = FileHandler.openInputFile(inputFileName);        
-            int i;
-            int j = 0;
-            String s;
-            try {	
-            	// Initialize progress bar
-            	progressBar.setMaximum(numLines);
-            	progressBar.setMinimum(0);
-            	progressBar.setValue(j);
-            	popup.setVisible(true);
-                // Write freq
-                outputFile.println(freq);
-                // Write Length
-                outputFile.println((numLines-1));
-                                
-				// Read header
-				s = input.readLine();
-				String[] cols = s.split(",");
-				// Write # of columns
-				outputFile.println((cols.length));
-				// Write headers
-				for (i = 0; i < cols.length; i++) {
-					if (cols[i].length() > 20) 
-						outputFile.println(cols[i].substring(0,19));					
-					else 
-						outputFile.println(cols[i]);
-				}
-				// Write equal amount of blanks (no units)
-				for (i = 0; i < cols.length; i++) 
-					outputFile.println("units");					
-				// Read data and replace "," with " "
-                while ((s = input.readLine()) != null) {					
-					outputFile.println(s.replace(',',' '));
-					// Increment progress bar
-					progressBar.setValue(j++);
-				}                 
-            } catch (Exception e) {popup.setVisible(false);}
-            try {
-                input.close();
-                outputFile.close();
-                popup.setVisible(false);
-            } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-        } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}      
-        
-        popup.setVisible(false);
-    }   
+                progressBar.setIsDone(true);
+                /*progressBar.dispose();*/
+            } catch (Exception e) {e.printStackTrace();progressBar.setIsDone(true);}
+        } catch (Exception e) {e.printStackTrace();progressBar.setIsDone(true);}                    
+    }           
     
     /** Convert from DAP ASCII to CSV */
     public void convertDAPtoCSV(String inputFileName, String outputFileName) {        
     	// Open output file
         PrintStream outputFile = FileHandler.openOutputFile(outputFileName);                  
         
-        // Create a progress bar
-        JProgressBar progressBar = new JProgressBar();
-		progressBar.setBounds(0,0,100,25);
-		JFrame popup = new JFrame("DAP to CSV Conversion");
-		popup.setBounds(0,0,200,70);
-		popup.setLocationRelativeTo(null);
-		popup.getContentPane().setLayout(new BorderLayout());
-		popup.setAlwaysOnTop(true);
-		popup.getContentPane().add(progressBar,BorderLayout.CENTER);
-		JLabel label = new JLabel("Converting");
-		label.setHorizontalAlignment(JLabel.CENTER);
-		popup.getContentPane().add(label,BorderLayout.NORTH);
+        /// Create progress bar
+		ProgressPopup progressBar = new ProgressPopup("Converting", "DAP->CSV");			
+		Thread progressBarThread = new Thread(progressBar);				
+		
         try {
         	// Open file 
             BufferedReader input = FileHandler.openInputFile(inputFileName);        
@@ -239,62 +148,26 @@ public class DAPCSVConverter {
 				input.readLine();					
 												
 				// Initialize progress bar
-            	progressBar.setMaximum(numLines);
-            	progressBar.setMinimum(0);
+				progressBar.setMaximum(numLines);
+				progressBar.setMinimum(0);
             	progressBar.setValue(j);
-            	popup.setVisible(true);
+            	progressBarThread.start();
 				// Read data and replace " " with ","
                 while ((s = input.readLine()) != null) {					
 					outputFile.println(s);
 					// Increment progress bar
 					progressBar.setValue(j++);
 				}                 
-            } catch (Exception e) {e.printStackTrace(); popup.setVisible(false);}
+            } catch (Exception e) {e.printStackTrace(); progressBar.setIsDone(true);}
             try {
                 input.close();
                 outputFile.close();
-                popup.setVisible(false);
-            } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-        } catch (Exception e) {e.printStackTrace();popup.setVisible(false);}
-            
-        JOptionPane.showMessageDialog(null,"Conversion Complete");
+                progressBar.setIsDone(true);
+            } catch (Exception e) {e.printStackTrace();progressBar.setIsDone(true);}
+        } catch (Exception e) {e.printStackTrace();progressBar.setIsDone(true);}                    
     }  
   
     public static void main(String[] args) {
-    	DAPCSVConverter dapcsv = new DAPCSVConverter();
-    	
-    	int selection = 0;
-    	try {
-    		selection = Integer.parseInt(JOptionPane.showInputDialog(null,"1- Convert CSV to DAP\n2- Convert DAP to CSV","1"));
-    	} catch (Exception e) {return;}
-    	
-    	if (selection == 1) {    	
-	    	// Get the input file name
-	    	String inputFileName;
-	        if ((inputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
-	        	return;
-	    	
-	    	// Get the output file name
-	    	String outputFileName;
-	        if ((outputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
-	        	return;
-	
-	        dapcsv.convertCSVtoDAP(inputFileName, outputFileName);
-    	}
-    	else if (selection == 2) {    	
-	    	// Get the input file name    
-    		String inputFileName;
-	        if ((inputFileName = FileHandler.getFilePath("Open DAP .txt File", new TXTFileFilter())) == null)
-	        	System.exit(1);
-	    	
-	    	// Get the output file name
-	        String outputFileName;
-	        if ((outputFileName = FileHandler.getFilePath("Open CSV File", new CSVFileFilter())) == null)
-	        	System.exit(1);
-	
-	        dapcsv.convertDAPtoCSV(inputFileName, outputFileName);
-    	}    	
-    	
-        System.exit(0);
+    	new DAPCSVConverter(true);    	      	
     }    
 }
