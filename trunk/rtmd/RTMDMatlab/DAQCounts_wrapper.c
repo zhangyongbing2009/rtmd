@@ -18,7 +18,7 @@
   *   in the Real-Time Workshop User's Manual in the Chapter titled,
   *   "Wrapper S-functions".
   *
-  *   Created: Fri Feb  6 10:50:11 2009
+  *   Created: Tue Jan 19 10:25:07 2010
   */
 
 
@@ -26,17 +26,12 @@
  * Include Files
  *
  */
-#if defined(MATLAB_MEX_FILE)
-#include "tmwtypes.h"
-#include "simstruc_types.h"
-#else
-#include "rtwtypes.h"
-#endif
+#include "simstruc.h"
+
+
 /* %%%-SFUNWIZ_wrapper_includes_Changes_BEGIN --- EDIT HERE TO _END */
 #include <math.h>
 /* %%%-SFUNWIZ_wrapper_includes_Changes_END --- EDIT HERE TO _BEGIN */
-#define u_width 1
-#define y_width 1
 /*
  * Create external references here.  
  *
@@ -50,16 +45,20 @@
  *
  */
 void DAQCounts_Outputs_wrapper(const uint32_T *u0,
-                          real_T *y0)
+                          real_T *y0,
+			     const int_T y_width, const int_T u_width, SimStruct *S)
 {
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_BEGIN --- EDIT HERE TO _END */
-int val;
-  val = u0[0];
+int i = 0;
+int_T numElements = u_width;
+for (i = 0; i < numElements; i++) {
+  int val;
+  val = u0[i]/65536;
   
   if (val > 0x7FFF)
      val = -((val ^ 0xFFFF) + 1);
-     val = val / 65536;
   
-  y0[0] = val;
+  y0[i] = val; 
+}
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */
 }

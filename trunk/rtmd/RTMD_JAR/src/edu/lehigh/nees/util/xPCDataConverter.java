@@ -41,11 +41,11 @@ public class xPCDataConverter {
 		outfile = outfile_;
 		
 		// Open the Data file
-		openDataFile();
+		openDataFile(true);
 	}
 	
 	/** Create a new xPCDataConverter Object with dialog boxes to get files */
-	public xPCDataConverter() {
+	public xPCDataConverter(boolean isDataFileLocal) {
 		out = null;			
 		
 		// Get the input file name    	
@@ -59,13 +59,16 @@ public class xPCDataConverter {
         }
         
 		// Open the Data file        
-        openDataFile();
+        openDataFile(isDataFileLocal);
 	}
 	
-	private boolean openDataFile() {
+	private boolean openDataFile(boolean isDataFileLocal) {
 		// Open the Data File and get header information
 		try {      
-			data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));
+			if (isDataFileLocal)
+				data = new DataInputStream(new BufferedInputStream(new FileInputStream(xmlfile.replace("xpc.xml", "XPC1.DAT"))));
+			else
+				data = new DataInputStream(new BufferedInputStream(new FileInputStream(FileHandler.getFilePath("Open xPC Data File"))));
 			if (data == null)
 				return false;
 			data.skipBytes(9);
@@ -155,7 +158,7 @@ public class xPCDataConverter {
 	
 	public static void main(String[] args) 
 	 {
-		xPCDataConverter xpcconv = new xPCDataConverter();
+		xPCDataConverter xpcconv = new xPCDataConverter(false);
 		xpcconv.convert();
 		System.out.println("Conversion Completed");
 	 }		

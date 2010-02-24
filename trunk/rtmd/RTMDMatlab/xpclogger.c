@@ -1,5 +1,5 @@
 /*
- * File: fptofixwithscale.c
+ * File: xpclogger.c
  *
  *
   *
@@ -26,19 +26,19 @@
   *  -------------------------------------------------------------------------
   * | See matlabroot/simulink/src/sfuntmpl_doc.c for a more detailed template |
   *  ------------------------------------------------------------------------- 
- * Created: Tue Jan 19 10:33:57 2010
+ * Created: Thu Jan 21 14:54:00 2010
  * 
  *
  */
 
 #define S_FUNCTION_LEVEL 2
-#define S_FUNCTION_NAME fptofixwithscale
+#define S_FUNCTION_NAME xpclogger
 /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 /* %%%-SFUNWIZ_defines_Changes_BEGIN --- EDIT HERE TO _END */
-#define NUM_INPUTS          1
+#define NUM_INPUTS          4
 /* Input Port  0 */
-#define IN_PORT_0_NAME      u0
-#define INPUT_0_WIDTH       DYNAMICALLY_SIZED
+#define IN_PORT_0_NAME      state
+#define INPUT_0_WIDTH       1
 #define INPUT_DIMS_0_COL    1
 #define INPUT_0_DTYPE       real_T
 #define INPUT_0_COMPLEX     COMPLEX_NO
@@ -53,13 +53,64 @@
 #define IN_0_FRACTIONLENGTH  9
 #define IN_0_BIAS            0
 #define IN_0_SLOPE           0.125
+/* Input Port  1 */
+#define IN_PORT_1_NAME      value
+#define INPUT_1_WIDTH       1
+#define INPUT_DIMS_1_COL    1
+#define INPUT_1_DTYPE       real_T
+#define INPUT_1_COMPLEX     COMPLEX_NO
+#define IN_1_FRAME_BASED    FRAME_NO
+#define IN_1_BUS_BASED      0
+#define IN_1_BUS_NAME       
+#define IN_1_DIMS           1-D
+#define INPUT_1_FEEDTHROUGH 1
+#define IN_1_ISSIGNED        0
+#define IN_1_WORDLENGTH      8
+#define IN_1_FIXPOINTSCALING 1
+#define IN_1_FRACTIONLENGTH  9
+#define IN_1_BIAS            0
+#define IN_1_SLOPE           0.125
+/* Input Port  2 */
+#define IN_PORT_2_NAME      limitpos
+#define INPUT_2_WIDTH       1
+#define INPUT_DIMS_2_COL    1
+#define INPUT_2_DTYPE       real_T
+#define INPUT_2_COMPLEX     COMPLEX_NO
+#define IN_2_FRAME_BASED    FRAME_NO
+#define IN_2_BUS_BASED      0
+#define IN_2_BUS_NAME       
+#define IN_2_DIMS           1-D
+#define INPUT_2_FEEDTHROUGH 1
+#define IN_2_ISSIGNED        0
+#define IN_2_WORDLENGTH      8
+#define IN_2_FIXPOINTSCALING 1
+#define IN_2_FRACTIONLENGTH  9
+#define IN_2_BIAS            0
+#define IN_2_SLOPE           0.125
+/* Input Port  3 */
+#define IN_PORT_3_NAME      limitneg
+#define INPUT_3_WIDTH       1
+#define INPUT_DIMS_3_COL    1
+#define INPUT_3_DTYPE       real_T
+#define INPUT_3_COMPLEX     COMPLEX_NO
+#define IN_3_FRAME_BASED    FRAME_NO
+#define IN_3_BUS_BASED      0
+#define IN_3_BUS_NAME       
+#define IN_3_DIMS           1-D
+#define INPUT_3_FEEDTHROUGH 1
+#define IN_3_ISSIGNED        0
+#define IN_3_WORDLENGTH      8
+#define IN_3_FIXPOINTSCALING 1
+#define IN_3_FRACTIONLENGTH  9
+#define IN_3_BIAS            0
+#define IN_3_SLOPE           0.125
 
 #define NUM_OUTPUTS          1
 /* Output Port  0 */
-#define OUT_PORT_0_NAME      y0
-#define OUTPUT_0_WIDTH       DYNAMICALLY_SIZED
+#define OUT_PORT_0_NAME      state_out
+#define OUTPUT_0_WIDTH       1
 #define OUTPUT_DIMS_0_COL    1
-#define OUTPUT_0_DTYPE       uint32_T
+#define OUTPUT_0_DTYPE       real_T
 #define OUTPUT_0_COMPLEX     COMPLEX_NO
 #define OUT_0_FRAME_BASED    FRAME_NO
 #define OUT_0_BUS_BASED      0
@@ -72,11 +123,7 @@
 #define OUT_0_BIAS            0
 #define OUT_0_SLOPE           0.125
 
-#define NPARAMS              1
-/* Parameter  1 */
-#define PARAMETER_0_NAME      scale
-#define PARAMETER_0_DTYPE     real_T
-#define PARAMETER_0_COMPLEX   COMPLEX_NO
+#define NPARAMS              0
 
 #define SAMPLE_TIME_0        INHERITED_SAMPLE_TIME
 #define NUM_DISC_STATES      0
@@ -87,7 +134,7 @@
 #define SFUNWIZ_GENERATE_TLC 0
 #define SOURCEFILES "__SFB__"
 #define PANELINDEX           6
-#define USE_SIMSTRUCT        1
+#define USE_SIMSTRUCT        0
 #define SHOW_COMPILE_STEPS   0                   
 #define CREATE_DEBUG_MEXFILE 0
 #define SAVE_CODE_ONLY       0
@@ -95,55 +142,16 @@
 /* %%%-SFUNWIZ_defines_Changes_END --- EDIT HERE TO _BEGIN */
 /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 #include "simstruc.h"
-#define PARAM_DEF0(S) ssGetSFcnParam(S, 0)
 
-#define IS_PARAM_DOUBLE(pVal) (mxIsNumeric(pVal) && !mxIsLogical(pVal) &&\
-!mxIsEmpty(pVal) && !mxIsSparse(pVal) && !mxIsComplex(pVal) && mxIsDouble(pVal))
-
-extern void fptofixwithscale_Outputs_wrapper(const real_T *u0,
-                          uint32_T *y0, 
-                           const real_T  *scale, const int_T p_width0,
-			     const int_T y_width, const int_T u_width, SimStruct *S);
+extern void xpclogger_Outputs_wrapper(const real_T *state,
+                          const real_T *value,
+                          const real_T *limitpos,
+                          const real_T *limitneg,
+                          real_T *state_out);
 
 /*====================*
  * S-function methods *
  *====================*/
-#define MDL_CHECK_PARAMETERS
- #if defined(MDL_CHECK_PARAMETERS) && defined(MATLAB_MEX_FILE)
-   /* Function: mdlCheckParameters =============================================
-     * Abstract:
-     *    Validate our parameters to verify they are okay.
-     */
-    static void mdlCheckParameters(SimStruct *S)
-    {
-     #define PrmNumPos 46
-     int paramIndex = 0;
-     bool validParam = false;
-     char paramVector[] ={'1'};
-     static char parameterErrorMsg[] ="The data type and/or complexity of parameter    does not match the information "
-     "specified in the S-function Builder dialog. For non-double parameters you will need to cast them using int8, int16,"
-     "int32, uint8, uint16, uint32 or boolean."; 
-
-     /* All parameters must match the S-function Builder Dialog */
-     
-
-	 {
-	  const mxArray *pVal0 = ssGetSFcnParam(S,0);
-	  if (!IS_PARAM_DOUBLE(pVal0)) {
-	    validParam = true;
-	    paramIndex = 0;
-	    goto EXIT_POINT;
-	  }
-	 }
-      
-     EXIT_POINT:
-      if (validParam) {
-	  parameterErrorMsg[PrmNumPos] = paramVector[paramIndex];
-	  ssSetErrorStatus(S,parameterErrorMsg);
-      }
-	return;
-    }
- #endif /* MDL_CHECK_PARAMETERS */
 /* Function: mdlInitializeSizes ===============================================
  * Abstract:
  *   Setup sizes of the various vectors.
@@ -153,36 +161,47 @@ static void mdlInitializeSizes(SimStruct *S)
 
     DECL_AND_INIT_DIMSINFO(inputDimsInfo);
     DECL_AND_INIT_DIMSINFO(outputDimsInfo);
-    ssSetNumSFcnParams(S, NPARAMS);  /* Number of expected parameters */
-      #if defined(MATLAB_MEX_FILE)
-	if (ssGetNumSFcnParams(S) == ssGetSFcnParamsCount(S)) {
-	  mdlCheckParameters(S);
-	  if (ssGetErrorStatus(S) != NULL) {
-	    return;
-	  }
-	 } else {
-	   return; /* Parameter mismatch will be reported by Simulink */
-	 }
-      #endif
+    ssSetNumSFcnParams(S, NPARAMS);
+     if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S)) {
+	 return; /* Parameter mismatch will be reported by Simulink */
+     }
 
     ssSetNumContStates(S, NUM_CONT_STATES);
     ssSetNumDiscStates(S, NUM_DISC_STATES);
 
     if (!ssSetNumInputPorts(S, NUM_INPUTS)) return;
-    inputDimsInfo.width = INPUT_0_WIDTH;
-    ssSetInputPortDimensionInfo(S, 0, &inputDimsInfo);
-    ssSetInputPortFrameData(S, 0, IN_0_FRAME_BASED);
+    /*Input Port 0 */
+    ssSetInputPortWidth(S,  0, INPUT_0_WIDTH); /* */
     ssSetInputPortDataType(S, 0, SS_DOUBLE);
-    ssSetInputPortComplexSignal(S, 0, INPUT_0_COMPLEX);
+    ssSetInputPortComplexSignal(S,  0, INPUT_0_COMPLEX);
     ssSetInputPortDirectFeedThrough(S, 0, INPUT_0_FEEDTHROUGH);
     ssSetInputPortRequiredContiguous(S, 0, 1); /*direct input signal access*/
 
+    /*Input Port 1 */
+    ssSetInputPortWidth(S,  1, INPUT_1_WIDTH); /* */
+    ssSetInputPortDataType(S, 1, SS_DOUBLE);
+    ssSetInputPortComplexSignal(S,  1, INPUT_1_COMPLEX);
+    ssSetInputPortDirectFeedThrough(S, 1, INPUT_1_FEEDTHROUGH);
+    ssSetInputPortRequiredContiguous(S, 1, 1); /*direct input signal access*/
+
+    /*Input Port 2 */
+    ssSetInputPortWidth(S,  2, INPUT_2_WIDTH); /* */
+    ssSetInputPortDataType(S, 2, SS_DOUBLE);
+    ssSetInputPortComplexSignal(S,  2, INPUT_2_COMPLEX);
+    ssSetInputPortDirectFeedThrough(S, 2, INPUT_2_FEEDTHROUGH);
+    ssSetInputPortRequiredContiguous(S, 2, 1); /*direct input signal access*/
+
+    /*Input Port 3 */
+    ssSetInputPortWidth(S,  3, INPUT_3_WIDTH); /* */
+    ssSetInputPortDataType(S, 3, SS_DOUBLE);
+    ssSetInputPortComplexSignal(S,  3, INPUT_3_COMPLEX);
+    ssSetInputPortDirectFeedThrough(S, 3, INPUT_3_FEEDTHROUGH);
+    ssSetInputPortRequiredContiguous(S, 3, 1); /*direct input signal access*/
+
+
     if (!ssSetNumOutputPorts(S, NUM_OUTPUTS)) return;
-    outputDimsInfo.width = OUTPUT_0_WIDTH;
-    ssSetOutputPortDimensionInfo(S, 0, &outputDimsInfo);
-    ssSetOutputPortFrameData(S, 0, OUT_0_FRAME_BASED);
-    ssSetOutputPortDataType(S, 0, SS_UINT32);
-    ssSetOutputPortComplexSignal(S, 0, OUTPUT_0_COMPLEX);
+    ssSetOutputPortWidth(S, 0, OUTPUT_0_WIDTH);
+    ssSetOutputPortDataType(S, 0, SS_DOUBLE);
     ssSetOutputPortComplexSignal(S, 0, OUTPUT_0_COMPLEX);
     ssSetNumSampleTimes(S, 1);
     ssSetNumRWork(S, 0);
@@ -235,14 +254,13 @@ static void mdlSetDefaultPortDataTypes(SimStruct *S)
 */
 static void mdlOutputs(SimStruct *S, int_T tid)
 {
-    const real_T   *u0  = (const real_T*) ssGetInputPortSignal(S,0);
-    uint32_T        *y0  = (uint32_T *)ssGetOutputPortRealSignal(S,0);
-    const int_T   p_width0  = mxGetNumberOfElements(PARAM_DEF0(S));
-    const real_T  *scale  = mxGetData(PARAM_DEF0(S));
-    const int_T        y_width = ssGetOutputPortWidth(S,0);
-    const int_T        u_width = ssGetInputPortWidth(S,0);
+    const real_T   *state  = (const real_T*) ssGetInputPortSignal(S,0);
+    const real_T   *value  = (const real_T*) ssGetInputPortSignal(S,1);
+    const real_T   *limitpos  = (const real_T*) ssGetInputPortSignal(S,2);
+    const real_T   *limitneg  = (const real_T*) ssGetInputPortSignal(S,3);
+    real_T        *state_out  = (real_T *)ssGetOutputPortRealSignal(S,0);
 
-    fptofixwithscale_Outputs_wrapper(u0, y0, scale, p_width0, y_width, u_width, S);
+    xpclogger_Outputs_wrapper(state, value, limitpos, limitneg, state_out);
 }
 
 

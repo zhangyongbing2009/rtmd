@@ -43,7 +43,9 @@ public class ScramNetIO
     /** Write a floating point value to a Scramnet location */
     public native int writeFloat(int loc, float value);       
     /** Write a double value to a Scramnet location */
-    public native int writeDouble(int loc, double value);           
+    public native int writeDouble(int loc, double value);
+    /** Read a floating point length block of values from a Scramnet starting location */
+    public native float[] readFloatBlock(int loc, float[] values, int length);
     /** Clear SCRAMNet Memory */
     public native int clear();
     /** Read the Global Counter */

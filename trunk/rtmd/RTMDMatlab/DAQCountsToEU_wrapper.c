@@ -18,7 +18,7 @@
   *   in the Real-Time Workshop User's Manual in the Chapter titled,
   *   "Wrapper S-functions".
   *
-  *   Created: Fri Feb  6 10:49:49 2009
+  *   Created: Tue Jan 19 10:32:59 2010
   */
 
 
@@ -26,17 +26,12 @@
  * Include Files
  *
  */
-#if defined(MATLAB_MEX_FILE)
-#include "tmwtypes.h"
-#include "simstruc_types.h"
-#else
-#include "rtwtypes.h"
-#endif
+#include "simstruc.h"
+
+
 /* %%%-SFUNWIZ_wrapper_includes_Changes_BEGIN --- EDIT HERE TO _END */
 #include <math.h>
 /* %%%-SFUNWIZ_wrapper_includes_Changes_END --- EDIT HERE TO _BEGIN */
-#define u_width 1
-#define y_width 1
 /*
  * Create external references here.  
  *
@@ -55,16 +50,20 @@ void DAQCountsToEU_Outputs_wrapper(const uint32_T *u0,
                           const real_T  *Vslope, const int_T  p_width1, 
                           const real_T  *Voffset, const int_T  p_width2, 
                           const real_T  *EUslope, const int_T  p_width3, 
-                          const real_T  *EUoffset,  const int_T p_width4)
+                          const real_T  *EUoffset,  const int_T p_width4,
+			     const int_T y_width, const int_T u_width, SimStruct *S)
 {
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_BEGIN --- EDIT HERE TO _END */
-int val;
-  val = u0[0];
+int i = 0;
+int_T numElements = u_width;
+for (i = 0; i < numElements; i++) {
+  int val;
+  val = u0[i]/65536;
   
   if (val > 0x7FFF)
      val = -((val ^ 0xFFFF) + 1);
-     val = val / 65536;
   
-  y0[0] = ((((((10000.0 / gain[0])/32768.0) * val) * Vslope[0]) + Voffset[0]) * EUslope[0]) + EUoffset[0];
+  y0[i] = ((((((10000.0 / gain[0])/32768.0) * val) * Vslope[0]) + Voffset[0]) * EUslope[0]) + EUoffset[0];
+}
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */
 }

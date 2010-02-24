@@ -35,40 +35,18 @@
         </xsl:for-each>     
         
         <xsl:for-each select="//NEESsim/Scramnet/SimBlock">
-          <xPCReadBlock name="Sim_{@Name}" unit="n_a" Gain="1" location="{@Offset}" isDAQ="false" />
+          <xPCReadBlock name="{@Name}" unit="n_a" Gain="1" location="{@Offset}" isDAQ="false" />
         </xsl:for-each>           
            
 		<xsl:for-each select="//NEESsim/Scramnet/CtrlBlock">
           <xsl:if test="(@Stream='true') and (@Offset &lt; 64)">
-            <xPCWriteBlock name="{@Description}" unit="{@Units}" Gain="{@Scale}" location="{@Offset}" lowerlimit="{@LowerLimit}" upperlimit="{@UpperLimit}" isCTRL = "true" />
+            <xPCWriteBlock name="{@Description}" unit="{@Units}" Gain="{@Scale}" location="{@Offset}" lowerlimit="{@LowerLimit}" upperlimit="{@UpperLimit}" isCTRL="true" />
           </xsl:if>
         </xsl:for-each>           
         
         <xsl:for-each select="//NEESsim/Scramnet/SimBlock">        
-          <xPCWriteBlock name="Sim_{@Name}_write" unit="n_a" Gain="1" location="{@Offset}" isCTRL = "false" />
-        </xsl:for-each>                    
-                
-        <xsl:for-each select="//NEESsim/Scramnet/NodeBlock[not(@ConstraintID = preceding-sibling::NodeBlock/@ConstraintID)]">
-        <xsl:sort select="@ConstraintID" />
-		  <xsl:if test="number(@DXOffset) &gt; 999">
-			<xPCWriteBlock name="Node_{@ID}_DX" unit="{@DUnits}" Gain="1" location="{@DXOffset}" isCTRL = "false" />
-		  </xsl:if>
-		  <xsl:if test="number(@DYOffset) &gt; 999">
-			<xPCWriteBlock name="Node_{@ID}_DY" unit="{@DUnits}" Gain="1" location="{@DYOffset}" isCTRL = "false" />
-		  </xsl:if>
-		  <xsl:if test="number(@DZOffset) &gt; 999">
-			<xPCWriteBlock name="Node_{@ID}_DZ" unit="{@DUnits}" Gain="1" location="{@DZOffset}" isCTRL = "false" />
-		  </xsl:if>
-		  <xsl:if test="number(@TXOffset) &gt; 999">
-			<xPCWriteBlock name="Node_{@ID}_TX" unit="{@TUnits}" Gain="1" location="{@TXOffset}" isCTRL = "false" />
-		  </xsl:if>
-		  <xsl:if test="number(@TYOffset) &gt; 999">
-			<xPCWriteBlock name="Node_{@ID}_TY" unit="{@TUnits}" Gain="1" location="{@TYOffset}" isCTRL = "false" />
-		  </xsl:if>
-		  <xsl:if test="number(@TZOffset) &gt; 999">
-			<xPCWriteBlock name="Node_{@ID}_TZ" unit="{@TUnits}" Gain="1" location="{@TZOffset}" isCTRL = "false" />
-		  </xsl:if>		  
-        </xsl:for-each>          
+          <xPCWriteBlock name="Sim_{@Name}_write" unit="n_a" Gain="1" location="{@Offset}" isCTRL="false" />
+        </xsl:for-each>                                                     
      
     </xPC>
 

@@ -272,11 +272,16 @@ public class Selector extends JFrame implements ActionListener, Runnable {
 				public clearSCRAMNet(ScramNetIO _scr) {scr=_scr;}
     			public void run() {
     				// Confirm
-    	    		int response = javax.swing.JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the SCRAMNet Memory?");
+    	    		int response = javax.swing.JOptionPane.showConfirmDialog(null, "Are you sure you want to clear the SCRAMNet Memory?");    	    		
     	    		if (response == javax.swing.JOptionPane.YES_OPTION) {
-    		    		// Clear every address
-    		            for (int i = 0 ; i <= 2097151; i++)
-    		            	scr.writeInt(i,0);
+    	    			scr = new ScramNetIO();
+    	    			scr.initScramnet();
+    		    		// Clear the 1st memory page addresses
+    		            //for (int i = 0 ; i <= 2097151/4; i++) {    		            	    		            
+    		            //	scr.writeInt(i,0);    		            	
+    		            //
+    	    			//}
+    	    			scr.clear();    	    			
     	    		}
 				}    			
     		}
@@ -343,7 +348,7 @@ public class Selector extends JFrame implements ActionListener, Runnable {
     	
     	// xPC Convert Button
     	else if (source == xpcConvertButton) {
-    		new xPCDataConverter();
+    		new xPCDataConverter(false);
     	}
     	
     	// csv Decimator

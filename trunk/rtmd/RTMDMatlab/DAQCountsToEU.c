@@ -26,24 +26,25 @@
   *  -------------------------------------------------------------------------
   * | See matlabroot/simulink/src/sfuntmpl_doc.c for a more detailed template |
   *  ------------------------------------------------------------------------- 
- * Created: Fri Feb  6 10:49:49 2009
+ * Created: Tue Jan 19 10:32:59 2010
  * 
  *
  */
 
-
-#define S_FUNCTION_NAME DAQCountsToEU
 #define S_FUNCTION_LEVEL 2
+#define S_FUNCTION_NAME DAQCountsToEU
 /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 /* %%%-SFUNWIZ_defines_Changes_BEGIN --- EDIT HERE TO _END */
 #define NUM_INPUTS          1
 /* Input Port  0 */
 #define IN_PORT_0_NAME      u0
-#define INPUT_0_WIDTH       1
+#define INPUT_0_WIDTH       DYNAMICALLY_SIZED
 #define INPUT_DIMS_0_COL    1
 #define INPUT_0_DTYPE       uint32_T
 #define INPUT_0_COMPLEX     COMPLEX_NO
 #define IN_0_FRAME_BASED    FRAME_NO
+#define IN_0_BUS_BASED      0
+#define IN_0_BUS_NAME       
 #define IN_0_DIMS           1-D
 #define INPUT_0_FEEDTHROUGH 1
 #define IN_0_ISSIGNED        0
@@ -56,11 +57,13 @@
 #define NUM_OUTPUTS          1
 /* Output Port  0 */
 #define OUT_PORT_0_NAME      y0
-#define OUTPUT_0_WIDTH       1
+#define OUTPUT_0_WIDTH       DYNAMICALLY_SIZED
 #define OUTPUT_DIMS_0_COL    1
 #define OUTPUT_0_DTYPE       real_T
 #define OUTPUT_0_COMPLEX     COMPLEX_NO
 #define OUT_0_FRAME_BASED    FRAME_NO
+#define OUT_0_BUS_BASED      0
+#define OUT_0_BUS_NAME       
 #define OUT_0_DIMS           1-D
 #define OUT_0_ISSIGNED        1
 #define OUT_0_WORDLENGTH      8
@@ -97,10 +100,10 @@
 #define NUM_CONT_STATES      0
 #define CONT_STATES_IC       [0]
 
-#define SFUNWIZ_GENERATE_TLC 1
+#define SFUNWIZ_GENERATE_TLC 0
 #define SOURCEFILES "__SFB__"
 #define PANELINDEX           6
-#define USE_SIMSTRUCT        0
+#define USE_SIMSTRUCT        1
 #define SHOW_COMPILE_STEPS   0                   
 #define CREATE_DEBUG_MEXFILE 0
 #define SAVE_CODE_ONLY       0
@@ -123,7 +126,8 @@ extern void DAQCountsToEU_Outputs_wrapper(const uint32_T *u0,
                           const real_T  *Vslope, const int_T  p_width1, 
                           const real_T  *Voffset, const int_T  p_width2, 
                           const real_T  *EUslope, const int_T  p_width3, 
-                          const real_T  *EUoffset,  const int_T p_width4);
+                          const real_T  *EUoffset,  const int_T p_width4,
+			     const int_T y_width, const int_T u_width, SimStruct *S);
 
 /*====================*
  * S-function methods *
@@ -225,15 +229,20 @@ static void mdlInitializeSizes(SimStruct *S)
     ssSetNumDiscStates(S, NUM_DISC_STATES);
 
     if (!ssSetNumInputPorts(S, NUM_INPUTS)) return;
-    ssSetInputPortWidth(S, 0, INPUT_0_WIDTH);
+    inputDimsInfo.width = INPUT_0_WIDTH;
+    ssSetInputPortDimensionInfo(S, 0, &inputDimsInfo);
+    ssSetInputPortFrameData(S, 0, IN_0_FRAME_BASED);
     ssSetInputPortDataType(S, 0, SS_UINT32);
     ssSetInputPortComplexSignal(S, 0, INPUT_0_COMPLEX);
     ssSetInputPortDirectFeedThrough(S, 0, INPUT_0_FEEDTHROUGH);
     ssSetInputPortRequiredContiguous(S, 0, 1); /*direct input signal access*/
 
     if (!ssSetNumOutputPorts(S, NUM_OUTPUTS)) return;
-    ssSetOutputPortWidth(S, 0, OUTPUT_0_WIDTH);
+    outputDimsInfo.width = OUTPUT_0_WIDTH;
+    ssSetOutputPortDimensionInfo(S, 0, &outputDimsInfo);
+    ssSetOutputPortFrameData(S, 0, OUT_0_FRAME_BASED);
     ssSetOutputPortDataType(S, 0, SS_DOUBLE);
+    ssSetOutputPortComplexSignal(S, 0, OUTPUT_0_COMPLEX);
     ssSetOutputPortComplexSignal(S, 0, OUTPUT_0_COMPLEX);
     ssSetNumSampleTimes(S, 1);
     ssSetNumRWork(S, 0);
@@ -244,7 +253,6 @@ static void mdlInitializeSizes(SimStruct *S)
 
     /* Take care when specifying exception free code - see sfuntmpl_doc.c */
     ssSetOptions(S, (SS_OPTION_EXCEPTION_FREE_CODE |
-                     SS_OPTION_USE_TLC_WITH_ACCELERATOR | 
 		     SS_OPTION_WORKS_WITH_CODE_REUSE));
 }
 
@@ -299,8 +307,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     const real_T  *Voffset  = mxGetData(PARAM_DEF2(S));
     const real_T  *EUslope  = mxGetData(PARAM_DEF3(S));
     const real_T  *EUoffset  = mxGetData(PARAM_DEF4(S));
+    const int_T        y_width = ssGetOutputPortWidth(S,0);
+    const int_T        u_width = ssGetInputPortWidth(S,0);
 
-    DAQCountsToEU_Outputs_wrapper(u0, y0, gain, p_width0, Vslope, p_width1, Voffset, p_width2, EUslope, p_width3, EUoffset, p_width4);
+    DAQCountsToEU_Outputs_wrapper(u0, y0, gain, p_width0, Vslope, p_width1, Voffset, p_width2, EUslope, p_width3, EUoffset, p_width4, y_width, u_width, S);
 }
 
 
@@ -314,7 +324,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 static void mdlTerminate(SimStruct *S)
 {
 }
-
 #ifdef  MATLAB_MEX_FILE    /* Is this file being compiled as a MEX-file? */
 #include "simulink.c"      /* MEX-file interface mechanism */
 #else

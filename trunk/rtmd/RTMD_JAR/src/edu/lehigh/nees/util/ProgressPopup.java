@@ -26,6 +26,7 @@ public class ProgressPopup implements Runnable {
 		progressBar = new JProgressBar();
 		progressBar.setBounds(0,0,100,25);						
 		popup = new JDialog();
+		popup.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		popup.setTitle(_title);
 		popup.setResizable(false);
 		popup.setBounds(0,0,300,70);
