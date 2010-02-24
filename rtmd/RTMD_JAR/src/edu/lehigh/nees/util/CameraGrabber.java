@@ -71,7 +71,7 @@ public class CameraGrabber {
         else
         	System.out.println("Error creating directory " + camarg[0] + ", may already exist");    	       	
     }           
-    
+        
     // If the argument is scramnet trigger,
     if (args[0].equals("--trigger")) {
     	int scramnetAddress = 61; // default address 61
@@ -114,11 +114,10 @@ public class CameraGrabber {
         	while(count == scr.readInt(scramnetAddress));
         	count = scr.readInt(scramnetAddress);
     	}
-    }
-  
+    }  
         
     // If it is time triggered,
-    else if (args[0].equals("--timer")) {
+    if (args[0].equals("--timer")) {
     	int timestep = 1000; // default 1 second
     	timestep = Integer.parseInt(args[1]);
     	

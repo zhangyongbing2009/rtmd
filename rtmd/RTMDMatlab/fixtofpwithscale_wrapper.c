@@ -18,7 +18,7 @@
   *   in the Real-Time Workshop User's Manual in the Chapter titled,
   *   "Wrapper S-functions".
   *
-  *   Created: Fri Feb 10 12:41:36 2006
+  *   Created: Tue Jan 19 10:33:27 2010
   */
 
 
@@ -28,11 +28,10 @@
  */
 #include "simstruc.h"
 
+
 /* %%%-SFUNWIZ_wrapper_includes_Changes_BEGIN --- EDIT HERE TO _END */
 #include <math.h>
 /* %%%-SFUNWIZ_wrapper_includes_Changes_END --- EDIT HERE TO _BEGIN */
-#define u_width 1
-#define y_width 1
 /*
  * Create external references here.  
  *
@@ -53,11 +52,16 @@ typedef union
  */
 void fixtofpwithscale_Outputs_wrapper(const uint32_T *u0,
                           real_T *y0, 
-                           const real_T  *scale, const int_T p_width0, SimStruct *S)
+                           const real_T  *scale, const int_T p_width0,
+			     const int_T y_width, const int_T u_width, SimStruct *S)
 {
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_BEGIN --- EDIT HERE TO _END */
-value v;
-     v.i = u0[0];
-     y0[0] = v.f*scale[0];
+int i = 0;
+int_T numElements = u_width;
+for (i = 0; i < numElements; i++) {
+    value v;   
+    v.i = u0[i];
+    y0[i] = v.f*scale[0];
+}
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */
 }

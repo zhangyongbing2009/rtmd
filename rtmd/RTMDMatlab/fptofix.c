@@ -26,24 +26,25 @@
   *  -------------------------------------------------------------------------
   * | See matlabroot/simulink/src/sfuntmpl_doc.c for a more detailed template |
   *  ------------------------------------------------------------------------- 
- * Created: Fri Feb 10 13:34:54 2006
+ * Created: Tue Jan 19 10:34:49 2010
  * 
  *
  */
 
-
-#define S_FUNCTION_NAME fptofix
 #define S_FUNCTION_LEVEL 2
+#define S_FUNCTION_NAME fptofix
 /*<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<*/
 /* %%%-SFUNWIZ_defines_Changes_BEGIN --- EDIT HERE TO _END */
 #define NUM_INPUTS          1
 /* Input Port  0 */
 #define IN_PORT_0_NAME      u0
-#define INPUT_0_WIDTH       1
+#define INPUT_0_WIDTH       DYNAMICALLY_SIZED
 #define INPUT_DIMS_0_COL    1
 #define INPUT_0_DTYPE       real_T
 #define INPUT_0_COMPLEX     COMPLEX_NO
 #define IN_0_FRAME_BASED    FRAME_NO
+#define IN_0_BUS_BASED      0
+#define IN_0_BUS_NAME       
 #define IN_0_DIMS           1-D
 #define INPUT_0_FEEDTHROUGH 1
 #define IN_0_ISSIGNED        0
@@ -56,11 +57,13 @@
 #define NUM_OUTPUTS          1
 /* Output Port  0 */
 #define OUT_PORT_0_NAME      y0
-#define OUTPUT_0_WIDTH       1
+#define OUTPUT_0_WIDTH       DYNAMICALLY_SIZED
 #define OUTPUT_DIMS_0_COL    1
 #define OUTPUT_0_DTYPE       uint32_T
 #define OUTPUT_0_COMPLEX     COMPLEX_NO
 #define OUT_0_FRAME_BASED    FRAME_NO
+#define OUT_0_BUS_BASED      0
+#define OUT_0_BUS_NAME       
 #define OUT_0_DIMS           1-D
 #define OUT_0_ISSIGNED        1
 #define OUT_0_WORDLENGTH      8
@@ -77,10 +80,10 @@
 #define NUM_CONT_STATES      0
 #define CONT_STATES_IC       [0]
 
-#define SFUNWIZ_GENERATE_TLC 1
-#define SOURCEFILES "__SFB____SFB____SFB____SFB__"
+#define SFUNWIZ_GENERATE_TLC 0
+#define SOURCEFILES "__SFB__"
 #define PANELINDEX           6
-#define USE_SIMSTRUCT        0
+#define USE_SIMSTRUCT        1
 #define SHOW_COMPILE_STEPS   0                   
 #define CREATE_DEBUG_MEXFILE 0
 #define SAVE_CODE_ONLY       0
@@ -90,7 +93,8 @@
 #include "simstruc.h"
 
 extern void fptofix_Outputs_wrapper(const real_T *u0,
-                          uint32_T *y0);
+                          uint32_T *y0,
+			     const int_T y_width, const int_T u_width, SimStruct *S);
 
 /*====================*
  * S-function methods *
@@ -113,15 +117,20 @@ static void mdlInitializeSizes(SimStruct *S)
     ssSetNumDiscStates(S, NUM_DISC_STATES);
 
     if (!ssSetNumInputPorts(S, NUM_INPUTS)) return;
-    ssSetInputPortWidth(S, 0, INPUT_0_WIDTH);
+    inputDimsInfo.width = INPUT_0_WIDTH;
+    ssSetInputPortDimensionInfo(S, 0, &inputDimsInfo);
+    ssSetInputPortFrameData(S, 0, IN_0_FRAME_BASED);
     ssSetInputPortDataType(S, 0, SS_DOUBLE);
     ssSetInputPortComplexSignal(S, 0, INPUT_0_COMPLEX);
     ssSetInputPortDirectFeedThrough(S, 0, INPUT_0_FEEDTHROUGH);
     ssSetInputPortRequiredContiguous(S, 0, 1); /*direct input signal access*/
 
     if (!ssSetNumOutputPorts(S, NUM_OUTPUTS)) return;
-    ssSetOutputPortWidth(S, 0, OUTPUT_0_WIDTH);
+    outputDimsInfo.width = OUTPUT_0_WIDTH;
+    ssSetOutputPortDimensionInfo(S, 0, &outputDimsInfo);
+    ssSetOutputPortFrameData(S, 0, OUT_0_FRAME_BASED);
     ssSetOutputPortDataType(S, 0, SS_UINT32);
+    ssSetOutputPortComplexSignal(S, 0, OUTPUT_0_COMPLEX);
     ssSetOutputPortComplexSignal(S, 0, OUTPUT_0_COMPLEX);
     ssSetNumSampleTimes(S, 1);
     ssSetNumRWork(S, 0);
@@ -132,7 +141,6 @@ static void mdlInitializeSizes(SimStruct *S)
 
     /* Take care when specifying exception free code - see sfuntmpl_doc.c */
     ssSetOptions(S, (SS_OPTION_EXCEPTION_FREE_CODE |
-                     SS_OPTION_USE_TLC_WITH_ACCELERATOR |
 		     SS_OPTION_WORKS_WITH_CODE_REUSE));
 }
 
@@ -177,8 +185,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 {
     const real_T   *u0  = (const real_T*) ssGetInputPortSignal(S,0);
     uint32_T        *y0  = (uint32_T *)ssGetOutputPortRealSignal(S,0);
+    const int_T        y_width = ssGetOutputPortWidth(S,0);
+    const int_T        u_width = ssGetInputPortWidth(S,0);
 
-    fptofix_Outputs_wrapper(u0, y0);
+    fptofix_Outputs_wrapper(u0, y0, y_width, u_width, S);
 }
 
 
@@ -192,7 +202,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 static void mdlTerminate(SimStruct *S)
 {
 }
-
 #ifdef  MATLAB_MEX_FILE    /* Is this file being compiled as a MEX-file? */
 #include "simulink.c"      /* MEX-file interface mechanism */
 #else

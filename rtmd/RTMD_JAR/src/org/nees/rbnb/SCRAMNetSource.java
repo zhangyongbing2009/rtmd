@@ -87,7 +87,9 @@ public class SCRAMNetSource extends RBNBBase {
 				source=new Source(cacheSize, "append", archiveSize);
 			else
 				source=new Source(cacheSize, "append", 0);
-			source.OpenRBNBConnection(getServer(),rbnbSourceName);
+			System.out.println (getServer());
+			//source.OpenRBNBConnection(getServer(),rbnbSourceName);
+			source.OpenRBNBConnection("128.180.53.5:3333",rbnbSourceName);
 			connected = true;
 			System.out.println("Connecting to SCRAMNetSource with..."			
 				+ "\n RBNB Server = " + getServer()

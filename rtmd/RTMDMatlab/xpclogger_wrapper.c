@@ -18,7 +18,7 @@
   *   in the Real-Time Workshop User's Manual in the Chapter titled,
   *   "Wrapper S-functions".
   *
-  *   Created: Tue Jan 19 10:34:24 2010
+  *   Created: Thu Jan 21 14:54:00 2010
   */
 
 
@@ -26,41 +26,41 @@
  * Include Files
  *
  */
-#include "simstruc.h"
-
+#if defined(MATLAB_MEX_FILE)
+#include "tmwtypes.h"
+#include "simstruc_types.h"
+#else
+#include "rtwtypes.h"
+#endif
 
 /* %%%-SFUNWIZ_wrapper_includes_Changes_BEGIN --- EDIT HERE TO _END */
 #include <math.h>
 /* %%%-SFUNWIZ_wrapper_includes_Changes_END --- EDIT HERE TO _BEGIN */
+#define u_width 1
+#define y_width 1
 /*
  * Create external references here.  
  *
  */
 /* %%%-SFUNWIZ_wrapper_externs_Changes_BEGIN --- EDIT HERE TO _END */
 /* extern double func(double a); */
-
-typedef union
-{
-  unsigned int i;
-  float f;
-} value;
 /* %%%-SFUNWIZ_wrapper_externs_Changes_END --- EDIT HERE TO _BEGIN */
 
 /*
  * Output functions
  *
  */
-void fixtofp_Outputs_wrapper(const uint32_T *u0,
-                          real_T *y0,
-			     const int_T y_width, const int_T u_width, SimStruct *S)
+void xpclogger_Outputs_wrapper(const real_T *state,
+                          const real_T *value,
+                          const real_T *limitpos,
+                          const real_T *limitneg,
+                          real_T *state_out)
 {
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_BEGIN --- EDIT HERE TO _END */
-int i = 0;
-int_T numElements = u_width;
-for (i = 0; i < numElements; i++) {
-    value v;   
-    v.i = u0[i];
-    y0[i] = v.f;
+if (state[0] > 0) {
+    printf("Limit Hit -> %f (%f | %f)\n",value[0],limitpos[0],limitneg[0]);
 }
+
+state_out[0] = state[0];
 /* %%%-SFUNWIZ_wrapper_Outputs_Changes_END --- EDIT HERE TO _BEGIN */
 }
